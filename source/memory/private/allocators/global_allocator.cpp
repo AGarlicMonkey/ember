@@ -30,6 +30,8 @@ namespace ember::memory {
     }
 
     std::byte *global_allocator::alloc(std::size_t bytes, std::size_t alignment) {
+        std::scoped_lock lock{ allocation_mutex };
+
         std::size_t const total_allocation_size{ bytes + alignment };//Allow enough room for the worst case aliognment
         std::byte *memory{ nullptr };
 
@@ -67,6 +69,8 @@ namespace ember::memory {
     }
 
     void global_allocator::free(std::byte *&memory) {
+        std::scoped_lock lock{ allocation_mutex };
+        
         if(memory == nullptr) {
             return;
         }

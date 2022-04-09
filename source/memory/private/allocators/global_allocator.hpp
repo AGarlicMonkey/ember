@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <ember/core/export.hpp>
 #include <list>
+#include <mutex>
 
 namespace ember::memory {
     /**
@@ -24,6 +25,8 @@ namespace ember::memory {
         std::byte *backing_memory{ nullptr };
         std::size_t size{ 0 };
         std::list<block> free_list{};//Keep track of the free list outside of the backing memory to be able to utilise the entire range.
+
+        std::mutex allocation_mutex{};
 
         //FUNCTIONS
     public:
