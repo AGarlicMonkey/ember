@@ -9,6 +9,7 @@ find_package(spdlog REQUIRED CONFIG)
 #Library
 add_library(
     ${TARGET_NAME}
+        ${SOURCE_PUBLIC}/exception.hpp
         ${SOURCE_PUBLIC}/export.hpp
         ${SOURCE_PUBLIC}/log.hpp
         ${SOURCE_PUBLIC}/log.inl

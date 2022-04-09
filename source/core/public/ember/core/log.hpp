@@ -122,9 +122,3 @@ EMBER_LOG_CATEGORY(EmberAssertion)
     #define EMBER_VERIFY(expression) expression
     #define EMBER_VERIFY_MSG(expression, msg) expression
 #endif
-
-#if EMBER_CORE_ENABLE_EXCEPTIONS
-    #define EMBER_THROW(exception) throw exception
-#else
-    #define EMBER_THROW(exception)
-#endif
