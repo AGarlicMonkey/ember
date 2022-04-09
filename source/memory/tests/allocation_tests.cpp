@@ -14,3 +14,15 @@ TEST(allocation_tests, can_allocate_memory) {
     EXPECT_TRUE(handle_2.is_valid());
     EXPECT_NE(handle_2.get(), nullptr);
 }
+
+TEST(allocation_tests, can_free_memory){
+    auto handle{ memory::alloc(100, 0) };
+
+    ASSERT_TRUE(handle.is_valid());
+    ASSERT_NE(handle.get(), nullptr);
+
+    memory::free(handle);
+
+    EXPECT_FALSE(handle.is_valid());
+    EXPECT_EQ(handle.get(), nullptr);
+}

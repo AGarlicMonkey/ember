@@ -7,7 +7,9 @@ namespace ember::memory {
     /**
      * @brief 
      */
-    class EMBER_API handle {
+    class handle {
+        friend class handle_manager;
+        
         //VARIABLES
     private:
         std::byte *memory{ nullptr };
@@ -15,9 +17,6 @@ namespace ember::memory {
         //FUNCTIONS
     public:
         handle() = default;
-        handle(std::byte *memory)
-            : memory{ memory } {
-        }
 
         handle(handle const &other)     = delete;
         handle(handle &&other) noexcept = default;
@@ -34,6 +33,11 @@ namespace ember::memory {
         inline std::byte *get() {
             return memory;
         };
+
+    private:
+        handle(std::byte *memory)
+            : memory{ memory } {
+        }
     };
 }
 

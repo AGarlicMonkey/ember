@@ -67,6 +67,38 @@ namespace ember::memory {
     }
 
     void global_allocator::free(std::byte *memory) {
-        //TODO
+        if(memory == nullptr) {
+            return;
+        }
+
+        for(auto block{ free_list.begin() }; block != free_list.end(); ++block) {
+            if(backing_memory + block->aligned_offset == memory) {
+
+                bool remove_index{ false };
+                bool remove_right{ false };
+
+                //Attempt to merge the new memory into either the left or right blocks or both
+                if(auto right_block{ std::next(block) }; right_block != free_list.end() && right_block->is_free) {
+                    block->size += right_block->size;
+                    remove_right = true;
+                }
+                if(block != free_list.begin()) {
+                    if(auto left_block{ std::prev(block) }; left_block->is_free) {
+                        left_block->size += block->size;
+                        remove_index = true;
+                    }
+                }
+
+                if(remove_right) {
+                    free_list.erase(std::next(block));
+                }
+                if(remove_index) {
+                    free_list.erase(block);
+                }
+
+                block->is_free = true;
+                break;
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@
 
 namespace ember::memory {
     /**
-     * @brief global_allocator iss essentially a free list allocator except it bypasses
+     * @brief global_allocator is essentially a free list allocator except it bypasses
      * ember's memory/allocation system. Providing a place to allocate memory from for the entire application.
      */
     class global_allocator {
@@ -42,7 +42,5 @@ namespace ember::memory {
 
         std::byte *alloc(std::size_t bytes, std::size_t alignment);
         void free(std::byte *memory);
-
-    private:
     };
 }
