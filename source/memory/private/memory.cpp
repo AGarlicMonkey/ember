@@ -3,7 +3,7 @@
 #include "allocators/global_allocator.hpp"
 
 namespace ember::memory {
-    std::byte *alloc(std::size_t bytes, std::size_t alignment) {
+    std::byte *alloc(std::size_t const bytes, std::size_t const alignment) {
         return global_allocator::get().alloc(bytes, alignment);
     }
 

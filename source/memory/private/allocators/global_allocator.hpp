@@ -2,8 +2,9 @@
 
 #include <cstddef>
 #include <ember/core/export.hpp>
-#include <list>
 #include <mutex>
+#include <vector>
+#include <unordered_map>
 
 namespace ember::memory {
     /**
@@ -14,19 +15,31 @@ namespace ember::memory {
         //TYPES
     private:
         struct block {
+            block *next{ nullptr };
+            block *prev{ nullptr };
+
             bool is_free{ true };
-            std::size_t offset{ 0 };         /**< Offset into the backing memory. */
-            std::size_t aligned_offset{ 0 }; /**< The offset into the backing memory that respects the allocation's alignment. */
-            std::size_t size{ 0 };           /**< Size of the entire block of memory. */
+
+            std::size_t arena_index{ 0 }; /**< Which arena this block belongs to. */
+
+            std::size_t block_offset{ 0 }; /**< Offset into the arena memory for the whole block. */
+            std::size_t data_offset{ 0 };  /**< Offset into the arena memory containing the block data. Respects the data's alignment. */
+            std::size_t size{ 0 };         /**< Size of the entire block of memory. */
+        };
+
+        struct arena {
+            std::byte *memory{ nullptr };
+            std::size_t size{ 0 };
+
+            std::vector<block *> free_list{};
         };
 
         //VARIABLES
     private:
-        std::byte *backing_memory{ nullptr };
-        std::size_t size{ 0 };
-        std::list<block> free_list{};//Keep track of the free list outside of the backing memory to be able to utilise the entire range.
+        std::size_t size{ 0 }; /**< Total size of this allocator (sum of all arenas) */
+        std::vector<arena> memory_arenas{};
 
-        std::mutex allocation_mutex{};
+        std::recursive_mutex allocator_mutex{};
 
         //FUNCTIONS
     public:
@@ -43,7 +56,13 @@ namespace ember::memory {
 
         static global_allocator &get();
 
-        std::byte *alloc(std::size_t bytes, std::size_t alignment);
+        std::byte *alloc(std::size_t const bytes, std::size_t const alignment);
         void free(std::byte *&memory);
+
+    private:
+        block *create_new_block(std::size_t const arena_index, std::size_t const offset, std::size_t const bytes);
+        void create_new_arena(std::size_t const bytes);
+
+        void remove_block_from_free_list(std::vector<block *> &free_list, block *const block);
     };
 }
