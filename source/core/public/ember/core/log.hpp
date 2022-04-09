@@ -46,7 +46,7 @@ namespace ember {
         static logger &get();
 
         template<typename... args_t>
-        void log(log_level level, std::string_view msg, args_t &&...args);
+        void log(std::string_view category, log_level level, std::string_view msg, args_t &&...args);
 
         void add_sink(std::shared_ptr<spdlog::sinks::sink> sink);
 
@@ -57,13 +57,25 @@ namespace ember {
 
     #include "log.inl"
 
-    #define EMBER_LOG(level, msg, ...) ::ember::logger::get().log(level, msg, __VA_ARGS__)
+    #define EBMER_LOG_ADD_FILE_SINK(name)                                                 \
+        {                                                                                 \
+            auto sink{ std::make_shared<spdlog::sinks::basic_file_sink_mt>(name, true) }; \
+            sink->set_pattern("[%D %T][%l] %v");                                          \
+            ::ember::logger::get().add_sink(std::move(sink));                             \
+        }
 
-    #define EBMER_LOG_ADD_SINK(sink) ::ember::logger::get().add_sink(std::move(sink))
+    #define EMBER_INTERNAL_EXPAND_CATEGORY(category_name) LOG_CATEGORY##category_name
+    #define EMBER_LOG_CATEGORY(category_name)                         \
+        struct EMBER_INTERNAL_EXPAND_CATEGORY(category_name) {        \
+            static std::string_view constexpr name{ #category_name }; \
+        };
+
+    #define EMBER_LOG(category, level, msg, ...) ::ember::logger::get().log(EMBER_INTERNAL_EXPAND_CATEGORY(category)::name, level, msg, __VA_ARGS__)
+
 #else
+    #define EBMER_LOG_ADD_FILE_SINK(name)
+    #define EMBER_LOG_CATEGORY(category_name)
     #define EMBER_LOG(level, msg, ...)
-
-    #define EBMER_LOG_ADD_SINK(sink)
 #endif
 
 #if EMBER_CORE_ENABLE_ASSERTIONS
