@@ -1,6 +1,6 @@
 #if EMBER_EXPORT
     #ifdef _MSC_VER
-        #if EMBER
+        #ifdef EMBER
             #define EMBER_API __declspec(dllexport)
         #else
             #define EMBER_API __declspec(dllimport)

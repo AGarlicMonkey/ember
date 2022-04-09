@@ -32,7 +32,6 @@ target_link_libraries(
 		spdlog::spdlog
 )
 
-
 #Preprocessor
 target_compile_definitions(
     ${TARGET_NAME}
@@ -43,9 +42,6 @@ target_compile_definitions(
             EMBER_CORE_ENABLE_ASSERTIONS=1
             EMBER_CORE_ENABLE_EXCEPTIONS=1
 
-        INTERFACE
-            EMBER=0
-
         PRIVATE
-            EMBER=1
+            EMBER
 )
