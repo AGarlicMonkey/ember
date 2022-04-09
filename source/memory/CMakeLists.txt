@@ -8,9 +8,6 @@ add_library(
     ${TARGET_NAME}
         ${SOURCE_PRIVATE}/allocators/global_allocator.hpp
         ${SOURCE_PRIVATE}/allocators/global_allocator.cpp
-        
-        ${SOURCE_PUBLIC}/handle.hpp
-        ${SOURCE_PUBLIC}/handle.inl
 
         ${SOURCE_PUBLIC}/memory.hpp
         ${SOURCE_PRIVATE}/memory.cpp

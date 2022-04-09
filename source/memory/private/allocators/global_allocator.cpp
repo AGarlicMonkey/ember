@@ -66,7 +66,7 @@ namespace ember::memory {
         return memory;
     }
 
-    void global_allocator::free(std::byte *memory) {
+    void global_allocator::free(std::byte *&memory) {
         if(memory == nullptr) {
             return;
         }
@@ -97,6 +97,7 @@ namespace ember::memory {
                 }
 
                 block->is_free = true;
+                memory = nullptr;
                 break;
             }
         }

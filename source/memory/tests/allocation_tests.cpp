@@ -4,25 +4,24 @@
 using namespace ember;
 
 TEST(allocation_tests, can_allocate_memory) {
-    auto handle_1{ memory::alloc(100, 0) };
+    float *mem_1{ reinterpret_cast<float *>(memory::alloc(sizeof(float), alignof(float))) };
+    float *mem_2{ reinterpret_cast<float *>(memory::alloc(sizeof(float), alignof(float))) };
 
-    EXPECT_TRUE(handle_1.is_valid());
-    EXPECT_NE(handle_1.get(), nullptr);
+    EXPECT_NE(mem_1, nullptr);
+    EXPECT_NE(mem_2, nullptr);
 
-    auto handle_2{ memory::alloc(100, 0) };
+    *mem_1 = 1.0f;
+    *mem_2 = 2.0f;
 
-    EXPECT_TRUE(handle_2.is_valid());
-    EXPECT_NE(handle_2.get(), nullptr);
+    EXPECT_NE(mem_1, mem_2);
 }
 
 TEST(allocation_tests, can_free_memory){
-    auto handle{ memory::alloc(100, 0) };
+    auto *mem{ memory::alloc(100, 0) };
 
-    ASSERT_TRUE(handle.is_valid());
-    ASSERT_NE(handle.get(), nullptr);
+    ASSERT_NE(mem, nullptr);
 
-    memory::free(handle);
+    memory::free(mem);
 
-    EXPECT_FALSE(handle.is_valid());
-    EXPECT_EQ(handle.get(), nullptr);
+    EXPECT_EQ(mem, nullptr);
 }

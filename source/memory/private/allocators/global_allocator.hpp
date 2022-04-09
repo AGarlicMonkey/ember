@@ -41,6 +41,6 @@ namespace ember::memory {
         static global_allocator &get();
 
         std::byte *alloc(std::size_t bytes, std::size_t alignment);
-        void free(std::byte *memory);
+        void free(std::byte *&memory);
     };
 }
