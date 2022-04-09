@@ -88,7 +88,9 @@ namespace ember {
 
 #if EMBER_CORE_ENABLE_ASSERTIONS
     #ifdef _MSC_VER
-        #define EMBER_DEBUG_BREAK __debugbreak()
+        #define EMBER_DEBUG_BREAK           \
+            ::ember::logger::get().flush(); \
+            __debugbreak()
     #else
         #error ember currently only supported on MSVC
     #endif
