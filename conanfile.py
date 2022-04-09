@@ -12,6 +12,7 @@ class CloveConan(ConanFile):
     )
 
     requires = (
+        "gtest/cci.20210126",
         "spdlog/1.10.0",
     )
 

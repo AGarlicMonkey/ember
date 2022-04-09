@@ -14,6 +14,7 @@ else()
   add_compile_options(-Werror)
 endif()
 
+option(EMBER_BUILD_TESTS "Build Ember's tests" OFF)
 
 #Set up conan
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
