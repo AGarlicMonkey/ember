@@ -17,7 +17,7 @@ namespace ember {
     }
 
     logger::~logger() {
-        internal_logger->flush();
+        flush();
     }
 
     logger &logger::get() {
@@ -26,6 +26,10 @@ namespace ember {
         }
 
         return *instance;
+    }
+
+    void logger::flush() {
+        internal_logger->flush();
     }
 
     void logger::add_sink(std::shared_ptr<spdlog::sinks::sink> sink) {
