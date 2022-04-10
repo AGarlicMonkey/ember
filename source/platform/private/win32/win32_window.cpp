@@ -20,8 +20,7 @@ namespace ember::platform {
     }
 
     window_handle open_window() {
-        std::byte *const memory{ memory::alloc(sizeof(win32_handle), alignof(win32_handle)) };
-        win32_handle *const handle{ new(memory) win32_handle };
+        win32_handle *const handle{ memory::construct<win32_handle>() };
 
         HINSTANCE instance{ GetModuleHandle(nullptr) };
 
@@ -88,10 +87,8 @@ namespace ember::platform {
 
         auto *win_handle{ reinterpret_cast<win32_handle *>(handle.platform_handle) };
         CloseWindow(win_handle->hwnd);
-        win_handle->~win32_handle();
 
-        auto *handle_memory{ reinterpret_cast<std::byte *>(win_handle) };
-        memory::free(handle_memory);
+        memory::destruct(win_handle);
 
         handle.platform_handle = nullptr;
 

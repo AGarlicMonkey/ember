@@ -1,5 +1,7 @@
+#include <cstddef>
 #include <ember/memory/memory.hpp>
 #include <gtest/gtest.h>
+#include <new>
 
 using namespace ember;
 
@@ -82,4 +84,49 @@ TEST(allocation_tests, can_allocate_large_amounts_of_memory) {
 
         EXPECT_EQ(*mem_3, 3.0f);
     }
+}
+
+TEST(allocation_tests, can_construct_objects) {
+    struct test_type {
+        std::uint32_t a{ 0 };
+        std::uint64_t b{ 1 };
+        float c{ 2.0f };
+        double d{ 3.0f };
+
+        test_type(std::uint32_t a)
+            : a{ a } {
+        }
+    };
+
+    test_type *type{ memory::construct<test_type>(3u) };
+
+    ASSERT_NE(type, nullptr);
+    EXPECT_EQ(type->a, 3);
+    EXPECT_EQ(type->b, 1);
+    EXPECT_EQ(type->c, 2.0f);
+    EXPECT_EQ(type->d, 3.0f);
+}
+
+TEST(allocation_tests, can_destruct_objects) {
+    struct test_type {
+        bool &dtor_called;
+
+        test_type(bool &dtor_called)
+            : dtor_called{ dtor_called } {
+        }
+        ~test_type() {
+            dtor_called = true;
+        }
+    };
+
+    bool dtor_called{ false };
+
+    test_type *type{ memory::construct<test_type>(dtor_called) };
+
+    ASSERT_FALSE(dtor_called);
+
+    memory::destruct(type);
+
+    EXPECT_TRUE(dtor_called);
+    EXPECT_EQ(type, nullptr);
 }
