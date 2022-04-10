@@ -6,7 +6,7 @@
 #include <new>
 #include <windows.h>
 
-EMBER_LOG_CATEGORY(Win32Window);
+EMBER_LOG_CATEGORY(EmberWindowWin32);
 
 namespace ember::platform {
     struct win32_handle {
@@ -19,7 +19,7 @@ namespace ember::platform {
         return DefWindowProc(hwnd, msg, w_param, l_param);
     }
 
-    window_handle open_window() {
+    window_handle open_window(window_descriptor const &descriptor) {
         win32_handle *const handle{ memory::construct<win32_handle>() };
 
         HINSTANCE instance{ GetModuleHandle(nullptr) };
@@ -35,7 +35,7 @@ namespace ember::platform {
             .hCursor       = nullptr,
             .hbrBackground = nullptr,
             .lpszMenuName  = nullptr,
-            .lpszClassName = /* WindowsWindow::className */ "ember_class",
+            .lpszClassName = /* WindowsWindow::className */ "ember_window_class",
         };
         RegisterClassEx(&window_class);
 
@@ -43,8 +43,8 @@ namespace ember::platform {
         RECT window_rect{
             .left   = 0,
             .top    = 0,
-            .right  = 800,
-            .bottom = 600,
+            .right  = descriptor.size.x,
+            .bottom = descriptor.size.y,
         };
         //HWND window_parent{ nullptr };
         LONG window_pos_xy{ 0 };
@@ -61,7 +61,7 @@ namespace ember::platform {
 
         handle->hwnd = CreateWindow(
             window_class.lpszClassName,
-            "TEST",
+            descriptor.title.c_str(),
             window_style,
             window_pos_xy,
             window_pos_xy,
@@ -73,11 +73,20 @@ namespace ember::platform {
             /* this */ nullptr);
 
         EMBER_THROW_IF_FAILED(handle->hwnd != nullptr, exception{ "Failed to create Win32 window." });
-        EMBER_LOG(Win32Window, log_level::info, "Created new Win32 window of X:{0} Y:{0}", 800, 600);
+        EMBER_LOG(EmberWindowWin32, log_level::info, "Created new window of X:{0} Y:{0}", descriptor.size.x, descriptor.size.y);
 
         return window_handle{
             .platform_handle = handle,
         };
+    }
+
+    bool is_window_open(window_handle const &handle) {
+        if(handle.platform_handle == nullptr) {
+            return false;
+        }
+
+        auto *win_handle{ reinterpret_cast<win32_handle *>(handle.platform_handle) };
+        return static_cast<bool>(IsWindow(win_handle->hwnd));
     }
 
     void close_window(window_handle &handle) {
@@ -92,15 +101,7 @@ namespace ember::platform {
 
         handle.platform_handle = nullptr;
 
-        EMBER_LOG(Win32Window, log_level::trace, "Closed Win32 window");
+        EMBER_LOG(EmberWindowWin32, log_level::trace, "Closed Win32 window");
     }
 
-    bool is_window_open(window_handle const &handle) {
-        if(handle.platform_handle == nullptr) {
-            return false;
-        }
-
-        auto *win_handle{ reinterpret_cast<win32_handle *>(handle.platform_handle) };
-        return static_cast<bool>(IsWindow(win_handle->hwnd));
-    }
 }

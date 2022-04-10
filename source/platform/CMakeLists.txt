@@ -7,6 +7,7 @@ set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 add_library(
     ${TARGET_NAME}
         ${SOURCE_PUBLIC}/platform.hpp
+
         ${SOURCE_PUBLIC}/window.hpp
 
         ${SOURCE_PRIVATE}/win32/win32_platform.cpp
@@ -28,6 +29,7 @@ target_link_libraries(
 
     PUBLIC
 		ember_core
+        ember_maths
 
     PRIVATE
         ember_memory
