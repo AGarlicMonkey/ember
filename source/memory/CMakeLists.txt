@@ -7,6 +7,7 @@ set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 add_library(
     ${TARGET_NAME}
         ${SOURCE_PRIVATE}/allocators/global_allocator.hpp
+        ${SOURCE_PRIVATE}/allocators/global_allocator.inl
         ${SOURCE_PRIVATE}/allocators/global_allocator.cpp
 
         ${SOURCE_PUBLIC}/memory.hpp

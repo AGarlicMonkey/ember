@@ -22,4 +22,10 @@ namespace ember::memory {
      * @return 
      */
     EMBER_API void free(std::byte *&memory);
+
+    /**
+     * @brief Returns the current size in bytes on the global memory pool.
+     * @return 
+     */
+    EMBER_API std::size_t get_global_pool_size();
 }

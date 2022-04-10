@@ -97,7 +97,7 @@ namespace ember::memory {
             return;
         }
 
-        block *const curr_block{ reinterpret_cast<block *>(memory) };
+        block *const curr_block{ get_block_from_memory(memory) };
         block *const next_block{ curr_block->next };
         block *const prev_block{ curr_block->prev };
         arena &arena{ memory_arenas[curr_block->arena_index] };
@@ -135,11 +135,14 @@ namespace ember::memory {
 
         block *const new_block{ reinterpret_cast<block *>(arena.memory + offset) };
         *new_block = block{
-            .arena_index = arena_index,
-            .block_offset = offset,
-            .data_offset  = offset,
+            .arena_index  = arena_index,
+            .block_offset = sizeof(block) + offset,
+            .data_offset  = sizeof(block) + offset,
             .size         = bytes,
         };
+
+        EMBER_CHECK(new_block->next == nullptr);
+        EMBER_CHECK(new_block->prev == nullptr);
 
         arena.free_list.push_back(new_block);
 
@@ -147,7 +150,7 @@ namespace ember::memory {
     }
 
     void global_allocator::create_new_arena(std::size_t const bytes) {
-        auto *memory{ reinterpret_cast<std::byte *>(malloc(bytes)) };
+        auto *memory{ reinterpret_cast<std::byte *>(std::malloc(bytes)) };
         EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to create allocate new memory for the global memory allocator." });
 
         arena new_arena{
@@ -160,6 +163,21 @@ namespace ember::memory {
         std::size_t const arena_index{ memory_arenas.size() - 1 };
         std::size_t constexpr block_offset{ 0 };
         create_new_block(arena_index, block_offset, bytes);
+    }
+
+    global_allocator::block *global_allocator::get_block_from_memory(std::byte const *const memory) {
+        for(auto &arena : memory_arenas) {
+            block *curr_block{ reinterpret_cast<block *>(arena.memory) };
+            while(curr_block != nullptr) {
+                if((arena.memory + curr_block->data_offset) == memory) {
+                    return curr_block;
+                }
+
+                curr_block = curr_block->next;
+            }
+        }
+
+        EMBER_THROW(exception{ "Unable to find memory inside current allocator" });
     }
 
     void global_allocator::remove_block_from_free_list(std::vector<block *> &free_list, block *const block) {

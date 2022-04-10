@@ -10,4 +10,8 @@ namespace ember::memory {
     void free(std::byte *&memory) {
         global_allocator::get().free(memory);
     }
+
+    std::size_t get_global_pool_size() {
+        return global_allocator::get().get_size();
+    }
 }
