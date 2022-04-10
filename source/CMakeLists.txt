@@ -1,3 +1,4 @@
 add_subdirectory(core)
+add_subdirectory(maths)
 add_subdirectory(memory)
 add_subdirectory(platform)
