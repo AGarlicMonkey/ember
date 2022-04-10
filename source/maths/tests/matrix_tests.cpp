@@ -24,8 +24,8 @@ TEST(matrix_tests, memory_is_column_major) {
         EXPECT_EQ(matrix[0][1], 2);
         EXPECT_EQ(matrix[1][0], 4);
 
-        EXPECT_EQ(matrix[2][0], 3);
-        EXPECT_EQ(matrix[2][1], 6);
+        EXPECT_EQ(matrix[0][2], 3);
+        EXPECT_EQ(matrix[1][2], 6);
 
         EXPECT_EQ(matrix.data[4], 3);
         EXPECT_EQ(matrix.data[5], 6);
@@ -50,6 +50,7 @@ TEST(matrix_tests, memory_is_column_major) {
         EXPECT_EQ(matrix.data[12], 2);
         EXPECT_EQ(matrix.data[13], 2);
         EXPECT_EQ(matrix.data[14], 2);
+        EXPECT_EQ(matrix.data[15], 1);
     }
 }
 

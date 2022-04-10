@@ -13,18 +13,18 @@ namespace ember::maths {
     struct mat {
         //TYPES
     public:
-        struct column_val;
-        struct column_ref;
+        struct row_val;
+        struct row_ref;
 
-        struct column_val {
-            std::vector<T> col;
+        struct row_val {
+            std::vector<T> row;
 
-            column_val();
-            column_val(std::initializer_list<T> const list);
+            row_val();
+            row_val(std::initializer_list<T> const list);
 
-            friend constexpr column_val operator*(column_val const &c, T scalar) {
-                column_val result{};
-                result.col.resize(C);
+            friend constexpr row_val operator*(row_val const &c, T scalar) {
+                row_val result{};
+                result.row.resize(C);
 
                 for(size_t i{ 0 }; i < C; ++i) {
                     result[i] = c[i] * scalar;
@@ -33,7 +33,7 @@ namespace ember::maths {
                 return result;
             }
 
-            friend constexpr bool operator==(column_val const &lhs, column_val const &rhs) {
+            friend constexpr bool operator==(row_val const &lhs, row_val const &rhs) {
                 bool result{ true };
 
                 for(size_t i{ 0 }; i < C && result; ++i) {
@@ -42,7 +42,7 @@ namespace ember::maths {
 
                 return result;
             }
-            friend constexpr bool operator==(column_val const &lhs, column_ref const &rhs) {
+            friend constexpr bool operator==(row_val const &lhs, row_ref const &rhs) {
                 bool result{ true };
 
                 for(size_t i{ 0 }; i < C && result; ++i) {
@@ -56,18 +56,18 @@ namespace ember::maths {
             constexpr T const &operator[](size_t const index) const;
         };
 
-        struct column_ref {
-            std::vector<std::reference_wrapper<T>> col;
+        struct row_ref {
+            std::vector<std::reference_wrapper<T>> row;
 
-            column_ref();
-            column_ref(std::initializer_list<std::reference_wrapper<T>> const list);
+            row_ref();
+            row_ref(std::initializer_list<std::reference_wrapper<T>> const list);
 
-            column_ref &operator=(column_ref const &other);
-            column_ref &operator=(column_val const &other);
+            row_ref &operator=(row_ref const &other);
+            row_ref &operator=(row_val const &other);
 
-            friend constexpr column_val operator*(column_ref const &c, T scalar) {
-                column_val result{};
-                result.col.resize(C);
+            friend constexpr row_val operator*(row_ref const &c, T scalar) {
+                row_val result{};
+                result.row.resize(C);
 
                 for(size_t i{ 0 }; i < C; ++i) {
                     result[i] = c[i] * scalar;
@@ -76,7 +76,7 @@ namespace ember::maths {
                 return result;
             }
 
-            friend constexpr bool operator==(column_ref const &lhs, column_ref const &rhs) {
+            friend constexpr bool operator==(row_ref const &lhs, row_ref const &rhs) {
                 bool result{ true };
 
                 for(size_t i{ 0 }; i < C && result; ++i) {
@@ -85,7 +85,7 @@ namespace ember::maths {
 
                 return result;
             }
-            friend constexpr bool operator==(column_ref const &lhs, column_val const &rhs) {
+            friend constexpr bool operator==(row_ref const &lhs, row_val const &rhs) {
                 bool result{ true };
 
                 for(size_t i{ 0 }; i < C && result; ++i) {
@@ -119,8 +119,8 @@ namespace ember::maths {
         template<size_t R1, size_t C1, number U>
         friend constexpr bool operator!=(mat<R1, C1, U> const &lhs, mat<R1, C1, U> const &rhs);
 
-        constexpr column_ref operator[](size_t const index);
-        constexpr column_val const operator[](size_t const index) const;
+        constexpr row_ref operator[](size_t const index);
+        constexpr row_val const operator[](size_t const index) const;
     };
 }
 

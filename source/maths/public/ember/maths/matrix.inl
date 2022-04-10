@@ -65,64 +65,64 @@ namespace ember::maths {
     }
 
     template<size_t R, size_t C, number T>
-    mat<R, C, T>::column_val::column_val() = default;
+    mat<R, C, T>::row_val::row_val() = default;
 
     template<size_t R, size_t C, number T>
-    mat<R, C, T>::column_val::column_val(std::initializer_list<T> const list) {
-        col.insert(col.begin(), list.begin(), list.end());
+    mat<R, C, T>::row_val::row_val(std::initializer_list<T> const list) {
+        row.insert(row.begin(), list.begin(), list.end());
     }
 
     template<size_t R, size_t C, number T>
-    constexpr T &mat<R, C, T>::column_val::operator[](size_t const index) {
-        return col[index];
+    constexpr T &mat<R, C, T>::row_val::operator[](size_t const index) {
+        return row[index];
     }
 
     template<size_t R, size_t C, number T>
-    constexpr T const &mat<R, C, T>::column_val::operator[](size_t const index) const {
-        return col[index];
+    constexpr T const &mat<R, C, T>::row_val::operator[](size_t const index) const {
+        return row[index];
     }
 
     template<size_t R, size_t C, number T>
-    mat<R, C, T>::column_ref::column_ref() = default;
+    mat<R, C, T>::row_ref::row_ref() = default;
 
     template<size_t R, size_t C, number T>
-    mat<R, C, T>::column_ref::column_ref(std::initializer_list<std::reference_wrapper<T>> const list) {
-        col.insert(col.begin(), list.begin(), list.end());
+    mat<R, C, T>::row_ref::row_ref(std::initializer_list<std::reference_wrapper<T>> const list) {
+        row.insert(row.begin(), list.begin(), list.end());
     }
 
     template<size_t R, size_t C, number T>
-    typename mat<R, C, T>::column_ref &mat<R, C, T>::column_ref::operator=(column_ref const &other) {
+    typename mat<R, C, T>::row_ref &mat<R, C, T>::row_ref::operator=(row_ref const &other) {
         for(size_t i{ 0 }; i < C; ++i) {
-            col[i].get() = other[i];
+            row[i].get() = other[i];
         }
 
         return *this;
     }
 
     template<size_t R, size_t C, number T>
-    typename mat<R, C, T>::column_ref &mat<R, C, T>::column_ref::operator=(column_val const &other) {
+    typename mat<R, C, T>::row_ref &mat<R, C, T>::row_ref::operator=(row_val const &other) {
         for(size_t i{ 0 }; i < C; ++i) {
-            col[i].get() = other[i];
+            row[i].get() = other[i];
         }
 
         return *this;
     }
 
     template<size_t R, size_t C, number T>
-    constexpr T &mat<R, C, T>::column_ref::operator[](size_t const index) {
-        return col[index];
+    constexpr T &mat<R, C, T>::row_ref::operator[](size_t const index) {
+        return row[index];
     }
 
     template<size_t R, size_t C, number T>
-    constexpr T const &mat<R, C, T>::column_ref::operator[](size_t const index) const {
-        return col[index];
+    constexpr T const &mat<R, C, T>::row_ref::operator[](size_t const index) const {
+        return row[index];
     }
 
     template<size_t R, size_t C, number T>
     constexpr mat<R, C, T>::mat(T val) {
         for(std::size_t r{ 0 }; r < R; ++r) {
             for(std::size_t c{ 0 }; c < C; ++c) {
-                data[r + (c * C)] = r == c ? val : T{};
+                data[(c * R) + r] = r == c ? val : T{};
             }
         }
     }
@@ -180,25 +180,25 @@ namespace ember::maths {
     }
 
     template<size_t R, size_t C, number T>
-    constexpr typename mat<R, C, T>::column_ref mat<R, C, T>::operator[](size_t const index) {
-        column_ref column{};
+    constexpr typename mat<R, C, T>::row_ref mat<R, C, T>::operator[](size_t const index) {
+        row_ref row{};
 
         for(std::size_t c{ 0 }; c < C; ++c) {
-            column.col.push_back(data[index + (c * C)]);
+            row.row.push_back(data[(c * R) + index]);
         }
 
-        return column;
+        return row;
     }
 
     template<size_t R, size_t C, number T>
-    constexpr typename mat<R, C, T>::column_val const mat<R, C, T>::operator[](size_t const index) const {
-        column_val column{};
+    constexpr typename mat<R, C, T>::row_val const mat<R, C, T>::operator[](size_t const index) const {
+        row_val row{};
 
         for(std::size_t c{ 0 }; c < C; ++c) {
-            column.col.push_back(data[index + (c * C)]);
+            row.row.push_back(data[(c * R) + index]);
         }
 
-        return column;
+        return row;
     }
 
     template<size_t R, size_t C, number T>
