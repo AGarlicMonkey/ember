@@ -13,6 +13,9 @@ add_library(
         ${SOURCE_PUBLIC}/memory.hpp
         ${SOURCE_PUBLIC}/memory.inl
         ${SOURCE_PRIVATE}/memory.cpp
+
+        ${SOURCE_PUBLIC}/unique_ptr.hpp
+        ${SOURCE_PUBLIC}/unique_ptr.inl
 )
 
 #Include
