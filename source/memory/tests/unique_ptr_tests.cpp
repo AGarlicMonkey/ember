@@ -9,6 +9,12 @@ TEST(unique_ptr_tests, does_not_create_nullptr) {
     EXPECT_NE(ptr, nullptr);
 }
 
+TEST(unique_ptr_tests, can_be_initialised_to_nullptr) {
+    unique_ptr<float> ptr{ nullptr };
+
+    EXPECT_EQ(ptr, nullptr);
+}
+
 TEST(unique_ptr_tests, can_access_object) {
     struct test_type {
         std::uint32_t a;

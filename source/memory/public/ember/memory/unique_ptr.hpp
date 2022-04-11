@@ -21,6 +21,7 @@ namespace ember::memory {
         //FUNCTIONS
     public:
         unique_ptr();
+        unique_ptr(std::nullptr_t);
         explicit unique_ptr(T *object);
 
         unique_ptr(unique_ptr const &other) = delete;

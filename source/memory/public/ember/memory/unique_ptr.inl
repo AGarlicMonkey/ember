@@ -5,6 +5,10 @@ namespace ember::memory {
     unique_ptr<T>::unique_ptr() = default;
 
     template<typename T>
+    unique_ptr<T>::unique_ptr(std::nullptr_t) {
+    }
+
+    template<typename T>
     unique_ptr<T>::unique_ptr(T *object)
         : ptr{ object } {
     }
