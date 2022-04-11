@@ -11,6 +11,8 @@ add_library(
         ${SOURCE_PUBLIC}/window.hpp
         ${SOURCE_PUBLIC}/window.inl
 
+        ${SOURCE_PRIVATE}/win32/win32_message_handler.hpp
+        ${SOURCE_PRIVATE}/win32/win32_message_handler.cpp
         ${SOURCE_PRIVATE}/win32/win32_platform.cpp
         ${SOURCE_PRIVATE}/win32/win32_window.cpp
 )

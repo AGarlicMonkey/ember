@@ -1,4 +1,5 @@
 #include "ember/platform/window.hpp"
+#include "win32_message_handler.hpp"
 
 #include <ember/core/exception.hpp>
 #include <ember/core/log.hpp>
@@ -17,8 +18,22 @@ namespace ember::platform {
         //FUNCTIONS
     public:
         win32_window() = delete;
-        win32_window(HWND window_handle)
-            : window_handle{ window_handle } {
+        win32_window(std::string_view title, HINSTANCE instance, WNDCLASSEX const &window_class, DWORD const window_style, RECT const &window_rect, LONG const window_pos_xy) {
+            //We do the actual API call for creating a window here so we can use 'this' as the l_param
+            window_handle = CreateWindow(
+                window_class.lpszClassName,
+                title.data(),
+                window_style,
+                window_pos_xy,
+                window_pos_xy,
+                window_rect.right - window_rect.left,
+                window_rect.bottom - window_rect.top,
+                /* window_parent  */ nullptr,
+                0,
+                instance,
+                this);
+
+            EMBER_THROW_IF_FAILED(window_handle != nullptr, exception{ "Failed to create Win32 window." });
         }
 
         win32_window(win32_window const &other)     = delete;
@@ -38,10 +53,6 @@ namespace ember::platform {
             window_handle = nullptr;
         }
     };
-
-    LRESULT CALLBACK process_message(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param) {
-        return DefWindowProc(hwnd, msg, w_param, l_param);
-    }
 
     memory::unique_ptr<window> open_window(window::descriptor const &descriptor) {
         HINSTANCE instance{ GetModuleHandle(nullptr) };
@@ -81,22 +92,10 @@ namespace ember::platform {
         window_pos_xy = CW_USEDEFAULT;
         //}
 
-        HWND hwnd = CreateWindow(
-            window_class.lpszClassName,
-            descriptor.title.c_str(),
-            window_style,
-            window_pos_xy,
-            window_pos_xy,
-            window_rect.right - window_rect.left,
-            window_rect.bottom - window_rect.top,
-            /* window_parent  */ nullptr,
-            0,
-            instance,
-            /* this */ nullptr);
+        auto window{ memory::make_unique<win32_window>(descriptor.title, instance, window_class, window_style, window_rect, window_pos_xy) };
 
-        EMBER_THROW_IF_FAILED(hwnd != nullptr, exception{ "Failed to create Win32 window." });
         EMBER_LOG(EmberWindowWin32, log_level::info, "Created new window of X:{0} Y:{1}", descriptor.size.x, descriptor.size.y);
 
-        return memory::make_unique<win32_window>(hwnd);
+        return window;
     }
 }
