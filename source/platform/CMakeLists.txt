@@ -44,9 +44,9 @@ target_compile_definitions(
     ${TARGET_NAME}
 
     PUBLIC
-        EMBER_PLATFORM_WINDOWS=$<PLATFORM_ID:Windows>
+        EMBER_PLATFORM_WIN32=$<PLATFORM_ID:Windows>
         EMBER_PLATFORM_MACOS=$<PLATFORM_ID:Darwin>
-        EMBER_PLATFORM_LINUX=$<PLATFORM_ID:Linux>
+        EMBER_PLATFORM_XLIB=$<PLATFORM_ID:Linux>
 
     PRIVATE
         EMBER

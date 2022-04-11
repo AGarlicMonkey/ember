@@ -37,6 +37,11 @@ namespace ember::platform {
 }
 
 namespace ember::platform {
+    /**
+     * @brief Opens a new window.
+     * @param descriptor 
+     * @return 
+     */
     EMBER_API memory::unique_ptr<window> open_window(window::descriptor const &descriptor);
 }
 
