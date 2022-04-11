@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <concepts>
 
 namespace ember::memory {
     /**
@@ -10,6 +11,9 @@ namespace ember::memory {
      */
     template<typename T>
     class unique_ptr {
+        template<typename U>
+        friend class unique_ptr;
+
         //VARIABLES
     private:
         T *ptr{ nullptr };
@@ -21,6 +25,8 @@ namespace ember::memory {
 
         unique_ptr(unique_ptr const &other) = delete;
         unique_ptr(unique_ptr &&other) noexcept;
+        template<typename U>
+        unique_ptr(unique_ptr<U> &&other) requires std::is_base_of_v<T, U>;
 
         unique_ptr &operator=(unique_ptr const &other) = delete;
         unique_ptr &operator=(unique_ptr &&other) noexcept;

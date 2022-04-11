@@ -16,6 +16,13 @@ namespace ember::memory {
     }
 
     template<typename T>
+    template<typename U>
+    unique_ptr<T>::unique_ptr(unique_ptr<U> &&other) requires std::is_base_of_v<T, U> {
+        ptr       = other.ptr;
+        other.ptr = nullptr;
+    }
+
+    template<typename T>
     unique_ptr<T> &unique_ptr<T>::operator=(unique_ptr<T> &&other) noexcept {
         ptr       = other.ptr;
         other.ptr = nullptr;

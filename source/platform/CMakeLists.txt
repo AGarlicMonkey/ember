@@ -9,6 +9,7 @@ add_library(
         ${SOURCE_PUBLIC}/platform.hpp
 
         ${SOURCE_PUBLIC}/window.hpp
+        ${SOURCE_PUBLIC}/window.inl
 
         ${SOURCE_PRIVATE}/win32/win32_platform.cpp
         ${SOURCE_PRIVATE}/win32/win32_window.cpp
@@ -30,8 +31,6 @@ target_link_libraries(
     PUBLIC
 		ember_core
         ember_maths
-
-    PRIVATE
         ember_memory
 )
 

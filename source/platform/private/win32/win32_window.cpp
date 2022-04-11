@@ -9,19 +9,41 @@
 EMBER_LOG_CATEGORY(EmberWindowWin32);
 
 namespace ember::platform {
-    struct win32_handle {
-        HWND hwnd{ nullptr };
-    };
-}
+    class win32_window : public window {
+        //VARIABLES
+    private:
+        HWND window_handle{ nullptr };
 
-namespace ember::platform {
+        //FUNCTIONS
+    public:
+        win32_window() = delete;
+        win32_window(HWND window_handle)
+            : window_handle{ window_handle } {
+        }
+
+        win32_window(win32_window const &other)     = delete;
+        win32_window(win32_window &&other) noexcept = default;
+
+        win32_window &operator=(win32_window const &other) = delete;
+        win32_window &operator=(win32_window &&other) noexcept = default;
+
+        ~win32_window() = default;
+
+        bool is_open() const override {
+            return static_cast<bool>(IsWindow(window_handle));
+        }
+
+        void close() override {
+            CloseWindow(window_handle);
+            window_handle = nullptr;
+        }
+    };
+
     LRESULT CALLBACK process_message(HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param) {
         return DefWindowProc(hwnd, msg, w_param, l_param);
     }
 
-    window_handle open_window(window_descriptor const &descriptor) {
-        win32_handle *const handle{ memory::construct<win32_handle>() };
-
+    memory::unique_ptr<window> open_window(window::descriptor const &descriptor) {
         HINSTANCE instance{ GetModuleHandle(nullptr) };
 
         WNDCLASSEX window_class{
@@ -59,7 +81,7 @@ namespace ember::platform {
         window_pos_xy = CW_USEDEFAULT;
         //}
 
-        handle->hwnd = CreateWindow(
+        HWND hwnd = CreateWindow(
             window_class.lpszClassName,
             descriptor.title.c_str(),
             window_style,
@@ -72,36 +94,9 @@ namespace ember::platform {
             instance,
             /* this */ nullptr);
 
-        EMBER_THROW_IF_FAILED(handle->hwnd != nullptr, exception{ "Failed to create Win32 window." });
-        EMBER_LOG(EmberWindowWin32, log_level::info, "Created new window of X:{0} Y:{0}", descriptor.size.x, descriptor.size.y);
+        EMBER_THROW_IF_FAILED(hwnd != nullptr, exception{ "Failed to create Win32 window." });
+        EMBER_LOG(EmberWindowWin32, log_level::info, "Created new window of X:{0} Y:{1}", descriptor.size.x, descriptor.size.y);
 
-        return window_handle{
-            .platform_handle = handle,
-        };
+        return memory::make_unique<win32_window>(hwnd);
     }
-
-    bool is_window_open(window_handle const &handle) {
-        if(handle.platform_handle == nullptr) {
-            return false;
-        }
-
-        auto *win_handle{ reinterpret_cast<win32_handle *>(handle.platform_handle) };
-        return static_cast<bool>(IsWindow(win_handle->hwnd));
-    }
-
-    void close_window(window_handle &handle) {
-        if(handle.platform_handle == nullptr) {
-            return;
-        }
-
-        auto *win_handle{ reinterpret_cast<win32_handle *>(handle.platform_handle) };
-        CloseWindow(win_handle->hwnd);
-
-        memory::destruct(win_handle);
-
-        handle.platform_handle = nullptr;
-
-        EMBER_LOG(EmberWindowWin32, log_level::trace, "Closed Win32 window");
-    }
-
 }
