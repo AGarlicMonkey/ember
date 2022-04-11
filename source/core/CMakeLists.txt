@@ -6,6 +6,12 @@ set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 set(TRACY_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/../../external/tracy_profiler/client)
 
 #CMake
+option(EMBER_CORE_ENABLE_LOGGING "Enables the logging macros in ember. Allowing the application to output log messages." ON)
+option(EMBER_CORE_ENABLE_ASSERTIONS "Enables the assertion macros in ember." ON)
+option(EMBER_CORE_ENABLE_EXCEPTIONS "Enables the exception macros in ember. Allowing the application to throw." ON)
+
+option(EMBER_CORE_ENABLE_PROFILING "Enables ember's profiler" OFF)
+
 find_package(spdlog REQUIRED CONFIG)
 find_package(tracy REQUIRED CONFIG)
 
@@ -50,16 +56,17 @@ target_compile_definitions(
         PUBLIC
             EMBER_EXPORT=$<BOOL:${BUILD_SHARED_LIBS}>
 
-            EMBER_CORE_ENABLE_LOGGING=1
-            EMBER_CORE_ENABLE_ASSERTIONS=1
-            EMBER_CORE_ENABLE_EXCEPTIONS=1
+            EMBER_CORE_ENABLE_LOGGING=$<BOOL:${EMBER_CORE_ENABLE_LOGGING}>
+            EMBER_CORE_ENABLE_ASSERTIONS=$<BOOL:${EMBER_CORE_ENABLE_ASSERTIONS}>
+            EMBER_CORE_ENABLE_EXCEPTIONS=$<BOOL:${EMBER_CORE_ENABLE_EXCEPTIONS}>
 
-            EMBER_CORE_ENABLE_PROFILING=1
-            $<1:TRACY_ENABLE>
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:TRACY_IMPORTS>
+            EMBER_CORE_ENABLE_PROFILING=$<BOOL:${EMBER_CORE_ENABLE_PROFILING}>
+
+            $<$<BOOL:${EMBER_CORE_ENABLE_PROFILING}>:TRACY_ENABLE>
+            $<$<AND:$<BOOL:${EMBER_CORE_ENABLE_PROFILING}>,$<BOOL:${BUILD_SHARED_LIBS}>>:TRACY_IMPORTS>
 
         PRIVATE
             EMBER
 
-            $<$<BOOL:${BUILD_SHARED_LIBS}>:TRACY_EXPORTS>
+            $<$<AND:$<BOOL:${EMBER_CORE_ENABLE_PROFILING}>,$<BOOL:${BUILD_SHARED_LIBS}>>:TRACY_EXPORTS>
 )
