@@ -17,6 +17,14 @@ namespace ember::memory {
      */
     EMBER_API std::byte *alloc(std::size_t const bytes, std::size_t const alignment);
     /**
+     * @brief Reallocates original into a new size. Copying memory over.
+     * @param original Original allocation.
+     * @param bytes How many bytes to allocate.
+     * @param alignment How to align the allocation.
+     * @return A pointer to the newly allocated memory.
+     */
+    EMBER_API std::byte *realloc(std::byte *&original, std::size_t const bytes, std::size_t const alignment);
+    /**
      * @brief Puts allocated memory back into the global memory pool.
      * @param memory Pointer to the memory to return.
      * @return 

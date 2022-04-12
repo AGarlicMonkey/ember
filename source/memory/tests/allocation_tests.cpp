@@ -48,6 +48,19 @@ TEST(allocation_tests, can_free_memory) {
     }
 }
 
+TEST(allocation_tests, can_reallocate_memory) {
+    auto *mem_1{ memory::alloc(200, alignof(float)) };
+
+    *reinterpret_cast<float *>(mem_1) = 1.0f;
+
+    ASSERT_EQ(*reinterpret_cast<float *>(mem_1), 1.0f);
+
+    mem_1 = memory::realloc(mem_1, 400, alignof(float));
+
+    ASSERT_NE(mem_1, nullptr);
+    EXPECT_EQ(*reinterpret_cast<float *>(mem_1), 1.0f);
+}
+
 TEST(allocation_tests, can_allocate_large_amounts_of_memory) {
     {
         std::byte *large_1{ memory::alloc(EMBER_MB(500), 0) };

@@ -90,6 +90,21 @@ namespace ember::memory {
         return memory;
     }
 
+    std::byte *global_allocator::realloc(std::byte *&original, std::size_t const bytes, std::size_t const alignment) {
+        std::scoped_lock lock{ allocator_mutex };
+
+        block *const original_block{ get_block_from_memory(original) };
+        std::size_t const copy_size{ std::min(bytes, original_block->size) };
+
+        std::byte *const new_alloc{ alloc(bytes, alignment) };
+        std::memcpy(new_alloc, original, copy_size);
+
+        return_block_to_freelist(original_block);
+        original = nullptr;
+
+        return new_alloc;
+    }
+
     void global_allocator::free(std::byte *&memory) {
         std::scoped_lock lock{ allocator_mutex };
 
@@ -97,7 +112,12 @@ namespace ember::memory {
             return;
         }
 
-        block *const curr_block{ get_block_from_memory(memory) };
+        return_block_to_freelist(get_block_from_memory(memory));
+
+        memory = nullptr;
+    }
+
+    void global_allocator::return_block_to_freelist(block *const curr_block) {
         block *const next_block{ curr_block->next };
         block *const prev_block{ curr_block->prev };
         arena &arena{ memory_arenas[curr_block->arena_index] };
@@ -126,8 +146,22 @@ namespace ember::memory {
                 prev_block->next->prev = prev_block;
             }
         }
+    }
 
-        memory = nullptr;
+    global_allocator::block *global_allocator::get_block_from_memory(std::byte const *const memory) {
+        for(auto &arena : memory_arenas) {
+            block *curr_block{ reinterpret_cast<block *>(arena.memory) };
+            while(curr_block != nullptr) {
+                if((arena.memory + curr_block->data_offset) == memory) {
+                    return curr_block;
+                }
+
+                curr_block = curr_block->next;
+            }
+        }
+
+        EMBER_THROW(exception{ "Unable to find memory inside current allocator" });
+        return nullptr;
     }
 
     global_allocator::block *global_allocator::create_new_block(std::size_t const arena_index, std::size_t const offset, std::size_t const bytes) {
@@ -163,22 +197,6 @@ namespace ember::memory {
         std::size_t const arena_index{ memory_arenas.size() - 1 };
         std::size_t constexpr block_offset{ 0 };
         create_new_block(arena_index, block_offset, bytes);
-    }
-
-    global_allocator::block *global_allocator::get_block_from_memory(std::byte const *const memory) {
-        for(auto &arena : memory_arenas) {
-            block *curr_block{ reinterpret_cast<block *>(arena.memory) };
-            while(curr_block != nullptr) {
-                if((arena.memory + curr_block->data_offset) == memory) {
-                    return curr_block;
-                }
-
-                curr_block = curr_block->next;
-            }
-        }
-
-        EMBER_THROW(exception{ "Unable to find memory inside current allocator" });
-        return nullptr;
     }
 
     void global_allocator::remove_block_from_free_list(std::vector<block *> &free_list, block *const block) {

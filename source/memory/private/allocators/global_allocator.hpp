@@ -3,8 +3,8 @@
 #include <cstddef>
 #include <ember/core/export.hpp>
 #include <mutex>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 namespace ember::memory {
     /**
@@ -57,15 +57,18 @@ namespace ember::memory {
         static global_allocator &get();
 
         std::byte *alloc(std::size_t const bytes, std::size_t const alignment);
+        std::byte *realloc(std::byte *&original, std::size_t const bytes, std::size_t const alignment);
         void free(std::byte *&memory);
 
         inline std::size_t get_size() const;
 
     private:
-        block *create_new_block(std::size_t const arena_index, std::size_t const offset, std::size_t const bytes);
-        void create_new_arena(std::size_t const bytes);
+        void return_block_to_freelist(block *const block);
 
         block *get_block_from_memory(std::byte const *const memory);
+
+        block *create_new_block(std::size_t const arena_index, std::size_t const offset, std::size_t const bytes);
+        void create_new_arena(std::size_t const bytes);
 
         void remove_block_from_free_list(std::vector<block *> &free_list, block *const block);
     };
