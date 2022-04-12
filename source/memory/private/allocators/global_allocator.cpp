@@ -178,6 +178,7 @@ namespace ember::memory {
         }
 
         EMBER_THROW(exception{ "Unable to find memory inside current allocator" });
+        return nullptr;
     }
 
     void global_allocator::remove_block_from_free_list(std::vector<block *> &free_list, block *const block) {
