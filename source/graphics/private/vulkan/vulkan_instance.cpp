@@ -14,6 +14,7 @@
 
 #include "vulkan_instance.hpp"
 
+#include "allocation_callbacks.hpp"
 #include "exception.hpp"
 #include "log.hpp"
 
@@ -83,10 +84,9 @@ namespace {
 namespace ember::graphics {
     vulkan_instance::~vulkan_instance() {
 #if EMBER_GRAPHICS_DEVICE_VALIDATION
-        //TODO: provide custom allocator
-        destroy_debug_utils_messenger_EXT(instance, debug_messenger, nullptr);
+        destroy_debug_utils_messenger_EXT(instance, debug_messenger, &global_allocator);
 #endif
-        vkDestroyInstance(instance, nullptr);
+        vkDestroyInstance(instance, &global_allocator);
     }
 
     memory::unique_ptr<vulkan_instance> create_vulkan_instance() {
@@ -101,6 +101,8 @@ namespace ember::graphics {
                 EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\t{0}", extension.extensionName);
             }
         }
+
+        VkAllocationCallbacks instance_allocation_callbacks{ get_allocations_callbacks() };
 
         //TODO: Internal vector
         std::vector<char const *> instance_extensions {
@@ -168,18 +170,16 @@ namespace ember::graphics {
                 .ppEnabledExtensionNames = instance_extensions.data(),
             };
 
-            //TODO: Provide custom allocator
-            EMBER_VULKAN_VERIFY_RESULT(vkCreateInstance(&create_info, nullptr, &instance), "Failed to create Vulkan instance.");
+            EMBER_VULKAN_VERIFY_RESULT(vkCreateInstance(&create_info, &instance_allocation_callbacks, &instance), "Failed to create Vulkan instance.");
 
 #if EMBER_GRAPHICS_DEVICE_VALIDATION
-            //TODO: Provide custom allocator
-            if(create_debug_utils_messenger_EXT(instance, &debug_messenger_create_info, nullptr, &debug_messenger) != VK_SUCCESS) {
+            if(create_debug_utils_messenger_EXT(instance, &debug_messenger_create_info, &instance_allocation_callbacks, &debug_messenger) < VK_SUCCESS) {
                 EMBER_LOG(EmberGraphicsVulkan, log_level::warn, "Failed to create debug messenger. Debug info will be limited.");
             }
 #endif
 
             EMBER_LOG(EmberGraphicsVulkan, log_level::info, "Creation of Vulkan instance was successful!");
-            return memory::make_unique<vulkan_instance>(instance, debug_messenger);
+            return memory::make_unique<vulkan_instance>(instance, debug_messenger, instance_allocation_callbacks);
         }
     }
 }

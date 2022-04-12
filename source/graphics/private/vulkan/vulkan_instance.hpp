@@ -12,10 +12,12 @@ namespace ember::graphics {
         VkInstance instance{ VK_NULL_HANDLE };
         VkDebugUtilsMessengerEXT debug_messenger{ VK_NULL_HANDLE };
 
+        VkAllocationCallbacks global_allocator{};
+
         //FUNCTIONS
     public:
         vulkan_instance() = delete;
-        inline vulkan_instance(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger);
+        inline vulkan_instance(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger, VkAllocationCallbacks global_allocator);
 
         vulkan_instance(vulkan_instance const &other) = delete;
         inline vulkan_instance(vulkan_instance &&other) noexcept;

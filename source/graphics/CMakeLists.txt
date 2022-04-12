@@ -22,6 +22,9 @@ set(
 set(
     vulkan_files
 
+    ${SOURCE_PRIVATE}/vulkan/allocation_callbacks.hpp
+    ${SOURCE_PRIVATE}/vulkan/allocation_callbacks.inl
+    ${SOURCE_PRIVATE}/vulkan/allocation_callbacks.cpp
     ${SOURCE_PRIVATE}/vulkan/exception.hpp
     ${SOURCE_PRIVATE}/vulkan/log.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.hpp
