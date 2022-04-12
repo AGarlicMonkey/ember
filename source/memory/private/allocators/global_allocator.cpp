@@ -161,7 +161,6 @@ namespace ember::memory {
         }
 
         EMBER_THROW(exception{ "Unable to find memory inside current allocator" });
-        return nullptr;
     }
 
     global_allocator::block *global_allocator::create_new_block(std::size_t const arena_index, std::size_t const offset, std::size_t const bytes) {
