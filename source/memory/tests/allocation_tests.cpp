@@ -5,6 +5,13 @@
 
 using namespace ember;
 
+namespace {
+    bool is_aligned(void const *const ptr, std::size_t alignment) {
+        auto iptr = reinterpret_cast<std::uintptr_t>(ptr);
+        return !(iptr % alignment);
+    }
+}
+
 TEST(allocation_tests, can_allocate_memory) {
     float *mem_1{ reinterpret_cast<float *>(memory::alloc(sizeof(float), alignof(float))) };
     float *mem_2{ reinterpret_cast<float *>(memory::alloc(sizeof(float), alignof(float))) };
@@ -16,6 +23,18 @@ TEST(allocation_tests, can_allocate_memory) {
     *mem_2 = 2.0f;
 
     EXPECT_NE(mem_1, mem_2);
+}
+
+TEST(allocation_tests, pointers_have_correct_alignment) {
+    auto const *const mem_1{ reinterpret_cast<float *>(memory::alloc(sizeof(float), alignof(float))) };
+    auto const *const mem_2{ reinterpret_cast<float *>(memory::alloc(sizeof(double), alignof(double))) };
+    auto const *const mem_3{ reinterpret_cast<float *>(memory::alloc(sizeof(std::uint32_t), alignof(std::uint32_t))) };
+    auto const *const mem_4{ reinterpret_cast<float *>(memory::alloc(sizeof(std::uint64_t), alignof(std::uint64_t))) };
+
+    EXPECT_TRUE(is_aligned(mem_1, alignof(float)));
+    EXPECT_TRUE(is_aligned(mem_2, alignof(double)));
+    EXPECT_TRUE(is_aligned(mem_3, alignof(std::uint32_t)));
+    EXPECT_TRUE(is_aligned(mem_4, alignof(std::uint64_t)));
 }
 
 TEST(allocation_tests, can_free_memory) {
@@ -59,6 +78,25 @@ TEST(allocation_tests, can_reallocate_memory) {
 
     ASSERT_NE(mem_1, nullptr);
     EXPECT_EQ(*reinterpret_cast<float *>(mem_1), 1.0f);
+
+    //TODO: allocate twice so it can't extend to next block
+}
+
+TEST(allocation_tests, can_make_many_allocations) {
+    std::uint32_t const num_allocs{ 25000 };
+
+    std::vector<std::byte *> mems;
+    for(std::size_t i{ 0 }; i < num_allocs; ++i) {
+        std::byte *memory{ memory::alloc(250, alignof(std::uint32_t)) };
+        EXPECT_NE(memory, nullptr);
+
+        mems.push_back(memory::alloc(250, alignof(std::uint32_t)));
+    }
+
+    for(auto *memory : mems) {
+        memory::free(memory);
+        EXPECT_EQ(memory, nullptr);
+    }
 }
 
 TEST(allocation_tests, can_allocate_large_amounts_of_memory) {

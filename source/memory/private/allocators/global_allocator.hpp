@@ -14,24 +14,25 @@ namespace ember::memory {
     class global_allocator {
         //TYPES
     private:
-        struct block {
-            block *next{ nullptr };
-            block *prev{ nullptr };
+        /**
+         * @brief Contains data about a block of memory within a memory arena.
+         */
+        struct block_header {
+            block_header *next{ nullptr }; /**< Next block within the arena. Can be nullptr.*/
+            block_header *prev{ nullptr }; /**< Previous block within the arena. Can be nullptr.*/
 
             bool is_free{ true };
 
             std::size_t arena_index{ 0 }; /**< Which arena this block belongs to. */
 
-            std::size_t block_offset{ 0 }; /**< Offset into the arena memory for the whole block. */
-            std::size_t data_offset{ 0 };  /**< Offset into the arena memory containing the block data. Respects the data's alignment. */
-            std::size_t size{ 0 };         /**< Size of the entire block of memory. */
+            std::uint8_t padding{ 0 }; /**< How many bytes this header was aligned by to accomodate an allocation.*/
+            std::size_t offset{ 0 };   /**< Offset into the arena memory for the whole block (including this header). */
+            std::size_t size{ 0 };     /**< Size of the entire block of memory (including this header). */
         };
 
         struct arena {
             std::byte *memory{ nullptr };
-            std::size_t size{ 0 };
-
-            std::vector<block *> free_list{};
+            std::size_t size{ 0 }; /**< Total size of the memroy arena. */
         };
 
         //VARIABLES
@@ -63,14 +64,15 @@ namespace ember::memory {
         inline std::size_t get_size() const;
 
     private:
-        void return_block_to_freelist(block *const block);
+        void apply_padding_to_header(block_header *&header, std::uint8_t const padding);
+        void reset_header_padding(block_header *&header);
 
-        block *get_block_from_memory(std::byte const *const memory);
+        block_header *get_header_from_memory(std::byte *const memory);
 
-        block *create_new_block(std::size_t const arena_index, std::size_t const offset, std::size_t const bytes);
+        block_header *create_new_block(std::size_t const arena, std::size_t const offset, std::size_t const bytes);
+        void return_block_to_freelist(block_header *const block);
+
         void create_new_arena(std::size_t const bytes);
-
-        void remove_block_from_free_list(std::vector<block *> &free_list, block *const block);
     };
 }
 
