@@ -6,6 +6,7 @@
     #include <fmt/format.h>
     #include <memory>
     #include <string_view>
+    #include <spdlog/sinks/basic_file_sink.h>
 
 namespace spdlog {
     class logger;
