@@ -1,7 +1,8 @@
 #include "ember/core/log.hpp"
 
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog.h>
+#if EMBER_CORE_ENABLE_LOGGING
+    #include <spdlog/sinks/stdout_color_sinks.h>
+    #include <spdlog/spdlog.h>
 
 static ember::logger *instance{ nullptr };
 
@@ -60,3 +61,4 @@ namespace ember {
         }
     }
 }
+#endif
