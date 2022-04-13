@@ -283,7 +283,7 @@ namespace ember::memory {
         if(next_block != nullptr && next_block->is_free) {
             EMBER_CHECK(next_block->prev == curr_block);
 
-            curr_block->size += next_block->size;
+            curr_block->size += sizeof(block_header) + next_block->size;
 
             curr_block->next = next_block->next;
             if(curr_block->next != nullptr) {
@@ -296,7 +296,7 @@ namespace ember::memory {
         if(prev_block != nullptr && prev_block->is_free) {
             EMBER_CHECK(prev_block->next == curr_block);
 
-            prev_block->size += curr_block->size;
+            prev_block->size += sizeof(block_header) + curr_block->size;
 
             prev_block->next = curr_block->next;
             if(prev_block->next != nullptr) {
