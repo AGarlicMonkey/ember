@@ -26,7 +26,7 @@ namespace ember::memory {
             std::size_t arena_index{ 0 }; /**< Which arena this block belongs to. */
 
             std::uint8_t padding{ 0 }; /**< How many bytes this header was aligned by to accomodate an allocation.*/
-            std::size_t offset{ 0 };   /**< Offset into the arena memory for the whole block (including this header). */
+            std::size_t offset{ 0 };   /**< Offset into the arena memory for the whole block (where this header starts). */
             std::size_t size{ 0 };     /**< Size of the entire block of memory (excluding the header). */
         };
 
