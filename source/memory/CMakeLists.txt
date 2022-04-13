@@ -3,6 +3,9 @@ set(TARGET_NAME ember_memory)
 set(SOURCE_PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public/ember/memory)
 set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 
+#CMake
+option(EMBER_MEMORY_DETAILED_LOGGING "Allows allocators to log every operation. Leaving this on can produce extremely large log files and should only be used to track hard to find bugs." OFF)
+
 #Library
 add_library(
     ${TARGET_NAME}
@@ -44,6 +47,8 @@ target_compile_definitions(
         
     PRIVATE
         EMBER
+
+        EMBER_MEMORY_DETAILED_LOGGING=$<BOOL:${EMBER_MEMORY_DETAILED_LOGGING}>
 )
 
 if(EMBER_BUILD_TESTS)

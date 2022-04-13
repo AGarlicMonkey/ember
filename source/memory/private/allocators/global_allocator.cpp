@@ -7,6 +7,13 @@
 
 EMBER_LOG_CATEGORY(EmberGlobalAllocator)
 
+#if EMBER_MEMORY_DETAILED_LOGGING
+EMBER_LOG_CATEGORY(EmberGlobalAllocator_Detailed)
+    #define DETAILED_LOG(message, ...) EMBER_LOG(EmberGlobalAllocator_Detailed, log_level::debug, message, __VA_ARGS__)
+#else
+    #define DETAILED_LOG(message, ...)
+#endif
+
 #if EMBER_CORE_ENABLE_ASSERTIONS
     #define VALIDATE_HEADER(header)                                                              \
         {                                                                                        \
@@ -69,8 +76,10 @@ namespace ember::memory {
     std::byte *global_allocator::alloc(std::size_t const bytes, std::size_t const alignment) {
         std::scoped_lock lock{ allocator_mutex };
 
-        std::size_t const total_allocation_size{ sizeof(block_header) + bytes + alignment };//Allow enough room for the worst case aliognment
+        std::size_t const total_allocation_size{ bytes + alignment };//Allow enough room for the worst case aliognment
         std::byte *memory{ nullptr };
+
+        DETAILED_LOG("New allocation: {0} bytes, {1} alignment. Searching for {2} bytes.", bytes, alignment, total_allocation_size);
 
         for(std::size_t arena_index{ 0 }; arena_index < memory_arenas.size(); ++arena_index) {
             arena &arena{ memory_arenas[arena_index] };
@@ -79,16 +88,26 @@ namespace ember::memory {
                 continue;
             }
 
+#if EMBER_MEMORY_DETAILED_LOGGING
+            static std::uint32_t loop_count{ 0 };
+#endif
+
             block_header *header{ reinterpret_cast<block_header *>(arena.memory) };
             while(header != nullptr) {
+                DETAILED_LOG("\t\tIteration {0} inside arena {1}", loop_count++, arena_index);
+
                 if(header->is_free && header->size >= total_allocation_size) {
                     header->is_free = false;
 
+                    DETAILED_LOG("\tFound block of {0} bytes.", header->size);
+
                     //If we have space left over then insert it as a new block
-                    if(size_t const remaining_space{ header->size - total_allocation_size }; remaining_space > 0) {
+                    if(size_t const remaining_space{ header->size - total_allocation_size }; remaining_space > sizeof(block_header)) {
                         header->size = total_allocation_size;
 
-                        size_t const new_block_offset{ header->offset + header->size };
+                        DETAILED_LOG("\tCreating new block of {0} bytes", remaining_space);
+
+                        size_t const new_block_offset{ header->offset + sizeof(block_header) + header->size };
                         block_header *const new_block{ create_new_block(arena_index, new_block_offset, remaining_space) };
                         block_header *const next_block{ header->next };
 
@@ -101,7 +120,7 @@ namespace ember::memory {
                         new_block->prev = header;
                     }
 
-                    std::byte *block_memory{ arena.memory + header->offset + sizeof(block_header) };
+                    std::byte *block_memory{ arena.memory + (header->offset + sizeof(block_header)) };
 
                     std::size_t const alignment_offset{ get_remaining_alignment(block_memory, alignment) };
                     EMBER_CHECK(alignment_offset < std::numeric_limits<std::uint8_t>::max());
@@ -110,24 +129,27 @@ namespace ember::memory {
                     //This allows freeing blocks to be extremely quick
                     if(alignment_offset > 0) {
                         apply_padding_to_header(header, alignment_offset);
+                        block_memory = arena.memory + (header->offset + sizeof(block_header));
                     }
 
-                    //Retrieve the block memory again here in case we needed to pad above.
-                    memory = arena.memory + header->offset + sizeof(block_header);
+                    memory = block_memory;
                     break;
                 }
 
                 header = header->next;
             }
+
+#if EMBER_MEMORY_DETAILED_LOGGING
+            loop_count = 0;
+#endif
         }
 
         if(memory == nullptr) {
-            std::size_t const new_arena_size{ std::max(arena_size, total_allocation_size) };
-            size += new_arena_size;
-
-            EMBER_LOG(EmberGlobalAllocator, log_level::debug, "Global memory pool filled. Allocating {0} more bytes. Current total size is {1} bytes", new_arena_size, size);
-
+            std::size_t const new_arena_size{ std::max(arena_size, total_allocation_size) + sizeof(block_header) };//Make sure we provide extra space for a header if an allocation fails. This catches issues where allocations are >= arena_size
             create_new_arena(new_arena_size);
+
+            size += new_arena_size;
+            EMBER_LOG(EmberGlobalAllocator, log_level::debug, "Global memory pool filled. Allocated {0} more bytes. Current total size is {1} bytes", new_arena_size, size);
 
             memory = alloc(bytes, alignment);
         }
@@ -142,6 +164,8 @@ namespace ember::memory {
 
         block_header *original_block{ get_header_from_memory(original) };
         std::size_t const copy_size{ std::min(bytes, original_block->size) };
+
+        DETAILED_LOG("Reallocating with {0} bytes and {1} alignment. Original was {2} bytes.", bytes, alignment, original_block->size);
 
         std::byte *const new_alloc{ alloc(bytes, alignment) };
         std::memcpy(new_alloc, original, copy_size);
@@ -161,6 +185,9 @@ namespace ember::memory {
         }
 
         block_header *header{ get_header_from_memory(memory) };
+
+        DETAILED_LOG("Freeing {0} bytes. Header had {1} padding.", header->size, header->padding);
+
         reset_header_padding(header);
         return_block_to_freelist(header);
 
@@ -171,6 +198,8 @@ namespace ember::memory {
         if(header->padding == 0) {
             return;
         }
+
+        DETAILED_LOG("\tHeader padded by {0} bytes.", padding);
 
         block_header *const next_header{ header->next };
         block_header *const prev_header{ header->prev };
@@ -195,6 +224,8 @@ namespace ember::memory {
             return;
         }
 
+        DETAILED_LOG("\tHeader removed {0} bytes of padding", header->padding);
+
         block_header *const next_header{ header->next };
         block_header *const prev_header{ header->prev };
         block_header header_copy{ *header };
@@ -218,13 +249,18 @@ namespace ember::memory {
     }
 
     global_allocator::block_header *global_allocator::create_new_block(std::size_t const arena_index, std::size_t const offset, std::size_t const bytes) {
+        EMBER_CHECK_MSG(bytes > sizeof(block_header), "Size of new block is smaller than the header to fit inside it.");
+
+        std::size_t const size_of_block{ bytes - sizeof(block_header) }; 
+
         arena &arena{ memory_arenas[arena_index] };
+        EMBER_THROW_IF_FAILED(offset + size_of_block <= arena.size, exception{ "Allocation for new block exceeds arena boundaries." });
 
         block_header *const new_block{ reinterpret_cast<block_header *>(arena.memory + offset) };
         *new_block = block_header{
             .arena_index = arena_index,
             .offset      = offset,
-            .size        = bytes,
+            .size        = size_of_block,
         };
 
         EMBER_CHECK(new_block->is_free);
@@ -235,6 +271,7 @@ namespace ember::memory {
 
     void global_allocator::return_block_to_freelist(block_header *const curr_block) {
         EMBER_CHECK_MSG(curr_block->padding == 0, "headers should be reset back to the beginning of their block before returning to the free list.");
+        DETAILED_LOG("Returning {0} bytes back into the free list.", curr_block->size);
 
         block_header *const next_block{ curr_block->next };
         block_header *const prev_block{ curr_block->prev };
@@ -254,6 +291,7 @@ namespace ember::memory {
             }
 
             VALIDATE_HEADER(curr_block);
+            DETAILED_LOG("\tBlock was merged to the right.");
         }
         if(prev_block != nullptr && prev_block->is_free) {
             EMBER_CHECK(prev_block->next == curr_block);
@@ -266,19 +304,20 @@ namespace ember::memory {
             }
 
             VALIDATE_HEADER(prev_block);
+            DETAILED_LOG("\tBlock was merged to the left");
         }
     }
 
     void global_allocator::create_new_arena(std::size_t const bytes) {
-        auto *memory{ reinterpret_cast<std::byte *>(std::malloc(bytes)) };
-        EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to create allocate new memory for the global memory allocator." });
+        EMBER_THROW_IF_FAILED(bytes > sizeof(block_header), exception{ "Memory arenas need to be larger than the header that will be placed into them." });
 
-        arena new_arena{
+        auto *memory{ reinterpret_cast<std::byte *>(std::malloc(bytes)) };
+        EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to allocate new memory for the global memory allocator." });
+
+        memory_arenas.emplace_back(arena{
             .memory = memory,
             .size   = bytes,
-        };
-
-        memory_arenas.emplace_back(std::move(new_arena));
+        });
 
         std::size_t const arena_index{ memory_arenas.size() - 1 };
         std::size_t constexpr block_offset{ 0 };
