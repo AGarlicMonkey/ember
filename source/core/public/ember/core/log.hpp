@@ -5,8 +5,8 @@
 
     #include <fmt/format.h>
     #include <memory>
-    #include <string_view>
     #include <spdlog/sinks/basic_file_sink.h>
+    #include <string_view>
 
 namespace spdlog {
     class logger;
@@ -89,31 +89,36 @@ namespace ember {
 
 #if EMBER_CORE_ENABLE_ASSERTIONS
     #ifdef _MSC_VER
-        #define EMBER_DEBUG_BREAK           \
-            ::ember::logger::get().flush(); \
-            __debugbreak()
+        #if EMBER_CORE_ENABLE_LOGGING
+            #define EMBER_DEBUG_BREAK           \
+                ::ember::logger::get().flush(); \
+                __debugbreak()
+        #else
+            #define EMBER_DEBUG_BREAK           \
+                __debugbreak()
+        #endif
     #else
         #error ember currently only supported on MSVC
     #endif
 
 EMBER_LOG_CATEGORY(EmberAssertion)
 
-    #define EMBER_CHECK(expression)                                                                                 \
-        {                                                                                                           \
-            if(!(expression)) {                                                                                     \
-                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "Assertion failed: {0}", #expression);      \
+    #define EMBER_CHECK(expression)                                                                              \
+        {                                                                                                        \
+            if(!(expression)) {                                                                                  \
+                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "Assertion failed: {0}", #expression);   \
                 EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tfunction: {0}", EMBER_FUNCTION_NAME); \
-                EMBER_DEBUG_BREAK;                                                                                  \
-            }                                                                                                       \
+                EMBER_DEBUG_BREAK;                                                                               \
+            }                                                                                                    \
         }
-    #define EMBER_CHECK_MSG(expression, msg)                                                                       \
-        {                                                                                                          \
-            if(!(expression)) {                                                                                    \
-                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "Assertion failed: {0}", #expression);     \
+    #define EMBER_CHECK_MSG(expression, msg)                                                                     \
+        {                                                                                                        \
+            if(!(expression)) {                                                                                  \
+                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "Assertion failed: {0}", #expression);   \
                 EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tmessage: {0}", msg);                  \
                 EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tfunction: {0}", EMBER_FUNCTION_NAME); \
-                EMBER_DEBUG_BREAK;                                                                                 \
-            }                                                                                                      \
+                EMBER_DEBUG_BREAK;                                                                               \
+            }                                                                                                    \
         }
 
     #define EMBER_VERIFY(expression) EMBER_CHECK(expression)
