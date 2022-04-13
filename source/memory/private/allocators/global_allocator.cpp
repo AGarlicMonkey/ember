@@ -37,7 +37,7 @@ EMBER_LOG_CATEGORY(EmberGlobalAllocator_Detailed)
         }
 
 #else
-    #define VALIDATE_BLOCK(header)
+    #define VALIDATE_HEADER(header)
 #endif
 
 static size_t constexpr arena_size{ EMBER_GB(1) };
@@ -92,12 +92,13 @@ namespace ember::memory {
             static std::uint32_t loop_count{ 0 };
 #endif
 
-            block_header *header{ reinterpret_cast<block_header *>(arena.memory) };
-            while(header != nullptr) {
+            for(auto* header : arena.free_list) {
                 DETAILED_LOG("\t\tIteration {0} inside arena {1}", loop_count++, arena_index);
+                EMBER_CHECK(header->is_free);
 
-                if(header->is_free && header->size >= total_allocation_size) {
+                if(header->size >= total_allocation_size) {
                     header->is_free = false;
+                    remove_block_from_free_list(header);
 
                     DETAILED_LOG("\tFound block of {0} bytes.", header->size);
 
@@ -266,14 +267,16 @@ namespace ember::memory {
         EMBER_CHECK(new_block->is_free);
         VALIDATE_HEADER(new_block);
 
+        arena.free_list.push_back(new_block);
+
         return new_block;
     }
 
-    void global_allocator::return_block_to_freelist(block_header *const curr_block) {
+    void global_allocator::return_block_to_freelist(block_header *curr_block) {
         EMBER_CHECK_MSG(curr_block->padding == 0, "headers should be reset back to the beginning of their block before returning to the free list.");
         DETAILED_LOG("Returning {0} bytes back into the free list.", curr_block->size);
 
-        block_header *const next_block{ curr_block->next };
+        block_header *next_block{ curr_block->next };
         block_header *const prev_block{ curr_block->prev };
         arena &arena{ memory_arenas[curr_block->arena_index] };
 
@@ -292,6 +295,9 @@ namespace ember::memory {
 
             VALIDATE_HEADER(curr_block);
             DETAILED_LOG("\tBlock was merged to the right.");
+
+            remove_block_from_free_list(next_block);
+            next_block = nullptr;
         }
         if(prev_block != nullptr && prev_block->is_free) {
             EMBER_CHECK(prev_block->next == curr_block);
@@ -305,6 +311,27 @@ namespace ember::memory {
 
             VALIDATE_HEADER(prev_block);
             DETAILED_LOG("\tBlock was merged to the left");
+
+            curr_block = nullptr;
+        }
+
+        if(curr_block != nullptr) {
+            arena.free_list.push_back(curr_block);
+        }
+    }
+
+    void global_allocator::remove_block_from_free_list(block_header *const block) {
+        auto &free_list{ memory_arenas[block->arena_index].free_list };
+
+        for(std::size_t i{ 0 }; i < free_list.size(); ++i) {
+            if(free_list[i] == block) {
+                if(i < free_list.size() - 1) {
+                    free_list[i] = free_list.back();
+                }
+                free_list.pop_back();
+
+                return;
+            }
         }
     }
 

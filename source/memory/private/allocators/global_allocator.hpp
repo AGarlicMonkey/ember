@@ -33,6 +33,8 @@ namespace ember::memory {
         struct arena {
             std::byte *memory{ nullptr };
             std::size_t size{ 0 }; /**< Total size of the memroy arena. */
+
+            std::vector<block_header *> free_list{};
         };
 
         //VARIABLES
@@ -70,7 +72,8 @@ namespace ember::memory {
         block_header *get_header_from_memory(std::byte *const memory);
 
         block_header *create_new_block(std::size_t const arena, std::size_t const offset, std::size_t const bytes);
-        void return_block_to_freelist(block_header *const block);
+        void return_block_to_freelist(block_header *block);
+        void remove_block_from_free_list(block_header *const block);
 
         void create_new_arena(std::size_t const bytes);
     };
