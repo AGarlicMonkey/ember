@@ -5,6 +5,60 @@
 namespace ember::containers {
     namespace internal {
         template<typename array_type>
+        const_array_iterator<array_type>::const_array_iterator() = default;
+
+        template<typename array_type>
+        const_array_iterator<array_type>::const_array_iterator(array_type const *array, array_type::pointer_type start)
+            : array{ array }
+            , ptr{ start } {
+        }
+
+        template<typename array_type>
+        const_array_iterator<array_type>::const_array_iterator(const_array_iterator &&other) noexcept = default;
+
+        template<typename array_type>
+        const_array_iterator<array_type> &const_array_iterator<array_type>::operator=(const_array_iterator &&other) noexcept = default;
+
+        template<typename array_type>
+        const_array_iterator<array_type>::~const_array_iterator() = default;
+
+        template<typename array_type>
+        const_array_iterator<array_type>::pointer_type const_array_iterator<array_type>::operator->() const {
+            EMBER_CHECK(ptr < array->last);
+            return ptr;
+        }
+
+        template<typename array_type>
+        const_array_iterator<array_type>::reference_type const_array_iterator<array_type>::operator*() const {
+            EMBER_CHECK(ptr < array->last);
+            return *ptr;
+        }
+
+        template<typename array_type>
+        const_array_iterator<array_type> &const_array_iterator<array_type>::operator++() {
+            EMBER_CHECK(ptr < array->last);
+            ++ptr;
+            return *this;
+        }
+
+        template<typename array_type>
+        const_array_iterator<array_type> &const_array_iterator<array_type>::operator--() {
+            EMBER_CHECK(ptr < array->last);
+            --ptr;
+            return *this;
+        }
+
+        template<typename array_type_1>
+        bool operator==(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr == rhs.ptr;
+        }
+
+        template<typename array_type_1>
+        bool operator!=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept {
+            return !(lhs.ptr == rhs.ptr);
+        }
+
+        template<typename array_type>
         array_iterator<array_type>::array_iterator() = default;
 
         template<typename array_type>
@@ -227,8 +281,18 @@ namespace ember::containers {
     }
 
     template<typename T>
+    array<T>::const_iterator array<T>::begin() const noexcept {
+        return const_iterator{ this, first };
+    }
+
+    template<typename T>
     array<T>::iterator array<T>::end() noexcept {
         return iterator{ this, last };
+    }
+
+    template<typename T>
+    array<T>::const_iterator array<T>::end() const noexcept {
+        return const_iterator{ this, last };
     }
 
     template<typename T>
