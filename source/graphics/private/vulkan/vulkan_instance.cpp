@@ -17,8 +17,13 @@
 #include "allocation_callbacks.hpp"
 #include "exception.hpp"
 #include "log.hpp"
+#include "vulkan_device.hpp"
 
-#include <vector>
+#include <map>
+#include <set>
+
+using namespace ember::containers;
+using namespace ember::memory;
 
 EMBER_LOG_CATEGORY(Vulkan)
 
@@ -55,11 +60,11 @@ namespace {
         }
     }
 
-    bool check_validation_layer_support(std::vector<char const *> const &validation_layers) {
+    bool check_validation_layer_support(array<char const *> const &validation_layers) {
         std::uint32_t layer_count{ 0 };
         vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
 
-        std::vector<VkLayerProperties> available_layers(layer_count);
+        array<VkLayerProperties> available_layers(layer_count);
         vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
 
         for(char const *layerName : validation_layers) {
@@ -82,14 +87,35 @@ namespace {
 }
 
 namespace ember::graphics {
+    vulkan_instance::vulkan_instance(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger, unique_ptr<vulkan_device> device)
+        : instance{ instance }
+        , debug_messenger{ debug_messenger }
+        , device{ std::move(device) }
+        , global_allocator{ get_allocations_callbacks() } {
+    }
+
+    vulkan_instance::vulkan_instance(vulkan_instance &&other) noexcept = default;
+
+    vulkan_instance &vulkan_instance::operator=(vulkan_instance &&other) noexcept = default;
+
     vulkan_instance::~vulkan_instance() {
+        //Reset the physical device before destroying the instance
+        device.reset();
+
 #if EMBER_GRAPHICS_DEVICE_VALIDATION
         destroy_debug_utils_messenger_EXT(instance, debug_messenger, &global_allocator);
 #endif
         vkDestroyInstance(instance, &global_allocator);
     }
 
-    memory::unique_ptr<vulkan_instance> create_vulkan_instance() {
+    device *vulkan_instance::get_device() const noexcept {
+        return device.get();
+    }
+
+    unique_ptr<vulkan_instance> create_vulkan_instance() {
+        EMBER_LOG(EmberGraphicsVulkan, log_level::debug, "Creating vulkan graphics instance...");
+
+#if EMBER_CORE_ENABLE_LOGGING
         {
             std::uint32_t extension_count{ 0 };
             vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
@@ -101,11 +127,11 @@ namespace ember::graphics {
                 EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\t{0}", extension.extensionName);
             }
         }
+#endif
 
-        VkAllocationCallbacks instance_allocation_callbacks{ get_allocations_callbacks() };
+        VkAllocationCallbacks allocation_callbacks{ get_allocations_callbacks() };
 
-        //TODO: Internal vector
-        std::vector<char const *> instance_extensions {
+        array<char const *> instance_extensions {
             VK_KHR_SURFACE_EXTENSION_NAME,
 
 #if EMBER_PLATFORM_WIN32
@@ -121,8 +147,7 @@ namespace ember::graphics {
         };
 
 #if EMBER_GRAPHICS_DEVICE_VALIDATION
-        //TODO: Internal vector
-        std::vector<char const *> const validation_layers{
+        array<char const *> const validation_layers{
             "VK_LAYER_KHRONOS_validation",
         };
 
@@ -131,6 +156,7 @@ namespace ember::graphics {
         }
 #endif
 
+        //Create instance
         VkInstance instance{ VK_NULL_HANDLE };
         VkDebugUtilsMessengerEXT debug_messenger{ VK_NULL_HANDLE };
         {
@@ -170,16 +196,132 @@ namespace ember::graphics {
                 .ppEnabledExtensionNames = instance_extensions.data(),
             };
 
-            EMBER_VULKAN_VERIFY_RESULT(vkCreateInstance(&create_info, &instance_allocation_callbacks, &instance), "Failed to create Vulkan instance.");
+            EMBER_VULKAN_VERIFY_RESULT(vkCreateInstance(&create_info, &allocation_callbacks, &instance), "Failed to create Vulkan instance.");
 
 #if EMBER_GRAPHICS_DEVICE_VALIDATION
-            if(create_debug_utils_messenger_EXT(instance, &debug_messenger_create_info, &instance_allocation_callbacks, &debug_messenger) < VK_SUCCESS) {
+            if(create_debug_utils_messenger_EXT(instance, &debug_messenger_create_info, &allocation_callbacks, &debug_messenger) < VK_SUCCESS) {
                 EMBER_LOG(EmberGraphicsVulkan, log_level::warn, "Failed to create debug messenger. Debug info will be limited.");
             }
 #endif
-
-            EMBER_LOG(EmberGraphicsVulkan, log_level::info, "Creation of Vulkan instance was successful!");
-            return memory::make_unique<vulkan_instance>(instance, debug_messenger, instance_allocation_callbacks);
         }
+
+        array<char const *> required_device_extensions {
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+
+#if EMBER_GRAPHICS_TRACK_MEMORY
+                VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
+#endif
+        };
+
+        //Select physical device to use for rendering
+        VkPhysicalDevice physical_device{ VK_NULL_HANDLE };
+        {
+            EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "Querying devices...");
+
+            std::uint32_t device_count{ 0 };
+            vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
+            EMBER_THROW_IF_FAILED(device_count > 0, exception{ "No devices available. Cannot continue with vulkan initialisation" });
+            array<VkPhysicalDevice> physical_devices(device_count);
+            vkEnumeratePhysicalDevices(instance, &device_count, physical_devices.data());
+
+#if EMBER_CORE_ENABLE_LOGGING
+            EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "Found {0} total devices:", device_count);
+            for(auto const &physical_device : physical_devices) {
+                VkPhysicalDeviceProperties device_properties{};
+                vkGetPhysicalDeviceProperties(physical_device, &device_properties);
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\t{0}", device_properties.deviceName);
+            }
+#endif
+
+            //Score avilable devices. Anything below 0 is considered in-complete and shouldn't be selected
+            std::map<std::int32_t, VkPhysicalDevice> device_Scores;//TODO: custom map
+            for(auto const &physical_device : physical_devices) {
+                device_Scores[vulkan_device::score_physical_device(physical_device, required_device_extensions)] = physical_device;
+            }
+            if(device_Scores.rbegin()->first > 0) {
+                physical_device = device_Scores.rbegin()->second;
+            }
+            EMBER_THROW_IF_FAILED(physical_device != VK_NULL_HANDLE, exception{ "Failed to create initialise Vulkan. Could not find a suitable device." });
+
+#if EMBER_CORE_ENABLE_LOGGING
+            {
+                VkPhysicalDeviceProperties device_poperties{};
+                vkGetPhysicalDeviceProperties(physical_device, &device_poperties);
+                EMBER_LOG(EmberGraphicsVulkan, log_level::debug, "Selecting '{0}'", device_poperties.deviceName);
+            }
+
+            {
+                std::uint32_t queue_family_count{ 0 };
+                vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, nullptr);
+                array<VkQueueFamilyProperties> queue_families(queue_family_count);
+                vkGetPhysicalDeviceQueueFamilyProperties(physical_device, &queue_family_count, queue_families.data());
+
+                auto const queue_family_indices{ vulkan_device::get_physical_device_queue_family_indices(physical_device) };
+
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "Queue family properties:");
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tGraphics:\tid: {0}, count: {1}", queue_family_indices.graphics_family, queue_families[queue_family_indices.graphics_family].queueCount);
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tCompute:\tid: {0}, count: {1}", queue_family_indices.compute_family, queue_families[queue_family_indices.compute_family].queueCount);
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tTransfer:\tid: {0}, count: {1}", queue_family_indices.transfer_family, queue_families[queue_family_indices.transfer_family].queueCount);
+            }
+
+            {
+                uint32_t extension_count{ 0 };
+                vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extension_count, nullptr);
+                std::vector<VkExtensionProperties> extensions(extension_count);
+                vkEnumerateDeviceExtensionProperties(physical_device, nullptr, &extension_count, extensions.data());
+
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "Available device extensions:");
+                for(auto const &extension : extensions) {
+                    EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\t{0}", extension.extensionName);
+                }
+            }
+#endif
+        }
+
+        //Create the logical device to wrap the physical one
+        VkDevice logical_device{ VK_NULL_HANDLE };
+        auto const queue_family_indices{ vulkan_device::get_physical_device_queue_family_indices(physical_device) };
+        unique_ptr<vulkan_device> selected_device{};
+        {
+            //TODO: use custom set
+            std::set<std::uint32_t> unique_family_indices{
+                queue_family_indices.graphics_family,
+                queue_family_indices.compute_family,
+                queue_family_indices.transfer_family,
+            };
+
+            float constexpr queue_priority{ 1.0f };
+            array<VkDeviceQueueCreateInfo> queue_create_infos{};
+            for(std::uint32_t queueFamily : unique_family_indices) {
+                VkDeviceQueueCreateInfo queue_create_info{
+                    .sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+                    .queueFamilyIndex = queueFamily,
+                    .queueCount       = 1,
+                    .pQueuePriorities = &queue_priority,
+                };
+                queue_create_infos.push_back(queue_create_info);
+            }
+
+            VkPhysicalDeviceFeatures device_features{
+                .imageCubeArray    = VK_TRUE,
+                .samplerAnisotropy = VK_TRUE,
+            };
+
+            VkDeviceCreateInfo create_info{
+                .sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+                .queueCreateInfoCount    = static_cast<std::uint32_t>(queue_create_infos.size()),
+                .pQueueCreateInfos       = queue_create_infos.data(),
+                .enabledLayerCount       = 0,
+                .enabledExtensionCount   = static_cast<std::uint32_t>(required_device_extensions.size()),
+                .ppEnabledExtensionNames = required_device_extensions.data(),
+                .pEnabledFeatures        = &device_features,
+            };
+
+            EMBER_VULKAN_VERIFY_RESULT(vkCreateDevice(physical_device, &create_info, &allocation_callbacks, &logical_device), "Failed to create logical device for vulkan. ");
+            selected_device = make_unique<vulkan_device>(physical_device, logical_device);
+        }
+
+        EMBER_LOG(EmberGraphicsVulkan, log_level::info, "Creation of Vulkan instance was successful!");
+        return make_unique<vulkan_instance>(instance, debug_messenger, std::move(selected_device));
     }
 }

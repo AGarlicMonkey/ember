@@ -1,5 +1,11 @@
 #pragma once
 
+#include <ember/containers/array.hpp>
+
+namespace ember::graphics {
+    class device;
+}
+
 namespace ember::graphics {
     /**
      * @brief Represents an instance of a graphics API. The instance can
@@ -9,5 +15,12 @@ namespace ember::graphics {
         //FUNCTIONS
     public:
         virtual ~instance() = default;
+
+        /**
+         * @brief Returns the most appropriate graphics device for real time rendering.
+         * @details The lifetime of the device is tied to this instance.
+         * @return 
+         */
+        virtual device *get_device() const noexcept = 0;
     };
 }
