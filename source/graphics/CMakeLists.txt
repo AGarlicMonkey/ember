@@ -43,6 +43,10 @@ add_library(
     ${SOURCE_PRIVATE}/graphics.cpp
     ${SOURCE_PUBLIC}/instance.hpp
 
+    ${SOURCE_PUBLIC}/command_buffer.hpp
+    ${SOURCE_PUBLIC}/command_buffer.inl
+    ${SOURCE_PRIVATE}/command_buffer.cpp
+
     ${validation_files}
     ${vulkan_files}
 )
