@@ -43,6 +43,13 @@ add_library(
     ${SOURCE_PRIVATE}/graphics.cpp
     ${SOURCE_PUBLIC}/instance.hpp
 
+    ${SOURCE_PUBLIC}/graphics_queue.hpp
+    ${SOURCE_PUBLIC}/graphics_queue.inl
+    ${SOURCE_PUBLIC}/compute_queue.hpp
+    ${SOURCE_PUBLIC}/compute_queue.inl
+    ${SOURCE_PUBLIC}/transfer_queue.hpp
+    ${SOURCE_PUBLIC}/transfer_queue.inl
+
     ${SOURCE_PUBLIC}/graphics_command_buffer.hpp
     ${SOURCE_PUBLIC}/graphics_command_buffer.inl
     ${SOURCE_PRIVATE}/graphics_command_buffer.cpp
@@ -66,6 +73,9 @@ add_library(
 
     ${SOURCE_PUBLIC}/render_pass.hpp
     ${SOURCE_PUBLIC}/framebuffer.hpp
+
+    ${SOURCE_PUBLIC}/fence.hpp
+    ${SOURCE_PUBLIC}/semaphore.hpp
 
     ${validation_files}
     ${vulkan_files}
