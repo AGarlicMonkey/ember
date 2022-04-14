@@ -7,7 +7,7 @@ namespace ember::graphics {
     class command_buffer {
         //VARIABLES
     private:
-        std::byte *buffer{ nullptr };
+        std::byte *buffer_memory{ nullptr };
         std::size_t buffer_size{ 0 };
 
         std::size_t pos{ 0 }; /**< Current position from the start of the command buffer. */
@@ -22,7 +22,7 @@ namespace ember::graphics {
         command_buffer &operator=(command_buffer const &other) = delete;
         command_buffer &operator=(command_buffer &&other) noexcept;
 
-        ~command_buffer();
+        virtual ~command_buffer();
 
         /**
          * @brief Reset this command buffer. Removing all currently recorded commands.

@@ -43,9 +43,29 @@ add_library(
     ${SOURCE_PRIVATE}/graphics.cpp
     ${SOURCE_PUBLIC}/instance.hpp
 
+    ${SOURCE_PUBLIC}/graphics_command_buffer.hpp
+    ${SOURCE_PUBLIC}/graphics_command_buffer.inl
+    ${SOURCE_PRIVATE}/graphics_command_buffer.cpp
+    ${SOURCE_PUBLIC}/compute_command_buffer.hpp
+    ${SOURCE_PUBLIC}/compute_command_buffer.inl
+    ${SOURCE_PRIVATE}/compute_command_buffer.cpp
+    ${SOURCE_PUBLIC}/transfer_command_buffer.hpp
+    ${SOURCE_PUBLIC}/transfer_command_buffer.inl
+    ${SOURCE_PRIVATE}/transfer_command_buffer.cpp
     ${SOURCE_PUBLIC}/command_buffer.hpp
     ${SOURCE_PUBLIC}/command_buffer.inl
     ${SOURCE_PRIVATE}/command_buffer.cpp
+
+    ${SOURCE_PUBLIC}/buffer.hpp
+    ${SOURCE_PUBLIC}/image.hpp
+
+    ${SOURCE_PUBLIC}/graphics_pipeline_object.hpp
+    ${SOURCE_PUBLIC}/compute_pipeline_object.hpp
+
+    ${SOURCE_PUBLIC}/descriptor_set.hpp
+
+    ${SOURCE_PUBLIC}/render_pass.hpp
+    ${SOURCE_PUBLIC}/framebuffer.hpp
 
     ${validation_files}
     ${vulkan_files}
