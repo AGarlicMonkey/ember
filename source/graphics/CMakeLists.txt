@@ -32,6 +32,9 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_device.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.cpp
+
+    ${SOURCE_PRIVATE}/vulkan/vulkan_image.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_image.cpp
 )
 
 #Library
