@@ -94,7 +94,7 @@ namespace ember {
                 ::ember::logger::get().flush(); \
                 __debugbreak()
         #else
-            #define EMBER_DEBUG_BREAK           \
+            #define EMBER_DEBUG_BREAK \
                 __debugbreak()
         #endif
     #else
@@ -111,11 +111,11 @@ EMBER_LOG_CATEGORY(EmberAssertion)
                 EMBER_DEBUG_BREAK;                                                                               \
             }                                                                                                    \
         }
-    #define EMBER_CHECK_MSG(expression, msg)                                                                     \
+    #define EMBER_CHECK_MSG(expression, msg, ...)                                                                \
         {                                                                                                        \
             if(!(expression)) {                                                                                  \
                 EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "Assertion failed: {0}", #expression);   \
-                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tmessage: {0}", msg);                  \
+                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tmessage: {0}", msg, __VA_ARGS__);     \
                 EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tfunction: {0}", EMBER_FUNCTION_NAME); \
                 EMBER_DEBUG_BREAK;                                                                               \
             }                                                                                                    \
