@@ -34,4 +34,8 @@ namespace ember::graphics {
     void graphics_command_buffer::draw_indexed(std::size_t const index_count) {
         //TODO
     }
+
+    void graphics_command_buffer::present(swapchain &swapchain, std::size_t const image_index) {
+        //TODO
+    }
 }
