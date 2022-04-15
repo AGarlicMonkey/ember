@@ -91,7 +91,7 @@ namespace ember::graphics {
         : instance{ instance }
         , debug_messenger{ debug_messenger }
         , device{ std::move(device) }
-        , global_allocator{ get_allocations_callbacks() } {
+        , global_allocator{ get_allocation_callbacks() } {
     }
 
     vulkan_instance::vulkan_instance(vulkan_instance &&other) noexcept = default;
@@ -129,7 +129,7 @@ namespace ember::graphics {
         }
 #endif
 
-        VkAllocationCallbacks allocation_callbacks{ get_allocations_callbacks() };
+        VkAllocationCallbacks allocation_callbacks{ get_allocation_callbacks() };
 
         array<char const *> instance_extensions {
             VK_KHR_SURFACE_EXTENSION_NAME,
@@ -234,7 +234,7 @@ namespace ember::graphics {
 #endif
 
             //Score avilable devices. Anything below 0 is considered in-complete and shouldn't be selected
-            std::map<std::int32_t, VkPhysicalDevice> device_Scores;//TODO: custom map
+            std::map<std::int32_t, VkPhysicalDevice> device_Scores{};//TODO: custom map
             for(auto const &physical_device : physical_devices) {
                 device_Scores[vulkan_device::score_physical_device(physical_device, required_device_extensions)] = physical_device;
             }
@@ -259,9 +259,9 @@ namespace ember::graphics {
                 auto const queue_family_indices{ vulkan_device::get_physical_device_queue_family_indices(physical_device) };
 
                 EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "Queue family properties:");
-                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tGraphics:\tid: {0}, count: {1}", queue_family_indices.graphics_family, queue_families[queue_family_indices.graphics_family].queueCount);
-                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tCompute:\tid: {0}, count: {1}", queue_family_indices.compute_family, queue_families[queue_family_indices.compute_family].queueCount);
-                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tTransfer:\tid: {0}, count: {1}", queue_family_indices.transfer_family, queue_families[queue_family_indices.transfer_family].queueCount);
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tGraphics:\tid: {0}, count: {1}", queue_family_indices.graphics, queue_families[queue_family_indices.graphics].queueCount);
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tCompute:\tid: {0}, count: {1}", queue_family_indices.compute, queue_families[queue_family_indices.compute].queueCount);
+                EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "\tTransfer:\tid: {0}, count: {1}", queue_family_indices.transfer, queue_families[queue_family_indices.transfer].queueCount);
             }
 
             {
@@ -285,9 +285,9 @@ namespace ember::graphics {
         {
             //TODO: use custom set
             std::set<std::uint32_t> unique_family_indices{
-                queue_family_indices.graphics_family,
-                queue_family_indices.compute_family,
-                queue_family_indices.transfer_family,
+                queue_family_indices.graphics,
+                queue_family_indices.compute,
+                queue_family_indices.transfer,
             };
 
             float constexpr queue_priority{ 1.0f };
@@ -318,7 +318,7 @@ namespace ember::graphics {
             };
 
             EMBER_VULKAN_VERIFY_RESULT(vkCreateDevice(physical_device, &create_info, &allocation_callbacks, &logical_device), "Failed to create logical device for vulkan. ");
-            selected_device = make_unique<vulkan_device>(physical_device, logical_device);
+            selected_device = make_unique<vulkan_device>(instance, physical_device, logical_device, queue_family_indices);
         }
 
         EMBER_LOG(EmberGraphicsVulkan, log_level::info, "Creation of Vulkan instance was successful!");

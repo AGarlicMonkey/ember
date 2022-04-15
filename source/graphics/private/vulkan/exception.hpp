@@ -9,7 +9,7 @@
     #include <vulkan/vulkan.h>
 
 namespace ember::graphics {
-    std::string convert_result(VkResult const result) {
+    inline std::string convert_result(VkResult const result) {
         switch(result) {
             case VK_ERROR_OUT_OF_HOST_MEMORY:
                 return "Out of device memory.";
@@ -58,15 +58,20 @@ namespace ember::graphics {
                 return "Reason unknown.";
         }
     }
+
+    class vulkan_exception : public exception {
+    public:
+        using exception::exception;
+    };
 }
 
-    #define EMBER_VULKAN_VERIFY_RESULT(function, message)                                                                                             \
-        {                                                                                                                                             \
-            if(VkResult const result{ function }; result < VK_SUCCESS) {                                                                              \
-                std::string const error_message{ convert_result(result) };                                                                            \
+    #define EMBER_VULKAN_VERIFY_RESULT(function, message)                                                                                            \
+        {                                                                                                                                            \
+            if(VkResult const result{ function }; result < VK_SUCCESS) {                                                                             \
+                std::string const error_message{ convert_result(result) };                                                                           \
                 EMBER_LOG(EmberGraphicsVulkan, ::ember::log_level::critical, "Vulkan call failed: {0}. {1} {2}", #function, message, error_message); \
-                EMBER_THROW(::ember::exception{ "Vulkan error. See log for details." });                                                              \
-            }                                                                                                                                         \
+                EMBER_THROW(::ember::graphics::vulkan_exception{ message });                                                                         \
+            }                                                                                                                                        \
         }
 #else
     #define EMBER_VULKAN_VERIFY_RESULT(function, message) function

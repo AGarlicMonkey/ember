@@ -28,23 +28,36 @@ set(
     ${SOURCE_PRIVATE}/vulkan/allocation_callbacks.cpp
     ${SOURCE_PRIVATE}/vulkan/exception.hpp
     ${SOURCE_PRIVATE}/vulkan/log.hpp
-    ${SOURCE_PRIVATE}/vulkan/vulkan_device.hpp
-    ${SOURCE_PRIVATE}/vulkan/vulkan_device.cpp
+
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_device.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_device.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_device.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.cpp
+
+    ${SOURCE_PRIVATE}/vulkan/vulkan_transfer_queue.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_transfer_queue.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.cpp
+
+    ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.cpp
 )
 
 #Library
 add_library(
     ${TARGET_NAME}
 
-    ${SOURCE_PUBLIC}/device.hpp
     ${SOURCE_PUBLIC}/graphics.hpp
     ${SOURCE_PRIVATE}/graphics.cpp
     ${SOURCE_PUBLIC}/instance.hpp
+    ${SOURCE_PUBLIC}/device.hpp
+    ${SOURCE_PUBLIC}/swapchain.hpp
 
     ${SOURCE_PUBLIC}/graphics_queue.hpp
     ${SOURCE_PUBLIC}/graphics_queue.inl

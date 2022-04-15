@@ -1,5 +1,5 @@
 namespace ember::graphics {
-    VkAllocationCallbacks get_allocations_callbacks() {
+    VkAllocationCallbacks get_allocation_callbacks() {
         return VkAllocationCallbacks{
             .pUserData             = nullptr,
             .pfnAllocation         = alloc,

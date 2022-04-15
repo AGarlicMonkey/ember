@@ -29,7 +29,7 @@ namespace ember::platform {
                 window_rect.right - window_rect.left,
                 window_rect.bottom - window_rect.top,
                 /* window_parent  */ nullptr,
-                0,
+                nullptr,
                 instance,
                 this);
 
@@ -51,6 +51,10 @@ namespace ember::platform {
         void close() override {
             CloseWindow(window_handle);
             window_handle = nullptr;
+        }
+
+        void *get_native_window() const override {
+            return window_handle;
         }
     };
 

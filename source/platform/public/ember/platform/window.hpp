@@ -33,6 +33,8 @@ namespace ember::platform {
         virtual bool is_open() const = 0;
 
         virtual void close() = 0;
+
+        virtual void *get_native_window() const = 0;
     };
 }
 
