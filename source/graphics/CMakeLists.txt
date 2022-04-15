@@ -26,7 +26,7 @@ set(
     ${SOURCE_PRIVATE}/vulkan/allocation_callbacks.hpp
     ${SOURCE_PRIVATE}/vulkan/allocation_callbacks.inl
     ${SOURCE_PRIVATE}/vulkan/allocation_callbacks.cpp
-    ${SOURCE_PRIVATE}/vulkan/exception.hpp
+    ${SOURCE_PRIVATE}/vulkan/verification.hpp
     ${SOURCE_PRIVATE}/vulkan/log.hpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.hpp
@@ -52,6 +52,8 @@ set(
 #Library
 add_library(
     ${TARGET_NAME}
+
+    ${SOURCE_PUBLIC}/exception.hpp
 
     ${SOURCE_PUBLIC}/graphics.hpp
     ${SOURCE_PRIVATE}/graphics.cpp

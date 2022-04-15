@@ -1,8 +1,8 @@
 #include "allocators/global_allocator.hpp"
 
+#include "ember/memory/exception.hpp"
 #include "ember/memory/memory.hpp"
 
-#include <ember/core/exception.hpp>
 #include <ember/core/log.hpp>
 
 EMBER_LOG_CATEGORY(EmberGlobalAllocator)
@@ -46,7 +46,7 @@ static ::ember::memory::global_allocator *instance{ nullptr };
 namespace {
     std::size_t get_remaining_alignment(std::byte const *const ptr, std::size_t required_alignment) {
         if(required_alignment == 0) {
-            return true;
+            return 0;
         }
 
         auto const iptr{ reinterpret_cast<std::uintptr_t>(ptr) };
@@ -92,7 +92,7 @@ namespace ember::memory {
             static std::uint32_t loop_count{ 0 };
 #endif
 
-            for(auto* header : arena.free_list) {
+            for(auto *header : arena.free_list) {
                 DETAILED_LOG("\t\tIteration {0} inside arena {1}", loop_count++, arena_index);
                 EMBER_CHECK(header->is_free);
 
@@ -245,17 +245,17 @@ namespace ember::memory {
     }
 
     global_allocator::block_header *global_allocator::get_header_from_memory(std::byte *const memory) {
-        EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Unable to find memory inside current allocator" });
+        EMBER_THROW_IF_FAILED(memory != nullptr, memory_exception{ "Unable to find memory inside current allocator" });
         return reinterpret_cast<block_header *>(memory - sizeof(block_header));
     }
 
     global_allocator::block_header *global_allocator::create_new_block(std::size_t const arena_index, std::size_t const offset, std::size_t const bytes) {
         EMBER_CHECK_MSG(bytes > sizeof(block_header), "Size of new block is smaller than the header to fit inside it.");
 
-        std::size_t const size_of_block{ bytes - sizeof(block_header) }; 
+        std::size_t const size_of_block{ bytes - sizeof(block_header) };
 
         arena &arena{ memory_arenas[arena_index] };
-        EMBER_THROW_IF_FAILED(offset + size_of_block <= arena.size, exception{ "Allocation for new block exceeds arena boundaries." });
+        EMBER_THROW_IF_FAILED(offset + size_of_block <= arena.size, memory_exception{ "Allocation for new block exceeds arena boundaries." });
 
         block_header *const new_block{ reinterpret_cast<block_header *>(arena.memory + offset) };
         *new_block = block_header{
@@ -336,10 +336,10 @@ namespace ember::memory {
     }
 
     void global_allocator::create_new_arena(std::size_t const bytes) {
-        EMBER_THROW_IF_FAILED(bytes > sizeof(block_header), exception{ "Memory arenas need to be larger than the header that will be placed into them." });
+        EMBER_THROW_IF_FAILED(bytes > sizeof(block_header), memory_exception{ "Memory arenas need to be larger than the header that will be placed into them." });
 
         auto *memory{ reinterpret_cast<std::byte *>(std::malloc(bytes)) };
-        EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to allocate new memory for the global memory allocator." });
+        EMBER_THROW_IF_FAILED(memory != nullptr, memory_exception{ "Failed to allocate new memory for the global memory allocator." });
 
         memory_arenas.emplace_back(arena{
             .memory = memory,

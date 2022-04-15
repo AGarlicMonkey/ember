@@ -12,7 +12,7 @@
 
 #include "vulkan_device.hpp"
 
-#include "exception.hpp"
+#include "verification.hpp"
 #include "log.hpp"
 #include "vulkan_image.hpp"
 #include "vulkan_swapchain.hpp"
@@ -91,6 +91,7 @@ namespace ember::graphics {
         vkDestroyDevice(logical_device, &global_allocator);
     }
 
+    unique_ptr<swapchain> vulkan_device::create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const {
 #if EMBER_PLATFORM_WIN32
         VkWin32SurfaceCreateInfoKHR const surface_create_info{
             .sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
@@ -108,7 +109,10 @@ namespace ember::graphics {
 
         VkBool32 present_support{ VK_FALSE };
         vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, graphics_queue_data.index, surface, &present_support);
-        EMBER_THROW_IF_FAILED(present_support == VK_TRUE, vulkan_exception{ "Window surface does not have presentation support." });
+        if(present_support == VK_FALSE) {
+            vkDestroySurfaceKHR(instance, surface, &global_allocator);
+            EMBER_THROW(present_not_available_exception{ "Graphics queue or physical device does not have presentation support." });
+        }
 
         VkExtent2D const extent{ descriptor.extent.x, descriptor.extent.y };
 
@@ -117,13 +121,13 @@ namespace ember::graphics {
 
         std::uint32_t format_count{ 0 };
         vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, surface, &format_count, nullptr);
-        EMBER_THROW_IF_FAILED(format_count > 0, vulkan_exception{ "Surface does not have any formats." });
+        EMBER_THROW_IF_FAILED(format_count > 0, graphics_exception{ "Surface does not have any formats." });
         array<VkSurfaceFormatKHR> formats(format_count);
         vkGetPhysicalDeviceSurfaceFormatsKHR(physical_device, surface, &format_count, formats.data());
 
         std::uint32_t present_mode_count{ 0 };
         vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, surface, &present_mode_count, nullptr);
-        EMBER_THROW_IF_FAILED(format_count > 0, vulkan_exception{ "Surface does not have any present modes." });
+        EMBER_THROW_IF_FAILED(format_count > 0, graphics_exception{ "Surface does not have any present modes." });
         array<VkPresentModeKHR> present_modes(present_mode_count);
         vkGetPhysicalDeviceSurfacePresentModesKHR(physical_device, surface, &present_mode_count, present_modes.data());
 

@@ -14,6 +14,8 @@ add_library(
     ${SOURCE_PRIVATE}/allocators/global_allocator.inl
     ${SOURCE_PRIVATE}/allocators/global_allocator.cpp
 
+    ${SOURCE_PUBLIC}/exception.hpp
+
     ${SOURCE_PUBLIC}/memory.hpp
     ${SOURCE_PUBLIC}/memory.inl
     ${SOURCE_PRIVATE}/memory.cpp

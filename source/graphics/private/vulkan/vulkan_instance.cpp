@@ -15,7 +15,7 @@
 #include "vulkan_instance.hpp"
 
 #include "allocation_callbacks.hpp"
-#include "exception.hpp"
+#include "verification.hpp"
 #include "log.hpp"
 #include "vulkan_device.hpp"
 
@@ -220,7 +220,7 @@ namespace ember::graphics {
 
             std::uint32_t device_count{ 0 };
             vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
-            EMBER_THROW_IF_FAILED(device_count > 0, exception{ "No devices available. Cannot continue with vulkan initialisation" });
+            EMBER_THROW_IF_FAILED(device_count > 0, graphics_exception{ "No devices available. Cannot continue with vulkan initialisation" });
             array<VkPhysicalDevice> physical_devices(device_count);
             vkEnumeratePhysicalDevices(instance, &device_count, physical_devices.data());
 
@@ -241,7 +241,7 @@ namespace ember::graphics {
             if(device_Scores.rbegin()->first > 0) {
                 physical_device = device_Scores.rbegin()->second;
             }
-            EMBER_THROW_IF_FAILED(physical_device != VK_NULL_HANDLE, exception{ "Failed to create initialise Vulkan. Could not find a suitable device." });
+            EMBER_THROW_IF_FAILED(physical_device != VK_NULL_HANDLE, device_selection_failed_exception{ "Failed to create initialise Vulkan. Could not find a suitable device." });
 
 #if EMBER_CORE_ENABLE_LOGGING
             {

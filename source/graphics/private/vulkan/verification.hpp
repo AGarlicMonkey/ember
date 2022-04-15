@@ -1,10 +1,9 @@
 #pragma once
 
-#include "log.hpp"
-
-#include <ember/core/exception.hpp>
-
 #if EMBER_CORE_ENABLE_EXCEPTIONS
+    #include "ember/graphics/exception.hpp"
+    #include "log.hpp"
+
     #include <string>
     #include <vulkan/vulkan.h>
 
@@ -58,11 +57,6 @@ namespace ember::graphics {
                 return "Reason unknown.";
         }
     }
-
-    class vulkan_exception : public exception {
-    public:
-        using exception::exception;
-    };
 }
 
     #define EMBER_VULKAN_VERIFY_RESULT(function, message)                                                                                            \
@@ -70,7 +64,7 @@ namespace ember::graphics {
             if(VkResult const result{ function }; result < VK_SUCCESS) {                                                                             \
                 std::string const error_message{ convert_result(result) };                                                                           \
                 EMBER_LOG(EmberGraphicsVulkan, ::ember::log_level::critical, "Vulkan call failed: {0}. {1} {2}", #function, message, error_message); \
-                EMBER_THROW(::ember::graphics::vulkan_exception{ message });                                                                         \
+                EMBER_THROW(::ember::graphics::api_verification_exception{ message });                                                               \
             }                                                                                                                                        \
         }
 #else
