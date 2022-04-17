@@ -12,8 +12,8 @@ namespace ember::containers::internal {
         using iterator_concept  = std::contiguous_iterator_tag;
         using iterator_category = std::random_access_iterator_tag;
 
-        using pointer_type   = array_type::const_pointer_type;
-        using reference_type = array_type::const_reference_type;
+        using pointer_type   = typename array_type::const_pointer_type;
+        using reference_type = typename array_type::const_reference_type;
 
         //VARIABLES
     private:
@@ -52,8 +52,8 @@ namespace ember::containers::internal {
         using iterator_concept  = std::contiguous_iterator_tag;
         using iterator_category = std::random_access_iterator_tag;
 
-        using pointer_type   = array_type::pointer_type;
-        using reference_type = array_type::reference_type;
+        using pointer_type   = typename array_type::pointer_type;
+        using reference_type = typename array_type::reference_type;
 
         //VARIABLES
     private:
