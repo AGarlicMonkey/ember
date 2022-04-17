@@ -13,9 +13,14 @@ namespace ember::graphics {
 
         //FUNCTIONS
     public:
-        //TODO: ctors
         vulkan_shader() = delete;
         inline vulkan_shader(VkDevice device, VkShaderModule module);
+
+        vulkan_shader(vulkan_shader const &other) = delete;
+        inline vulkan_shader(vulkan_shader &&other) noexcept;
+
+        vulkan_shader &operator=(vulkan_shader const &other) = delete;
+        inline vulkan_shader &operator=(vulkan_shader &&other) noexcept;
 
         inline ~vulkan_shader();
     };

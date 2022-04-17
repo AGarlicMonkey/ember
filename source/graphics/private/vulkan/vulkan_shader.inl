@@ -6,6 +6,10 @@ namespace ember::graphics {
         , module{ module } {
     }
 
+    vulkan_shader::vulkan_shader(vulkan_shader &&other) noexcept = default;
+
+    vulkan_shader &vulkan_shader::operator=(vulkan_shader &&other) noexcept = default;
+
     vulkan_shader::~vulkan_shader() {
         vkDestroyShaderModule(device, module, &global_host_allocation_callbacks);
     }

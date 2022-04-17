@@ -32,6 +32,13 @@ namespace ember::graphics {
 
         inline virtual ~shader_cache();
 
+        /**
+         * @brief Adds a shader compilation job.
+         * @details It best to use the macro EMBER_REGISTER_SHADER rather than call this function directly
+         * @param shader_name 
+         * @param source_path 
+         * @param shader_stage 
+         */
         static void add_compile_job(std::string const &shader_name, std::filesystem::path const &source_path, shader::stage const shader_stage);
 
         /**
@@ -46,15 +53,7 @@ namespace ember::graphics {
         inline containers::array<std::uint32_t> get_spriv_for_shader(std::string const &shader_name);
 
     private:
-        /**
-         * @brief Compiles GLSL shader source into SPIR-V
-         * @param shader_name 
-         * @param source_path 
-         * @param shader_stage 
-         * @return 
-         */
-        static containers::array<std::uint32_t>
-        compile(std::string const &shader_name, std::string const &shader_source, shader::stage const shader_stage);
+        static containers::array<std::uint32_t> compile(std::string const &shader_name, std::string const &shader_source, shader::stage const shader_stage);
     };
 }
 
@@ -69,7 +68,7 @@ namespace ember::graphics {
  * @param file_path 
  * @param shader_stage 
  */
-#define EMBER_REGISTER_SHADER(shader_type, file_path, shader_stage)                     \
+#define EMBER_REGISTER_SHADER(shader_type, file_path, shader_stage)               \
     struct shader_compiler_helper_##shader_type {                                 \
         shader_compiler_helper_##shader_type() {                                  \
             shader_cache::add_compile_job(#shader_type, file_path, shader_stage); \
