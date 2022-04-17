@@ -1,6 +1,5 @@
 #pragma once
 
-#include "allocation_callbacks.hpp"
 #include "ember/graphics/device.hpp"
 
 #include <cinttypes>
@@ -29,8 +28,6 @@ namespace ember::graphics {
         VkInstance instance{ VK_NULL_HANDLE };
         VkPhysicalDevice physical_device{ VK_NULL_HANDLE };
         VkDevice logical_device{ VK_NULL_HANDLE };
-
-        VkAllocationCallbacks global_allocator{};
 
         queue_data graphics_queue_data{};
         queue_data compute_queue_data{};

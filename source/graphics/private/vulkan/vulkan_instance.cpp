@@ -14,7 +14,7 @@
 
 #include "vulkan_instance.hpp"
 
-#include "allocation_callbacks.hpp"
+#include "host_memory_allocator.hpp"
 #include "verification.hpp"
 #include "log.hpp"
 #include "vulkan_device.hpp"
@@ -90,8 +90,7 @@ namespace ember::graphics {
     vulkan_instance::vulkan_instance(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger, unique_ptr<vulkan_device> device)
         : instance{ instance }
         , debug_messenger{ debug_messenger }
-        , device{ std::move(device) }
-        , global_allocator{ get_allocation_callbacks() } {
+        , device{ std::move(device) } {
     }
 
     vulkan_instance::vulkan_instance(vulkan_instance &&other) noexcept = default;
@@ -103,9 +102,9 @@ namespace ember::graphics {
         device.reset();
 
 #if EMBER_GRAPHICS_DEVICE_VALIDATION
-        destroy_debug_utils_messenger_EXT(instance, debug_messenger, &global_allocator);
+        destroy_debug_utils_messenger_EXT(instance, debug_messenger, &global_host_allocation_callbacks);
 #endif
-        vkDestroyInstance(instance, &global_allocator);
+        vkDestroyInstance(instance, &global_host_allocation_callbacks);
     }
 
     device *vulkan_instance::get_device() const noexcept {
@@ -128,8 +127,6 @@ namespace ember::graphics {
             }
         }
 #endif
-
-        VkAllocationCallbacks allocation_callbacks{ get_allocation_callbacks() };
 
         array<char const *> instance_extensions {
             VK_KHR_SURFACE_EXTENSION_NAME,
@@ -196,10 +193,10 @@ namespace ember::graphics {
                 .ppEnabledExtensionNames = instance_extensions.data(),
             };
 
-            EMBER_VULKAN_VERIFY_RESULT(vkCreateInstance(&create_info, &allocation_callbacks, &instance), "Failed to create Vulkan instance.");
+            EMBER_VULKAN_VERIFY_RESULT(vkCreateInstance(&create_info, &global_host_allocation_callbacks, &instance), "Failed to create Vulkan instance.");
 
 #if EMBER_GRAPHICS_DEVICE_VALIDATION
-            if(create_debug_utils_messenger_EXT(instance, &debug_messenger_create_info, &allocation_callbacks, &debug_messenger) < VK_SUCCESS) {
+            if(create_debug_utils_messenger_EXT(instance, &debug_messenger_create_info, &global_host_allocation_callbacks, &debug_messenger) < VK_SUCCESS) {
                 EMBER_LOG(EmberGraphicsVulkan, log_level::warn, "Failed to create debug messenger. Debug info will be limited.");
             }
 #endif
@@ -317,7 +314,7 @@ namespace ember::graphics {
                 .pEnabledFeatures        = &device_features,
             };
 
-            EMBER_VULKAN_VERIFY_RESULT(vkCreateDevice(physical_device, &create_info, &allocation_callbacks, &logical_device), "Failed to create logical device for vulkan. ");
+            EMBER_VULKAN_VERIFY_RESULT(vkCreateDevice(physical_device, &create_info, &global_host_allocation_callbacks, &logical_device), "Failed to create logical device for vulkan. ");
             selected_device = make_unique<vulkan_device>(instance, physical_device, logical_device, queue_family_indices);
         }
 

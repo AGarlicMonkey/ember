@@ -19,8 +19,6 @@ namespace ember::graphics {
 
         memory::unique_ptr<vulkan_device> device{};
 
-        VkAllocationCallbacks global_allocator{};
-
         //FUNCTIONS
     public:
         vulkan_instance() = delete;

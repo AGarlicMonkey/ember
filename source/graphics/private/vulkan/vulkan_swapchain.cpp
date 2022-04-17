@@ -1,6 +1,5 @@
 #include "vulkan_swapchain.hpp"
 
-#include "allocation_callbacks.hpp"
 #include "log.hpp"
 #include "vulkan_image.hpp"
 #include "vulkan_semaphore.hpp"
@@ -17,7 +16,6 @@ namespace ember::graphics {
         , surface{ surface }
         , swapchain_image_format{ swapchain_image_format }
         , swapchain_extent{ swapchain_extent }
-        , global_allocator{ get_allocation_callbacks() }
         , images{ std::move(images) } {
     }
 

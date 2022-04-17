@@ -22,8 +22,6 @@ namespace ember::graphics {
         VkFormat swapchain_image_format{};
         VkExtent2D swapchain_extent{};
 
-        VkAllocationCallbacks global_allocator{};
-
         containers::array<memory::unique_ptr<vulkan_image>> images{};
 
         //FUNCTIONS

@@ -39,8 +39,16 @@ namespace ember::graphics {
          */
         virtual std::pair<std::uint32_t, result> aquire_next_image(semaphore const *available_semaphore) = 0;
 
+        /**
+         * @brief
+         * @return 
+         */
         virtual image::format get_image_format() const = 0;
-        virtual maths::vec2u get_size() const          = 0;
+        /**
+         * @brief
+         * @return 
+         */
+        virtual maths::vec2u get_size() const = 0;
 
         /**
          * @brief Return the image views backing this swapchain. The lifetime

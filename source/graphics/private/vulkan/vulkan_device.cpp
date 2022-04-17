@@ -16,6 +16,7 @@
 #include "log.hpp"
 #include "vulkan_image.hpp"
 #include "vulkan_swapchain.hpp"
+#include "host_memory_allocator.hpp"
 
 #include <ember/containers/array.hpp>
 #include <ember/memory/unique_ptr.hpp>
@@ -56,8 +57,7 @@ namespace ember::graphics {
     vulkan_device::vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices const &family_indices)
         : instance{ instance }
         , physical_device{ physical_device }
-        , logical_device{ logical_device }
-        , global_allocator{ get_allocation_callbacks() } {
+        , logical_device{ logical_device } {
         VkCommandPoolCreateInfo command_pool_create_info{
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext = nullptr,
@@ -67,28 +67,28 @@ namespace ember::graphics {
         //Graphics
         graphics_queue_data.index                 = family_indices.graphics;
         command_pool_create_info.queueFamilyIndex = graphics_queue_data.index;
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_allocator, &graphics_queue_data.command_pool), "Failed to create graphics queue pool");
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &graphics_queue_data.command_pool), "Failed to create graphics queue pool");
         vkGetDeviceQueue(logical_device, graphics_queue_data.index, 0, &graphics_queue_data.queue);
 
         //Compute
         compute_queue_data.index                  = family_indices.graphics;
         command_pool_create_info.queueFamilyIndex = compute_queue_data.index;
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_allocator, &compute_queue_data.command_pool), "Failed to create compute queue pool");
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &compute_queue_data.command_pool), "Failed to create compute queue pool");
         vkGetDeviceQueue(logical_device, compute_queue_data.index, 0, &compute_queue_data.queue);
 
         //Transfer
         transfer_queue_data.index                 = family_indices.graphics;
         command_pool_create_info.queueFamilyIndex = transfer_queue_data.index;
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_allocator, &transfer_queue_data.command_pool), "Failed to create transfer queue pool");
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &transfer_queue_data.command_pool), "Failed to create transfer queue pool");
         vkGetDeviceQueue(logical_device, transfer_queue_data.index, 0, &transfer_queue_data.queue);
     }
 
     vulkan_device::~vulkan_device() {
-        vkDestroyCommandPool(logical_device, graphics_queue_data.command_pool, &global_allocator);
-        vkDestroyCommandPool(logical_device, compute_queue_data.command_pool, &global_allocator);
-        vkDestroyCommandPool(logical_device, transfer_queue_data.command_pool, &global_allocator);
+        vkDestroyCommandPool(logical_device, graphics_queue_data.command_pool, &global_host_allocation_callbacks);
+        vkDestroyCommandPool(logical_device, compute_queue_data.command_pool, &global_host_allocation_callbacks);
+        vkDestroyCommandPool(logical_device, transfer_queue_data.command_pool, &global_host_allocation_callbacks);
 
-        vkDestroyDevice(logical_device, &global_allocator);
+        vkDestroyDevice(logical_device, &global_host_allocation_callbacks);
     }
 
     unique_ptr<swapchain> vulkan_device::create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const {
@@ -100,7 +100,7 @@ namespace ember::graphics {
         };
 
         VkSurfaceKHR surface{ VK_NULL_HANDLE };
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateWin32SurfaceKHR(instance, &surface_create_info, &global_allocator, &surface), "Failed to create swapchain. Could not create surface.");
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateWin32SurfaceKHR(instance, &surface_create_info, &global_host_allocation_callbacks, &surface), "Failed to create swapchain. Could not create surface.");
 #elif EMBER_PLATFORM_MACOS
     #error vulkan not supported on macos
 #elif EMBER_PLATFORM_XLIB
@@ -110,7 +110,7 @@ namespace ember::graphics {
         VkBool32 present_support{ VK_FALSE };
         vkGetPhysicalDeviceSurfaceSupportKHR(physical_device, graphics_queue_data.index, surface, &present_support);
         if(present_support == VK_FALSE) {
-            vkDestroySurfaceKHR(instance, surface, &global_allocator);
+            vkDestroySurfaceKHR(instance, surface, &global_host_allocation_callbacks);
             EMBER_THROW(present_not_available_exception{ "Graphics queue or physical device does not have presentation support." });
         }
 
@@ -162,7 +162,7 @@ namespace ember::graphics {
         };
 
         VkSwapchainKHR swapchain{ nullptr };
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateSwapchainKHR(logical_device, &swapchain_create_info, &global_allocator, &swapchain), "Failed to create vk_swapchain. ");
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateSwapchainKHR(logical_device, &swapchain_create_info, &global_host_allocation_callbacks, &swapchain), "Failed to create vk_swapchain. ");
 
         array<VkImage> vk_images(desired_image_count);//TODO: should be resized (see below)
         array<unique_ptr<vulkan_image>> vulkan_images{};
