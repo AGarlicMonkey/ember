@@ -4,89 +4,89 @@
 #include <cstddef>
 #include <iterator>
 
+namespace ember::containers::internal {
+    template<typename array_type>
+    class const_array_iterator {
+        //TYPES
+    public:
+        using iterator_concept  = std::contiguous_iterator_tag;
+        using iterator_category = std::random_access_iterator_tag;
+
+        using pointer_type   = array_type::const_pointer_type;
+        using reference_type = array_type::const_reference_type;
+
+        //VARIABLES
+    private:
+        array_type const *array{ nullptr };
+        array_type::pointer_type ptr{ nullptr };
+
+        //FUNCTIONS
+    public:
+        const_array_iterator();
+        const_array_iterator(array_type const *array, typename array_type::pointer_type start);
+
+        const_array_iterator(const_array_iterator const &other) = delete;
+        const_array_iterator(const_array_iterator &&other) noexcept;
+
+        const_array_iterator &operator=(const_array_iterator const &other) = delete;
+        const_array_iterator &operator=(const_array_iterator &&other) noexcept;
+
+        ~const_array_iterator();
+
+        pointer_type operator->() const;
+        reference_type operator*() const;
+
+        const_array_iterator &operator++();
+        const_array_iterator &operator--();
+
+        template<typename array_type_1>
+        friend bool operator==(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
+        template<typename array_type_1>
+        friend bool operator!=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
+    };
+
+    template<typename array_type>
+    class array_iterator : public const_array_iterator<array_type> {
+        //TYPES
+    public:
+        using iterator_concept  = std::contiguous_iterator_tag;
+        using iterator_category = std::random_access_iterator_tag;
+
+        using pointer_type   = array_type::pointer_type;
+        using reference_type = array_type::reference_type;
+
+        //VARIABLES
+    private:
+        array_type *array{ nullptr };
+        pointer_type ptr{ nullptr };
+
+        //FUNCTIONS
+    public:
+        array_iterator();
+        array_iterator(array_type *array, pointer_type start);
+
+        array_iterator(array_iterator const &other) = delete;
+        array_iterator(array_iterator &&other) noexcept;
+
+        array_iterator &operator=(array_iterator const &other) = delete;
+        array_iterator &operator=(array_iterator &&other) noexcept;
+
+        ~array_iterator();
+
+        pointer_type operator->();
+        reference_type operator*();
+
+        array_iterator &operator++();
+        array_iterator &operator--();
+
+        template<typename array_type_1>
+        friend bool operator==(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
+        template<typename array_type_1>
+        friend bool operator!=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
+    };
+}
+
 namespace ember::containers {
-    namespace internal {
-        template<typename array_type>
-        class const_array_iterator {
-            //TYPES
-        public:
-            using iterator_concept  = std::contiguous_iterator_tag;
-            using iterator_category = std::random_access_iterator_tag;
-
-            using pointer_type   = array_type::const_pointer_type;
-            using reference_type = array_type::const_reference_type;
-
-            //VARIABLES
-        private:
-            array_type const *array{ nullptr };
-            array_type::pointer_type ptr{ nullptr };
-
-            //FUNCTIONS
-        public:
-            const_array_iterator();
-            const_array_iterator(array_type const *array, array_type::pointer_type start);
-
-            const_array_iterator(const_array_iterator const &other) = delete;
-            const_array_iterator(const_array_iterator &&other) noexcept;
-
-            const_array_iterator &operator=(const_array_iterator const &other) = delete;
-            const_array_iterator &operator=(const_array_iterator &&other) noexcept;
-
-            ~const_array_iterator();
-
-            pointer_type operator->() const;
-            reference_type operator*() const;
-
-            const_array_iterator &operator++();
-            const_array_iterator &operator--();
-
-            template<typename array_type_1>
-            friend bool operator==(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
-            template<typename array_type_1>
-            friend bool operator!=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
-        };
-
-        template<typename array_type>
-        class array_iterator : public const_array_iterator<array_type> {
-            //TYPES
-        public:
-            using iterator_concept  = std::contiguous_iterator_tag;
-            using iterator_category = std::random_access_iterator_tag;
-
-            using pointer_type   = array_type::pointer_type;
-            using reference_type = array_type::reference_type;
-
-            //VARIABLES
-        private:
-            array_type *array{ nullptr };
-            pointer_type ptr{ nullptr };
-
-            //FUNCTIONS
-        public:
-            array_iterator();
-            array_iterator(array_type *array, pointer_type start);
-
-            array_iterator(array_iterator const &other) = delete;
-            array_iterator(array_iterator &&other) noexcept;
-
-            array_iterator &operator=(array_iterator const &other) = delete;
-            array_iterator &operator=(array_iterator &&other) noexcept;
-
-            ~array_iterator();
-
-            pointer_type operator->();
-            reference_type operator*();
-
-            array_iterator &operator++();
-            array_iterator &operator--();
-
-            template<typename array_type_1>
-            friend bool operator==(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
-            template<typename array_type_1>
-            friend bool operator!=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
-        };
-    }
-
     /**
      * @brief Dynamically sized contiguous array of type T.
      * @tparam T 
@@ -121,6 +121,8 @@ namespace ember::containers {
         array() noexcept;
         explicit array(std::size_t const size) requires std::is_default_constructible_v<T>;
         array(std::initializer_list<T> init);
+        template<typename iterator_type>
+        array(iterator_type begin, iterator_type end);
 
         array(array const &other);
         array(array &&other);

@@ -8,7 +8,7 @@ namespace ember::containers {
         const_array_iterator<array_type>::const_array_iterator() = default;
 
         template<typename array_type>
-        const_array_iterator<array_type>::const_array_iterator(array_type const *array, array_type::pointer_type start)
+        const_array_iterator<array_type>::const_array_iterator(array_type const *array, typename array_type::pointer_type start)
             : array{ array }
             , ptr{ start } {
         }
@@ -132,6 +132,18 @@ namespace ember::containers {
         allocate_array(cap);
         std::size_t index{ 0 };
         for(auto iter{ init.begin() }; iter != init.end(); ++iter, ++index) {
+            new(&first[index]) value_type{ *iter };
+        }
+    }
+
+    template<typename T>
+    template<typename iterator_type>
+    array<T>::array(iterator_type begin, iterator_type end)
+        : elems{ static_cast<std::size_t>(std::distance(begin, end)) }
+        , cap{ elems } {
+        allocate_array(cap);
+        std::size_t index{ 0 };
+        for(auto iter{ begin }; iter != end; ++iter, ++index) {
             new(&first[index]) value_type{ *iter };
         }
     }

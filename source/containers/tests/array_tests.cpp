@@ -1,5 +1,6 @@
 #include <ember/containers/array.hpp>
 #include <gtest/gtest.h>
+#include <vector>
 
 using namespace ember::containers;
 
@@ -77,6 +78,17 @@ TEST(array_tests, can_initialiser_list_initialise) {
 
     for(std::size_t i{ 0 }; i < arr.size(); ++i) {
         EXPECT_EQ(arr[i], i);
+    }
+}
+
+TEST(array_tests, can_iterator_initialise) {
+    std::vector<std::uint32_t> a{ 1, 2, 3, 4, 5 };
+    array<std::uint32_t> b{ a.begin(), a.end() };
+
+    ASSERT_EQ(a.size(), b.size());
+    EXPECT_EQ(b.size(), b.capacity());
+    for(std::size_t i{ 0 }; i < a.size(); ++i) {
+        EXPECT_EQ(a[i], b[i]);
     }
 }
 
