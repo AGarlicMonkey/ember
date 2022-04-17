@@ -23,6 +23,9 @@ set(
 set(
     vulkan_files
 
+    ${SOURCE_PRIVATE}/vulkan/device_memory_allocator.hpp
+    ${SOURCE_PRIVATE}/vulkan/device_memory_allocator.inl
+    ${SOURCE_PRIVATE}/vulkan/device_memory_allocator.cpp
     ${SOURCE_PRIVATE}/vulkan/host_memory_allocator.hpp
     ${SOURCE_PRIVATE}/vulkan/host_memory_allocator.cpp
     ${SOURCE_PRIVATE}/vulkan/log.hpp

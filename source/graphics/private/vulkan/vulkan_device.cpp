@@ -57,7 +57,8 @@ namespace ember::graphics {
     vulkan_device::vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices const &family_indices)
         : instance{ instance }
         , physical_device{ physical_device }
-        , logical_device{ logical_device } {
+        , logical_device{ logical_device }
+        , memory_allocator{ logical_device, physical_device } {
         VkCommandPoolCreateInfo command_pool_create_info{
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext = nullptr,

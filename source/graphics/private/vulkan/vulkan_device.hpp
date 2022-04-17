@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ember/graphics/device.hpp"
+#include "device_memory_allocator.hpp"
 
 #include <cinttypes>
 #include <ember/containers/array.hpp>
@@ -28,6 +29,8 @@ namespace ember::graphics {
         VkInstance instance{ VK_NULL_HANDLE };
         VkPhysicalDevice physical_device{ VK_NULL_HANDLE };
         VkDevice logical_device{ VK_NULL_HANDLE };
+
+        device_memory_allocator memory_allocator;
 
         queue_data graphics_queue_data{};
         queue_data compute_queue_data{};
