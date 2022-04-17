@@ -38,4 +38,21 @@ namespace ember::graphics {
     class resource_creation_exception : public graphics_exception {
         using graphics_exception::graphics_exception;
     };
+
+    /**
+     * @brief Thrown if a shader fails to compile
+     */
+    class shader_compilation_failed_exception : public graphics_exception {
+    public:
+        std::string shader_name{};
+
+        explicit shader_compilation_failed_exception(std::string const &message, std::string shader_name)
+            : graphics_exception{ message }
+            , shader_name{ std::move(shader_name) } {
+        }
+        explicit shader_compilation_failed_exception(char const *message, std::string shader_name)
+            : graphics_exception{ message }
+            , shader_name{ std::move(shader_name) } {
+        }
+    };
 }

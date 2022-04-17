@@ -8,7 +8,9 @@ option(EMBER_GRAPHICS_DEVICE_VALIDATION "Enables API specific device validation 
 option(EMBER_GRAPHICS_USAGE_VALIDATION "Enables ember's API usage validation. This helps prevent issues developing a renderer for one API and for it not to work on another." ON)
 option(EMBER_GRAPHICS_TRACK_MEMORY "Enables extra logging of memory state within a device." ON)
 option(EMBER_GRAPHICS_DEBUG_UTILITIES "Enables the graphics debugging utilities such as naming resources and adding user markers." ON)
+option(EMBER_GRAPHICS_COMPILE_DEBUG_SHADERS "Compiles shaders in debug mode, with no optimisations enabled." OFF)
 
+find_package(shaderc REQUIRED CONFIG)
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	find_package(Vulkan REQUIRED)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -52,10 +54,16 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_shader.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_shader.inl
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.cpp
+
+    ${SOURCE_PRIVATE}/vulkan/vulkan_shader_cache.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_shader_cache.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_shader_cache.cpp
 )
 
 #Library
@@ -94,6 +102,7 @@ add_library(
     ${SOURCE_PUBLIC}/resource.hpp
     ${SOURCE_PUBLIC}/buffer.hpp
     ${SOURCE_PUBLIC}/image.hpp
+    ${SOURCE_PUBLIC}/shader.hpp
 
     ${SOURCE_PUBLIC}/graphics_pipeline_object.hpp
     ${SOURCE_PUBLIC}/compute_pipeline_object.hpp
@@ -105,6 +114,10 @@ add_library(
 
     ${SOURCE_PUBLIC}/fence.hpp
     ${SOURCE_PUBLIC}/semaphore.hpp
+
+    ${SOURCE_PUBLIC}/shader_cache.hpp
+    ${SOURCE_PUBLIC}/shader_cache.inl
+    ${SOURCE_PRIVATE}/shader_cache.cpp
 
     ${validation_files}
     ${vulkan_files}
@@ -134,8 +147,9 @@ target_link_libraries(
         ember_platform
 
     PRIVATE
-        $<$<PLATFORM_ID:Windows>:Vulkan::Vulkan>
-        $<$<PLATFORM_ID:Linux>:Vulkan::Vulkan>
+        shaderc::shaderc
+
+        $<$<OR:$<PLATFORM_ID:Windows>,$<PLATFORM_ID:Linux>>:Vulkan::Vulkan>
 )
 
 #Preprocessor
@@ -149,4 +163,5 @@ target_compile_definitions(
         EMBER_GRAPHICS_USAGE_VALIDATION=$<BOOL:${EMBER_GRAPHICS_USAGE_VALIDATION}>
         EMBER_GRAPHICS_TRACK_MEMORY=$<BOOL:${EMBER_GRAPHICS_TRACK_MEMORY}>
         EMBER_GRAPHICS_DEBUG_UTILITIES=$<BOOL:${EMBER_GRAPHICS_DEBUG_UTILITIES}>
+        EMBER_GRAPHICS_COMPILE_DEBUG_SHADERS=$<BOOL:${EMBER_GRAPHICS_COMPILE_DEBUG_SHADERS}>
 )

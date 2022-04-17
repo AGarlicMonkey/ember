@@ -13,6 +13,7 @@ class CloveConan(ConanFile):
 
     requires = (
         "gtest/cci.20210126",
+        "shaderc/2021.1",
         "spdlog/1.10.0",
     )
 
@@ -21,5 +22,6 @@ class CloveConan(ConanFile):
     )
 
     default_options = {
+        "shaderc:shared": True,
         "spdlog:shared": False,
     }

@@ -10,6 +10,7 @@ namespace ember::platform {
 
 namespace ember::graphics {
     class resource_factory;
+    class shader_cache;
 
 }
 
@@ -24,10 +25,16 @@ namespace ember::graphics {
         virtual ~device() = default;
 
         /**
-         * @brief Returns the factory used to create graphics resources.
+         * @brief Returns the factory object used to create graphics resources.
+         * @details Lifetime of the factory is tied to this object.
          * @return 
          */
         virtual resource_factory const *get_factory() const = 0;
+        /**
+         * @brief Returns the shader cache which contains the applications compiled shaders.
+         * @return 
+         */
+        virtual shader_cache *get_shader_cache() = 0;
 
         /**
          * @brief Creates a swapchain for a given window.

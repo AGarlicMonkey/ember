@@ -4,6 +4,7 @@
 #include "ember/graphics/device.hpp"
 #include "types.hpp"
 #include "vulkan_resource_factory.hpp"
+#include "vulkan_shader_cache.hpp"
 
 #include <cinttypes>
 #include <ember/containers/array.hpp>
@@ -30,6 +31,7 @@ namespace ember::graphics {
         device_memory_allocator memory_allocator;
 
         vulkan_resource_factory factory;
+        vulkan_shader_cache cache;
 
         queue_data graphics_queue_data{};
         queue_data compute_queue_data{};
@@ -49,6 +51,7 @@ namespace ember::graphics {
         ~vulkan_device();
 
         resource_factory const *get_factory() const override;
+        shader_cache *get_shader_cache() override;
 
         memory::unique_ptr<swapchain> create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const override;
 

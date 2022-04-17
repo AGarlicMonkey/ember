@@ -7,9 +7,9 @@ namespace ember {
     class exception : public std::runtime_error {
     public:
         explicit exception(std::string const &message)
-            : std::runtime_error(message) {}
+            : std::runtime_error{ message } {}
         explicit exception(char const *message)
-            : std::runtime_error(message) {}
+            : std::runtime_error{ message } {}
     };
 }
 
