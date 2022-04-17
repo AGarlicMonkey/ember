@@ -5,8 +5,9 @@ set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 
 #CMake
 option(EMBER_GRAPHICS_DEVICE_VALIDATION "Enables API specific device validation layers." ON)
-option(EMBER_GRAPHICS_USAGE_VALIDATION "Enables ember's API usage validation. This helps prevent issues developing a renderer for one API for it not to work on another." ON)
+option(EMBER_GRAPHICS_USAGE_VALIDATION "Enables ember's API usage validation. This helps prevent issues developing a renderer for one API and for it not to work on another." ON)
 option(EMBER_GRAPHICS_TRACK_MEMORY "Enables extra logging of memory state within a device." ON)
+option(EMBER_GRAPHICS_DEBUG_UTILITIES "Enables the graphics debugging utilities such as naming resources and adding user markers." ON)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows" OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	find_package(Vulkan REQUIRED)
@@ -29,6 +30,7 @@ set(
     ${SOURCE_PRIVATE}/vulkan/host_memory_allocator.hpp
     ${SOURCE_PRIVATE}/vulkan/host_memory_allocator.cpp
     ${SOURCE_PRIVATE}/vulkan/log.hpp
+    ${SOURCE_PRIVATE}/vulkan/types.hpp
     ${SOURCE_PRIVATE}/vulkan/verification.hpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.hpp
@@ -36,6 +38,9 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_device.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_device.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_device.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_resource_factory.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_resource_factory.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_resource_factory.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.cpp
@@ -43,6 +48,8 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_transfer_queue.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_transfer_queue.cpp
 
+    ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.cpp
 
@@ -61,6 +68,7 @@ add_library(
     ${SOURCE_PRIVATE}/graphics.cpp
     ${SOURCE_PUBLIC}/instance.hpp
     ${SOURCE_PUBLIC}/device.hpp
+    ${SOURCE_PUBLIC}/resource_factory.hpp
     ${SOURCE_PUBLIC}/swapchain.hpp
 
     ${SOURCE_PUBLIC}/graphics_queue.hpp
@@ -83,6 +91,7 @@ add_library(
     ${SOURCE_PUBLIC}/command_buffer.inl
     ${SOURCE_PRIVATE}/command_buffer.cpp
 
+    ${SOURCE_PUBLIC}/resource.hpp
     ${SOURCE_PUBLIC}/buffer.hpp
     ${SOURCE_PUBLIC}/image.hpp
 
@@ -139,4 +148,5 @@ target_compile_definitions(
         EMBER_GRAPHICS_DEVICE_VALIDATION=$<BOOL:${EMBER_GRAPHICS_DEVICE_VALIDATION}>
         EMBER_GRAPHICS_USAGE_VALIDATION=$<BOOL:${EMBER_GRAPHICS_USAGE_VALIDATION}>
         EMBER_GRAPHICS_TRACK_MEMORY=$<BOOL:${EMBER_GRAPHICS_TRACK_MEMORY}>
+        EMBER_GRAPHICS_DEBUG_UTILITIES=$<BOOL:${EMBER_GRAPHICS_DEBUG_UTILITIES}>
 )

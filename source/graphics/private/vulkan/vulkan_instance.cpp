@@ -15,8 +15,8 @@
 #include "vulkan_instance.hpp"
 
 #include "host_memory_allocator.hpp"
-#include "verification.hpp"
 #include "log.hpp"
+#include "verification.hpp"
 #include "vulkan_device.hpp"
 
 #include <map>

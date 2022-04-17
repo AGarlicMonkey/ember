@@ -33,6 +33,7 @@ namespace ember::graphics {
     device_memory_allocator::block::~block() {
         if(memory != VK_NULL_HANDLE) {
             vkFreeMemory(device, memory, &global_host_allocation_callbacks);
+            memory = VK_NULL_HANDLE;
         }
     }
 

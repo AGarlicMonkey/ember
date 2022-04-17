@@ -18,6 +18,7 @@ find_package(tracy REQUIRED CONFIG)
 #Library
 add_library(
     ${TARGET_NAME}
+        ${SOURCE_PUBLIC}/enum.hpp
         ${SOURCE_PUBLIC}/exception.hpp
         ${SOURCE_PUBLIC}/export.hpp
         ${SOURCE_PUBLIC}/log.hpp

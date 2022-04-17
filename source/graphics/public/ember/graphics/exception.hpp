@@ -31,4 +31,11 @@ namespace ember::graphics {
     public:
         using graphics_exception::graphics_exception;
     };
+
+    /**
+     * @brief Thrown if there was a problem creating a resource.
+     */
+    class resource_creation_exception : public graphics_exception {
+        using graphics_exception::graphics_exception;
+    };
 }

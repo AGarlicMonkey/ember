@@ -55,7 +55,7 @@ namespace ember::graphics {
             inline block(block &&other) noexcept;
 
             block &operator=(block const &other) = delete;
-            inline block &operator               =(block &&other) noexcept;
+            inline block &operator=(block &&other) noexcept;
 
             inline ~block();
 
@@ -73,7 +73,7 @@ namespace ember::graphics {
 
         VkDevice logical_device{ VK_NULL_HANDLE };
         VkPhysicalDevice physical_device{ VK_NULL_HANDLE };
-        
+
         containers::array<block> memory_blocks{};
 
         //FUNCTIONS

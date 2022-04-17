@@ -12,11 +12,11 @@
 
 #include "vulkan_device.hpp"
 
-#include "verification.hpp"
+#include "host_memory_allocator.hpp"
 #include "log.hpp"
+#include "verification.hpp"
 #include "vulkan_image.hpp"
 #include "vulkan_swapchain.hpp"
-#include "host_memory_allocator.hpp"
 
 #include <ember/containers/array.hpp>
 #include <ember/memory/unique_ptr.hpp>
@@ -54,11 +54,13 @@ namespace {
 }
 
 namespace ember::graphics {
-    vulkan_device::vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices const &family_indices)
+    vulkan_device::vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices)
         : instance{ instance }
         , physical_device{ physical_device }
         , logical_device{ logical_device }
-        , memory_allocator{ logical_device, physical_device } {
+        , memory_allocator{ logical_device, physical_device }
+        , family_indices{ std::move(family_indices) }
+        , factory{ instance, logical_device, this->family_indices, &memory_allocator } {
         VkCommandPoolCreateInfo command_pool_create_info{
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext = nullptr,
@@ -66,30 +68,36 @@ namespace ember::graphics {
         };
 
         //Graphics
-        graphics_queue_data.index                 = family_indices.graphics;
+        graphics_queue_data.index                 = this->family_indices.graphics;
         command_pool_create_info.queueFamilyIndex = graphics_queue_data.index;
         EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &graphics_queue_data.command_pool), "Failed to create graphics queue pool");
         vkGetDeviceQueue(logical_device, graphics_queue_data.index, 0, &graphics_queue_data.queue);
 
         //Compute
-        compute_queue_data.index                  = family_indices.graphics;
+        compute_queue_data.index                  = this->family_indices.graphics;
         command_pool_create_info.queueFamilyIndex = compute_queue_data.index;
         EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &compute_queue_data.command_pool), "Failed to create compute queue pool");
         vkGetDeviceQueue(logical_device, compute_queue_data.index, 0, &compute_queue_data.queue);
 
         //Transfer
-        transfer_queue_data.index                 = family_indices.graphics;
+        transfer_queue_data.index                 = this->family_indices.graphics;
         command_pool_create_info.queueFamilyIndex = transfer_queue_data.index;
         EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &transfer_queue_data.command_pool), "Failed to create transfer queue pool");
         vkGetDeviceQueue(logical_device, transfer_queue_data.index, 0, &transfer_queue_data.queue);
     }
 
     vulkan_device::~vulkan_device() {
+        memory_allocator.~device_memory_allocator(); //Call dtor to make sure memory is freed before destroying the device.
+
         vkDestroyCommandPool(logical_device, graphics_queue_data.command_pool, &global_host_allocation_callbacks);
         vkDestroyCommandPool(logical_device, compute_queue_data.command_pool, &global_host_allocation_callbacks);
         vkDestroyCommandPool(logical_device, transfer_queue_data.command_pool, &global_host_allocation_callbacks);
 
         vkDestroyDevice(logical_device, &global_host_allocation_callbacks);
+    }
+
+    resource_factory const *vulkan_device::get_factory() const {
+        return &factory;
     }
 
     unique_ptr<swapchain> vulkan_device::create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const {
@@ -180,6 +188,7 @@ namespace ember::graphics {
             .format       = image_format,
             .sharing_mode = sharing_mode::exclusive,
         };
+        //TODO: Resource name
 
         std::uint32_t created_image_count{ 0 };
         vkGetSwapchainImagesKHR(logical_device, swapchain, &created_image_count, nullptr);
@@ -195,7 +204,7 @@ namespace ember::graphics {
         return make_unique<vulkan_swapchain>(instance, logical_device, surface, swapchain, surface_format.format, extent, std::move(vulkan_images));
     }
 
-    vulkan_device::queue_family_indices vulkan_device::get_physical_device_queue_family_indices(VkPhysicalDevice device) {
+    queue_family_indices vulkan_device::get_physical_device_queue_family_indices(VkPhysicalDevice device) {
         queue_family_indices indices{};
         //TODO: custom set
         std::set<std::uint32_t> graphics_families{};
