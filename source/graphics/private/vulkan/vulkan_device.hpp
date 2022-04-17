@@ -28,10 +28,10 @@ namespace ember::graphics {
 
         queue_family_indices family_indices{};
 
-        device_memory_allocator memory_allocator;
+        memory::unique_ptr<device_memory_allocator> memory_allocator{ nullptr };
 
-        vulkan_resource_factory factory;
-        vulkan_shader_cache cache;
+        memory::unique_ptr<vulkan_resource_factory> factory{ nullptr };
+        memory::unique_ptr<vulkan_shader_cache> cache{ nullptr };
 
         queue_data graphics_queue_data{};
         queue_data compute_queue_data{};

@@ -58,10 +58,11 @@ namespace ember::graphics {
         : instance{ instance }
         , physical_device{ physical_device }
         , logical_device{ logical_device }
-        , memory_allocator{ logical_device, physical_device }
-        , family_indices{ std::move(family_indices) }
-        , factory{ instance, logical_device, this->family_indices, &memory_allocator }
-        , cache{ logical_device } {
+        , family_indices{ std::move(family_indices) } {
+        memory_allocator = make_unique<device_memory_allocator>(logical_device, physical_device);
+        factory          = make_unique<vulkan_resource_factory>(instance, logical_device, this->family_indices, memory_allocator.get());
+        cache            = make_unique<vulkan_shader_cache>(logical_device);
+
         VkCommandPoolCreateInfo command_pool_create_info{
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext = nullptr,
@@ -89,7 +90,8 @@ namespace ember::graphics {
 
     vulkan_device::~vulkan_device() {
         //Call dtor to make sure memory is freed before destroying the device.
-        memory_allocator.~device_memory_allocator();
+        memory_allocator.reset();
+        cache.reset();
 
         vkDestroyCommandPool(logical_device, graphics_queue_data.command_pool, &global_host_allocation_callbacks);
         vkDestroyCommandPool(logical_device, compute_queue_data.command_pool, &global_host_allocation_callbacks);
@@ -99,11 +101,11 @@ namespace ember::graphics {
     }
 
     resource_factory const *vulkan_device::get_factory() const {
-        return &factory;
+        return factory.get();
     }
 
     shader_cache *vulkan_device::get_shader_cache() {
-        return &cache;
+        return cache.get();
     }
 
     unique_ptr<swapchain> vulkan_device::create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const {
