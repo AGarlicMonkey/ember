@@ -47,9 +47,6 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.cpp
 
-    ${SOURCE_PRIVATE}/vulkan/vulkan_transfer_queue.hpp
-    ${SOURCE_PRIVATE}/vulkan/vulkan_transfer_queue.cpp
-
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.hpp
@@ -75,6 +72,8 @@ add_library(
     ${TARGET_NAME}
 
     ${SOURCE_PUBLIC}/exception.hpp
+    ${SOURCE_PRIVATE}/resource_cast.hpp
+    ${SOURCE_PRIVATE}/resource_cast.inl
 
     ${SOURCE_PUBLIC}/graphics.hpp
     ${SOURCE_PRIVATE}/graphics.cpp

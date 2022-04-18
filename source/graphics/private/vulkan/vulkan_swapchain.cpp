@@ -1,6 +1,7 @@
 #include "vulkan_swapchain.hpp"
 
 #include "log.hpp"
+#include "resource_cast.hpp"
 #include "vulkan_image.hpp"
 #include "vulkan_semaphore.hpp"
 
@@ -21,7 +22,7 @@ namespace ember::graphics {
 
     std::pair<std::uint32_t, vulkan_swapchain::result> vulkan_swapchain::aquire_next_image(semaphore const *available_semaphore) {
         std::uint32_t out_image_index{ 0 };
-        VkSemaphore vk_semaphore{ available_semaphore != nullptr ? static_cast<vulkan_semaphore const *>(available_semaphore)->get_semaphore() : VK_NULL_HANDLE };
+        VkSemaphore vk_semaphore{ available_semaphore != nullptr ? resource_cast<vulkan_semaphore const>(available_semaphore)->get_semaphore() : VK_NULL_HANDLE };
         VkResult const result{ vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, vk_semaphore, VK_NULL_HANDLE, &out_image_index) };
 
         return { out_image_index, convert_result(result) };

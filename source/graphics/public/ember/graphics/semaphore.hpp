@@ -2,6 +2,8 @@
 
 namespace ember::graphics {
     class semaphore {
-        //TODO
+        //FUNCTIONS
+    public:
+        virtual ~semaphore() = default;
     };
 }
