@@ -23,6 +23,10 @@ namespace ember::graphics {
         inline vulkan_shader &operator=(vulkan_shader &&other) noexcept;
 
         inline ~vulkan_shader();
+
+        inline VkShaderModule get_module() const;
+
+        static VkShaderStageFlags convert_stage(stage const stage);
     };
 }
 

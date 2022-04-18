@@ -29,6 +29,10 @@ namespace ember::graphics {
 
         memory::unique_ptr<buffer> create_buffer(buffer::descriptor const &descriptor, std::string_view name) const override;
 
+        memory::unique_ptr<graphics_pipeline_object> create_graphics_pipeline_object(graphics_pipeline_object::descriptor const &descriptor, std::string_view name) const override;
+
+        memory::unique_ptr<descriptor_set_layout> create_descriptor_set_layout(descriptor_set_layout::descriptor const &descriptor, std::string_view name) const override;
+
         memory::unique_ptr<render_pass> create_render_pass(render_pass::descriptor const &descriptor, std::string_view name) const override;
     };
 }

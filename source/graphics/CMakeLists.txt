@@ -53,6 +53,15 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_shader.cpp
+
+    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_pipeline_object.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_pipeline_object.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_pipeline_object.cpp
+
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.inl
@@ -109,7 +118,8 @@ add_library(
 
     ${SOURCE_PUBLIC}/graphics_pipeline_object.hpp
     ${SOURCE_PUBLIC}/compute_pipeline_object.hpp
-
+    
+    ${SOURCE_PUBLIC}/descriptor_set_layout.hpp
     ${SOURCE_PUBLIC}/descriptor_set.hpp
 
     ${SOURCE_PUBLIC}/render_pass.hpp
