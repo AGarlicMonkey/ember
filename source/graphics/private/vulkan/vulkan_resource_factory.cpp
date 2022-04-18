@@ -5,8 +5,13 @@
 #include "host_memory_allocator.hpp"
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
+#include "vulkan_image.hpp"
+#include "vulkan_render_pass.hpp"
 
 #include <array>
+#include <ember/containers/array.hpp>
+
+using namespace ember::memory;
 
 namespace {
 #if EMBER_GRAPHICS_DEBUG_UTILITIES
@@ -55,7 +60,7 @@ namespace ember::graphics {
 #endif
     }
 
-    memory::unique_ptr<buffer> vulkan_resource_factory::create_buffer(buffer::descriptor const &descriptor, std::string_view name) const {
+    unique_ptr<buffer> vulkan_resource_factory::create_buffer(buffer::descriptor const &descriptor, std::string_view name) const {
         //TODO: custom fixed size array
         std::array const shared_queue_indices{ family_indices.graphics, family_indices.compute, family_indices.transfer };
         bool const is_exclusive{ descriptor.sharing_mode == sharing_mode::exclusive };
@@ -83,6 +88,88 @@ namespace ember::graphics {
 
         SET_RESOURCE_NAME(buffer_handle, VK_OBJECT_TYPE_BUFFER, name.data());
 
-        return memory::make_unique<vulkan_buffer>(device, buffer_handle, memory_allocator, allocated_chunk);
+        return make_unique<vulkan_buffer>(device, buffer_handle, memory_allocator, allocated_chunk);
+    }
+
+    unique_ptr<render_pass> vulkan_resource_factory::create_render_pass(render_pass::descriptor const &descriptor, std::string_view name) const {
+        //Convert attachments
+        std::size_t const colour_attachment_size{ descriptor.colour_attachments.size() };
+        containers::array<VkAttachmentDescription> attachments(colour_attachment_size);
+        for(std::size_t i{ 0 }; i < colour_attachment_size; ++i) {
+            attachments[i] = VkAttachmentDescription{
+                .format         = vulkan_image::convert_format(descriptor.colour_attachments[i].format),
+                .samples        = VK_SAMPLE_COUNT_1_BIT,
+                .loadOp         = vulkan_render_pass::convert_load_op(descriptor.colour_attachments[i].load_op),
+                .storeOp        = vulkan_render_pass::convert_store_op(descriptor.colour_attachments[i].store_op),
+                .stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                .initialLayout  = vulkan_image::convert_layout(descriptor.colour_attachments[i].initial_layout),
+                .finalLayout    = vulkan_image::convert_layout(descriptor.colour_attachments[i].final_layout),
+            };
+        }
+        if(descriptor.depth_attachment.has_value()) {
+            attachments.emplace_back(VkAttachmentDescription{
+                .format         = vulkan_image::convert_format(descriptor.depth_attachment->format),
+                .samples        = VK_SAMPLE_COUNT_1_BIT,
+                .loadOp         = vulkan_render_pass::convert_load_op(descriptor.depth_attachment->load_op),
+                .storeOp        = vulkan_render_pass::convert_store_op(descriptor.depth_attachment->store_op),
+                .stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE,
+                .stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE,
+                .initialLayout  = vulkan_image::convert_layout(descriptor.depth_attachment->initial_layout),
+                .finalLayout    = vulkan_image::convert_layout(descriptor.depth_attachment->final_layout),
+            });
+        }
+
+        containers::array<VkAttachmentReference> colour_attachment_references(colour_attachment_size);
+        VkAttachmentReference depth_stencil_attachment_reference{};
+        for(size_t i{ 0 }; i < colour_attachment_size; ++i) {
+            colour_attachment_references[i] = VkAttachmentReference{
+                .attachment = static_cast<std::uint32_t>(i),
+                .layout     = vulkan_image::convert_layout(descriptor.colour_attachments[i].used_layout),
+            };
+        }
+        if(descriptor.depth_attachment.has_value()) {
+            depth_stencil_attachment_reference.attachment = static_cast<std::uint32_t>(attachments.size() - 1);
+            depth_stencil_attachment_reference.layout     = vulkan_image::convert_layout(descriptor.depth_attachment->used_layout);
+        }
+
+        VkSubpassDescription const subpass{
+            .flags                   = 0,
+            .pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS,
+            .inputAttachmentCount    = 0,
+            .pInputAttachments       = nullptr,
+            .colorAttachmentCount    = static_cast<std::uint32_t>(colour_attachment_references.size()),
+            .pColorAttachments       = colour_attachment_references.data(),
+            .pResolveAttachments     = nullptr,
+            .pDepthStencilAttachment = descriptor.depth_attachment.has_value() ? &depth_stencil_attachment_reference : nullptr,
+            .preserveAttachmentCount = 0,
+            .pPreserveAttachments    = nullptr,
+        };
+
+        VkSubpassDependency constexpr dependecy{
+            .srcSubpass    = VK_SUBPASS_EXTERNAL,
+            .dstSubpass    = 0,
+            .srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            .srcAccessMask = 0,
+            .dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+        };
+
+        VkRenderPassCreateInfo const render_pass_info{
+            .sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO,
+            .attachmentCount = static_cast<std::uint32_t>(attachments.size()),
+            .pAttachments    = attachments.data(),
+            .subpassCount    = 1,
+            .pSubpasses      = &subpass,
+            .dependencyCount = 1,
+            .pDependencies   = &dependecy,
+        };
+
+        VkRenderPass render_pass{ nullptr };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateRenderPass(device, &render_pass_info, &global_host_allocation_callbacks, &render_pass), "Failed to create RenderPass.");
+
+        SET_RESOURCE_NAME(render_pass, VK_OBJECT_TYPE_RENDER_PASS, name.data());
+
+        return make_unique<vulkan_render_pass>(device, render_pass);
     }
 }

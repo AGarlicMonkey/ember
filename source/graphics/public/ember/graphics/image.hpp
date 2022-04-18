@@ -40,16 +40,15 @@ namespace ember::graphics {
             undefined,
             general,
             present,
-            transfer_sSource_optimal,
+            transfer_source_optimal,
             transfer_destination_optimal,
             shader_read_only_optimal,
             colour_attachment_optimal,
             depth_stencil_attachment_optimal,
-            cepth_stencil_readOnly_optimal
+            cepth_stencil_read_only_optimal
         };
 
         struct descriptor {
-            //TODO: resource name -- or should this be on the factory call as it should ber unique per object
             type type{ type::_2d };
             usage_mode usage_flags;
             maths::vec2u dimensions;

@@ -28,6 +28,8 @@ namespace ember::graphics {
         inline ~vulkan_resource_factory() override;
 
         memory::unique_ptr<buffer> create_buffer(buffer::descriptor const &descriptor, std::string_view name) const override;
+
+        memory::unique_ptr<render_pass> create_render_pass(render_pass::descriptor const &descriptor, std::string_view name) const override;
     };
 }
 

@@ -12,7 +12,9 @@ namespace ember::graphics {
         vulkan_image(VkDevice device, VkImage image, descriptor descriptor) {
             //TODO
         }
-       
+
         static format convert_format(VkFormat format);
+        static VkFormat convert_format(format format);
+        static VkImageLayout convert_layout(layout layout);
     };
 }

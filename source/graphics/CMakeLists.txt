@@ -57,6 +57,10 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.inl
 
+    ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.cpp
+
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.cpp
