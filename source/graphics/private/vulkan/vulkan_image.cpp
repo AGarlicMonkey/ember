@@ -3,7 +3,47 @@
 #include "log.hpp"
 
 namespace ember::graphics {
-    image::format vulkan_image::convert_format(VkFormat format) {
+    image::descriptor const &vulkan_image::get_descriptor() const {
+        return desc;
+    }
+
+    VkImageUsageFlags vulkan_image::convert_usage(usage_mode const usage) {
+        VkImageUsageFlags flags{ 0 };
+        if((usage & usage_mode::transfer_source) != 0) {
+            flags |= VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+        }
+        if((usage & usage_mode::transfer_destination) != 0) {
+            flags |= VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+        }
+        if((usage & usage_mode::sampled) != 0) {
+            flags |= VK_IMAGE_USAGE_SAMPLED_BIT;
+        }
+        if((usage & usage_mode::storage) != 0) {
+            flags |= VK_IMAGE_USAGE_STORAGE_BIT;
+        }
+        if((usage & usage_mode::colour_attachment) != 0) {
+            flags |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+        }
+        if((usage & usage_mode::depth_stencil_attachment) != 0) {
+            flags |= VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        }
+        return flags;
+    }
+
+    VkImageType vulkan_image::convert_type(type const type) {
+        switch(type) {
+            case image::type::_2d:
+            case image::type::cube:
+                return VK_IMAGE_TYPE_2D;
+            case image::type::_3d:
+                return VK_IMAGE_TYPE_3D;
+            default:
+                EMBER_CHECK(false);
+                return VK_IMAGE_TYPE_2D;
+        }
+    }
+
+    image::format vulkan_image::convert_format(VkFormat const format) {
         switch(format) {
             case VK_FORMAT_R8_UNORM:
                 return format::R8_UNORM;
@@ -23,7 +63,7 @@ namespace ember::graphics {
         }
     }
 
-    VkFormat vulkan_image::convert_format(format format) {
+    VkFormat vulkan_image::convert_format(format const format) {
         switch(format) {
             case format::R8_UNORM:
                 return VK_FORMAT_R8_UNORM;
@@ -43,7 +83,7 @@ namespace ember::graphics {
         }
     }
 
-    VkImageLayout vulkan_image::convert_layout(layout layout) {
+    VkImageLayout vulkan_image::convert_layout(layout const layout) {
         switch(layout) {
             case layout::undefined:
                 return VK_IMAGE_LAYOUT_UNDEFINED;

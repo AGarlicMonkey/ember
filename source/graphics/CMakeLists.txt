@@ -48,9 +48,14 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_image.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_image.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_image_view.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_image_view.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_image_view.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.cpp
@@ -114,6 +119,7 @@ add_library(
     ${SOURCE_PUBLIC}/resource.hpp
     ${SOURCE_PUBLIC}/buffer.hpp
     ${SOURCE_PUBLIC}/image.hpp
+    ${SOURCE_PUBLIC}/image_view.hpp
     ${SOURCE_PUBLIC}/shader.hpp
 
     ${SOURCE_PUBLIC}/graphics_pipeline_object.hpp

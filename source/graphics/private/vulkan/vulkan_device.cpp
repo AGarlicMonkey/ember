@@ -206,7 +206,7 @@ namespace ember::graphics {
         //vulkan_images.resize(images.size()); //TODO
         for(size_t i{ 0 }; i < vk_images.size(); ++i) {
             //vulkan_images[i] = make_unique<vulkan_image>(logical_device, vk_images[i], image_descriptor);
-            vulkan_images.emplace_back(make_unique<vulkan_image>(logical_device, vk_images[i], image_descriptor));
+            vulkan_images.emplace_back(make_unique<vulkan_image>(image_descriptor, logical_device, vk_images[i]));
         }
 
         return make_unique<vulkan_swapchain>(instance, logical_device, surface, swapchain, surface_format.format, extent, std::move(vulkan_images));

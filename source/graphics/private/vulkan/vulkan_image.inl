@@ -1,0 +1,32 @@
+#include "host_memory_allocator.hpp"
+
+namespace ember::graphics {
+    vulkan_image::vulkan_image(descriptor desc, VkDevice device, VkImage image_handle, device_memory_allocator *memory_allocator, device_memory_allocator::chunk const *allocated_chunk)
+        : desc{ desc }
+        , device{ device }
+        , image_handle{ image_handle }
+        , memory_allocator{ memory_allocator }
+        , allocated_chunk{ allocated_chunk } {
+    }
+
+    vulkan_image::vulkan_image(descriptor desc, VkDevice device, VkImage image_handle)
+        : desc{ desc }
+        , device{ device }
+        , image_handle{ image_handle } {
+    }
+
+    vulkan_image::vulkan_image(vulkan_image &&other) noexcept = default;
+
+    vulkan_image &vulkan_image::operator=(vulkan_image &&other) noexcept = default;
+
+    vulkan_image::~vulkan_image() {
+        if(memory_allocator != nullptr) {
+            vkDestroyImage(device, image_handle, &global_host_allocation_callbacks);
+            memory_allocator->free(allocated_chunk);
+        }
+    }
+
+    VkImage vulkan_image::get_image() const {
+        return image_handle;
+    }
+}

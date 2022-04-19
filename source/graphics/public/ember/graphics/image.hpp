@@ -3,13 +3,15 @@
 #include "ember/graphics/resource.hpp"
 
 #include <cinttypes>
+#include <ember/core/enum.hpp>
 #include <ember/maths/vector.hpp>
 
 namespace ember::graphics {
     class image {
         //TYPES
     public:
-        enum class usage_mode : std::uint8_t {
+        using usage_mode_type = std::uint8_t;
+        enum class usage_mode : usage_mode_type {
             transfer_source          = 1 << 0, /**< Image will be used as a source in a transfer operation. */
             transfer_destination     = 1 << 1, /**< Image will be used as a destination in a transfer operation. */
             sampled                  = 1 << 2, /**< Image will be sampled in a shader. */
@@ -57,6 +59,12 @@ namespace ember::graphics {
             sharing_mode sharing_mode{ sharing_mode::exclusive };
         };
 
-        //TODO
+        //FUNCTIONS
+    public:
+        virtual ~image() = default;
+
+        virtual descriptor const &get_descriptor() const = 0;
     };
+
+    EMBER_ENUM_BIT_FLAG_OPERATORS(image::usage_mode, image::usage_mode_type);
 }

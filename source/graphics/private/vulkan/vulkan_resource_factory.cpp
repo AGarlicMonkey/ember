@@ -9,6 +9,7 @@
 #include "vulkan_descriptor_set_layout.hpp"
 #include "vulkan_graphics_pipeline_object.hpp"
 #include "vulkan_image.hpp"
+#include "vulkan_image_view.hpp"
 #include "vulkan_render_pass.hpp"
 #include "vulkan_shader.hpp"
 
@@ -88,7 +89,7 @@ namespace ember::graphics {
         vkGetBufferMemoryRequirements(device, buffer_handle, &memory_requirements);
 
         device_memory_allocator::chunk const *allocated_chunk{ memory_allocator->alloc(memory_requirements, get_memory_property_flags(descriptor.memory_type)) };
-        EMBER_THROW_IF_FAILED(allocated_chunk != nullptr, resource_creation_exception{ "Failed to create buffer. Could not allocate any device memory." });
+        EMBER_THROW_IF_FAILED(allocated_chunk != nullptr, resource_creation_exception{ "Failed to create VkBuffer. Could not allocate any device memory." });
         vkBindBufferMemory(device, buffer_handle, allocated_chunk->memory, allocated_chunk->offset);
 
         SET_RESOURCE_NAME(buffer_handle, VK_OBJECT_TYPE_BUFFER, name.data());
@@ -96,7 +97,79 @@ namespace ember::graphics {
         return make_unique<vulkan_buffer>(device, buffer_handle, memory_allocator, allocated_chunk);
     }
 
-    memory::unique_ptr<graphics_pipeline_object> vulkan_resource_factory::create_graphics_pipeline_object(graphics_pipeline_object::descriptor const &descriptor, std::string_view name) const {
+    unique_ptr<image> vulkan_resource_factory::create_image(image::descriptor descriptor, std::string_view name) const {
+        //TODO: custom static array
+        std::array const shared_queue_indices{ family_indices.graphics, family_indices.compute, family_indices.transfer };
+        bool const is_exclusive{ descriptor.sharing_mode == sharing_mode::exclusive };
+        bool const is_cube{ descriptor.type == image::type::cube };
+        std::uint32_t const array_layers{ is_cube ? descriptor.array_count * 6u : descriptor.array_count };
+
+        VkImageCreateInfo const create_info{
+            .sType                 = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
+            .pNext                 = nullptr,
+            .flags                 = is_cube ? VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT : 0u,
+            .imageType             = vulkan_image::convert_type(descriptor.type),
+            .format                = vulkan_image::convert_format(descriptor.format),
+            .extent                = { descriptor.dimensions.x, descriptor.dimensions.y, 1 },
+            .mipLevels             = 1,
+            .arrayLayers           = array_layers,
+            .samples               = VK_SAMPLE_COUNT_1_BIT,
+            .tiling                = VK_IMAGE_TILING_OPTIMAL,
+            .usage                 = vulkan_image::convert_usage(descriptor.usage_flags),
+            .sharingMode           = is_exclusive ? VK_SHARING_MODE_EXCLUSIVE : VK_SHARING_MODE_CONCURRENT,
+            .queueFamilyIndexCount = is_exclusive ? 0 : static_cast<std::uint32_t>(shared_queue_indices.size()),
+            .pQueueFamilyIndices   = is_exclusive ? nullptr : shared_queue_indices.data(),
+            .initialLayout         = VK_IMAGE_LAYOUT_UNDEFINED,
+        };
+
+        VkImage image_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateImage(device, &create_info, &global_host_allocation_callbacks, &image_handle), "Failed to create VkImage.");
+
+        VkMemoryRequirements memory_requirements{};
+        vkGetImageMemoryRequirements(device, image_handle, &memory_requirements);
+
+        device_memory_allocator::chunk const *allocated_chunk{ memory_allocator->alloc(memory_requirements, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) };
+        EMBER_THROW_IF_FAILED(allocated_chunk != nullptr, resource_creation_exception{ "Failed to create VkImage. Could not allocate any device memory." });
+        vkBindImageMemory(device, image_handle, allocated_chunk->memory, allocated_chunk->offset);
+
+        SET_RESOURCE_NAME(image_handle, VK_OBJECT_TYPE_IMAGE, name.data());
+
+        return make_unique<vulkan_image>(descriptor, device, image_handle, memory_allocator, allocated_chunk);
+    }
+
+    unique_ptr<image_view> vulkan_resource_factory::create_image_view(image const &image, image_view::descriptor const &descriptor, std::string_view name) const {
+        image::descriptor const &image_descriptor{ image.get_descriptor() };
+        VkImageAspectFlags const aspect_flags{ static_cast<VkImageAspectFlags>(image_descriptor.format == image::format::D32_SFLOAT ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT) };
+
+        VkImageViewCreateInfo const create_info{
+            .sType      = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+            .pNext      = nullptr,
+            .flags      = 0,
+            .image      = resource_cast<vulkan_image const>(&image)->get_image(),
+            .viewType   = vulkan_image_view::convert_type(descriptor.type),
+            .format     = vulkan_image::convert_format(image_descriptor.format),
+            .components = {
+                .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+                .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+            },
+            .subresourceRange = {
+                .aspectMask     = aspect_flags,
+                .baseMipLevel   = 0,
+                .levelCount     = 1,
+                .baseArrayLayer = descriptor.layer,
+                .layerCount     = descriptor.layer_count,
+            },
+        };
+
+        VkImageView image_view_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateImageView(device, &create_info, &global_host_allocation_callbacks, &image_view_handle), "Failed to create VkImageView");
+
+        return make_unique<vulkan_image_view>(device, image_view_handle);
+    }
+
+    unique_ptr<graphics_pipeline_object> vulkan_resource_factory::create_graphics_pipeline_object(graphics_pipeline_object::descriptor const &descriptor, std::string_view name) const {
         //Descriptor set layouts
         array<VkDescriptorSetLayout> descriptor_layouts(descriptor.descriptor_set_layouts.size());
         for(std::size_t i{ 0 }; i < descriptor_layouts.size(); ++i) {
