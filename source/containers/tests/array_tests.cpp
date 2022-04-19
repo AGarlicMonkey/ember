@@ -216,6 +216,51 @@ TEST(array_tests, can_move) {
 //TODO
 // }
 
+TEST(array_tests, resizing_calls_move_or_copy) {
+    bool copied{ false };
+    bool moved{ false };
+
+    struct copy_struct {
+        bool &copied;
+
+        copy_struct(bool &copied)
+            : copied{ copied } {}
+        copy_struct(copy_struct const &other)
+            : copied{ other.copied } {
+            copied = true;
+        }
+
+        copy_struct(copy_struct &&other) = delete;
+    };
+    struct move_struct {
+        bool &moved;
+
+        move_struct(bool &moved)
+            : moved{ moved } {}
+        move_struct(move_struct &&other) noexcept
+            : moved{ other.moved } {
+            moved = true;
+        }
+
+        move_struct(move_struct const &other) = delete;
+    };
+
+    array<copy_struct> copy_array{};
+    array<move_struct> move_array{};
+
+    ASSERT_FALSE(copied);
+    ASSERT_FALSE(moved);
+
+    copy_array.emplace_back(copied);
+    copy_array.emplace_back(copied);
+
+    move_array.emplace_back(moved);
+    move_array.emplace_back(moved);
+
+    EXPECT_TRUE(copied);
+    EXPECT_TRUE(moved);
+}
+
 // TEST(array_tests, can_reserve) {
 //TODO
 // }

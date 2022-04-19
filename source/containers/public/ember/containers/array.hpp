@@ -29,7 +29,7 @@ namespace ember::containers::internal {
         const_array_iterator(const_array_iterator &&other) noexcept;
 
         const_array_iterator &operator=(const_array_iterator const &other) = delete;
-        const_array_iterator &operator=(const_array_iterator &&other) noexcept;
+        const_array_iterator &operator                                     =(const_array_iterator &&other) noexcept;
 
         ~const_array_iterator();
 
@@ -69,7 +69,7 @@ namespace ember::containers::internal {
         array_iterator(array_iterator &&other) noexcept;
 
         array_iterator &operator=(array_iterator const &other) = delete;
-        array_iterator &operator=(array_iterator &&other) noexcept;
+        array_iterator &operator                               =(array_iterator &&other) noexcept;
 
         ~array_iterator();
 
@@ -106,6 +106,12 @@ namespace ember::containers {
 
         friend iterator;
         friend const_iterator;
+
+    private:
+        enum class reallocate_type {
+            ignore_current_items,
+            preserve_current_items,
+        };
 
         //VARIABLES
     private:
@@ -210,8 +216,8 @@ namespace ember::containers {
         const_reference_type operator[](std::size_t pos) const;
 
     private:
-        void allocate_array(std::size_t capacity);
-        void reallocate_array(std::size_t new_capacity);
+        void allocate_array(std::size_t const capacity);
+        void reallocate_array(std::size_t const new_capacity, reallocate_type const type);
 
         void destruct_items();
 

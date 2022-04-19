@@ -154,7 +154,7 @@ namespace ember::containers {
 
         elems = other.elems;
         cap   = other.cap;
-        reallocate_array(cap);
+        reallocate_array(cap, reallocate_type::ignore_current_items);
 
         for(std::size_t i{ 0 }; i < elems; ++i) {
             new(&first[i]) value_type{ other[i] };
@@ -167,7 +167,7 @@ namespace ember::containers {
 
         elems = other.elems;
         cap   = other.cap;
-        reallocate_array(cap);
+        reallocate_array(cap, reallocate_type::ignore_current_items);
 
         for(std::size_t i{ 0 }; i < elems; ++i) {
             new(&first[i]) value_type{ std::move(other[i]) };
@@ -185,7 +185,7 @@ namespace ember::containers {
 
         elems = other.elems;
         cap   = other.cap;
-        reallocate_array(cap);
+        reallocate_array(cap, reallocate_type::ignore_current_items);
 
         for(std::size_t i{ 0 }; i < elems; ++i) {
             new(&first[i]) value_type{ other[i] };
@@ -200,7 +200,7 @@ namespace ember::containers {
 
         elems = other.elems;
         cap   = other.cap;
-        reallocate_array(cap);
+        reallocate_array(cap, reallocate_type::ignore_current_items);
 
         for(std::size_t i{ 0 }; i < elems; ++i) {
             new(&first[i]) value_type{ std::move(other[i]) };
@@ -320,24 +320,46 @@ namespace ember::containers {
     }
 
     template<typename T>
-    void array<T>::allocate_array(std::size_t capacity) {
+    void array<T>::allocate_array(std::size_t const capacity) {
         EMBER_CHECK(memory == nullptr);
 
         //Allocate the memory with 1 extra element for the end iterator.
         memory = memory::alloc(sizeof(value_type) * (capacity + 1), alignof(value_type));
         EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to allocate array." });
         first = reinterpret_cast<pointer_type>(memory);
-        last  = &first[elems];
+        last  = first + elems;
     }
 
     template<typename T>
-    void array<T>::reallocate_array(std::size_t new_capacity) {
+    void array<T>::reallocate_array(std::size_t const new_capacity, reallocate_type const type) {
         if(memory != nullptr) {
-            //Reallocate the memory with 1 extra element for the end iterator.
-            memory = memory::realloc(memory, sizeof(value_type) * (new_capacity + 1), alignof(value_type));
-            EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to allocate array." });
-            first = reinterpret_cast<pointer_type>(memory);
-            last  = &first[elems];
+            if(type == reallocate_type::preserve_current_items) {
+                //Reallocate the memory with 1 extra element for the end iterator.
+                std::byte *new_memory = memory::alloc(sizeof(value_type) * (new_capacity + 1), alignof(value_type));
+                EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to reallocate array." });
+                auto *new_first{ reinterpret_cast<pointer_type>(memory) };
+
+                if constexpr(std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
+                    for(std::size_t i{ 0 }; i < elems; ++i) {
+                        new(&new_first[i]) value_type{ std::move(first[i]) };
+                    }
+                } else {
+                    for(std::size_t i{ 0 }; i < elems; ++i) {
+                        new(&new_first[i]) value_type{ first[i] };
+                    }
+                }
+
+                memory::free(memory);
+                memory = new_memory;
+                first  = new_first;
+                last   = first + elems;
+            } else {
+                //Reallocate the memory with 1 extra element for the end iterator.
+                memory = memory::realloc(memory, sizeof(value_type) * (new_capacity + 1), alignof(value_type));
+                EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to reallocate array." });
+                first = reinterpret_cast<pointer_type>(memory);
+                last  = first + elems;
+            }
         } else {
             allocate_array(new_capacity);
         }
@@ -357,9 +379,6 @@ namespace ember::containers {
         } else {
             cap *= 2;
         }
-        reallocate_array(cap);
-
-        first = reinterpret_cast<pointer_type>(memory);
-        last  = &first[elems];
+        reallocate_array(cap, reallocate_type::preserve_current_items);
     }
 }
