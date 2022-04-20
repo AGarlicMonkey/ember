@@ -244,6 +244,28 @@ namespace ember::containers {
     }
 
     template<typename T>
+    template<typename... args_t>
+    void array<T>::resize(std::size_t const size, args_t &&...args) {
+        if(cap < size) {
+            cap = size;
+            reallocate_array(cap, reallocate_type::preserve_current_items);
+        }
+
+        if(elems < size) {
+            //Grow the array    
+            for(std::size_t i{ elems }; i < size; ++i) {
+                new(&first[i]) T{ std::forward<args_t>(args)... };
+            }
+        } else {
+            //Shrink the array
+            for(std::size_t i{ size }; i < elems; ++i) {
+                first[i].~T();
+            }
+        }
+        elems = size;
+    }
+
+    template<typename T>
     std::size_t array<T>::size() const noexcept {
         return elems;
     }

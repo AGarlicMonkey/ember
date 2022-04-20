@@ -118,7 +118,7 @@ namespace ember::graphics {
         {
             std::uint32_t extension_count{ 0 };
             vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
-            std::vector<VkExtensionProperties> extensions(extension_count);//TODO: Internal vector
+            array<VkExtensionProperties> extensions(extension_count);
             vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data());
 
             EMBER_LOG(EmberGraphicsVulkan, log_level::trace, "Available instance extensions:");

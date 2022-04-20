@@ -181,7 +181,7 @@ namespace ember::graphics {
         VkSwapchainKHR swapchain{ nullptr };
         EMBER_VULKAN_VERIFY_RESULT(vkCreateSwapchainKHR(logical_device, &swapchain_create_info, &global_host_allocation_callbacks, &swapchain), "Failed to create vk_swapchain. ");
 
-        array<VkImage> vk_images(desired_image_count);//TODO: should be resized (see below)
+        array<VkImage> vk_images{};
         array<unique_ptr<vulkan_image>> vulkan_images{};
 
         image::format const image_format{ vulkan_image::convert_format(surface_format.format) };
@@ -200,13 +200,12 @@ namespace ember::graphics {
 
         std::uint32_t created_image_count{ 0 };
         vkGetSwapchainImagesKHR(logical_device, swapchain, &created_image_count, nullptr);
-        //images.resize(createdImageCount); //TODO
+        vk_images.resize(created_image_count);
         vkGetSwapchainImagesKHR(logical_device, swapchain, &created_image_count, vk_images.data());
 
-        //vulkan_images.resize(images.size()); //TODO
+        vulkan_images.resize(vk_images.size());
         for(size_t i{ 0 }; i < vk_images.size(); ++i) {
-            //vulkan_images[i] = make_unique<vulkan_image>(logical_device, vk_images[i], image_descriptor);
-            vulkan_images.emplace_back(make_unique<vulkan_image>(image_descriptor, logical_device, vk_images[i]));
+            vulkan_images[i] = make_unique<vulkan_image>(image_descriptor, logical_device, vk_images[i]);
         }
 
         return make_unique<vulkan_swapchain>(instance, logical_device, surface, swapchain, surface_format.format, extent, std::move(vulkan_images));

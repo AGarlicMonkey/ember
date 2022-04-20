@@ -212,9 +212,63 @@ TEST(array_tests, can_move) {
     EXPECT_EQ(arr_1.data(), nullptr);
 }
 
-// TEST(array_tests, can_resize) {
-//TODO
-// }
+struct resize_destruct_helper {
+    inline static std::uint32_t x{ 0 };
+
+    ~resize_destruct_helper() {
+        ++x;
+    }
+};
+
+TEST(array_tests, can_resize) {
+    struct construct_helper {
+        std::uint32_t x{ 0 };
+
+        construct_helper(std::uint32_t x)
+            : x{ x } {
+        }
+    };
+
+    array<std::uint32_t> arr_1{};
+    array<construct_helper> arr_2{};
+    array<resize_destruct_helper> arr_3{};
+
+    ASSERT_EQ(arr_1.size(), 0);
+    ASSERT_EQ(arr_1.capacity(), 0);
+    ASSERT_EQ(arr_2.size(), 0);
+    ASSERT_EQ(arr_2.capacity(), 0);
+    ASSERT_EQ(arr_3.size(), 0);
+    ASSERT_EQ(arr_3.capacity(), 0);
+
+    arr_1.resize(8);
+    arr_2.resize(8, 100u);
+
+    EXPECT_EQ(arr_1.size(), 8);
+    EXPECT_EQ(arr_1.capacity(), 8);
+    EXPECT_EQ(arr_2.size(), 8);
+    EXPECT_EQ(arr_2.capacity(), 8);
+
+    for(auto h : arr_2) {
+        EXPECT_EQ(h.x, 100);
+    }
+
+    resize_destruct_helper::x = 0;
+
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+
+    ASSERT_EQ(arr_3.size(), 6);
+    ASSERT_NE(arr_3.capacity(), 0);
+
+    arr_3.resize(2);
+
+    EXPECT_EQ(arr_3.size(), 2);
+    EXPECT_EQ(resize_destruct_helper::x, 4);
+}
 
 TEST(array_tests, resizing_calls_move_or_copy) {
     bool copied{ false };
@@ -262,9 +316,9 @@ TEST(array_tests, resizing_calls_move_or_copy) {
 }
 
 // TEST(array_tests, can_reserve) {
-//TODO
+//     EXPECT_TRUE(false);
 // }
 
 // TEST(array_tests, can_shrink_to_fit) {
-//TODO
+//     EXPECT_TRUE(false);
 // }

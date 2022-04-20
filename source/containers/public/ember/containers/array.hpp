@@ -29,7 +29,7 @@ namespace ember::containers::internal {
         const_array_iterator(const_array_iterator &&other) noexcept;
 
         const_array_iterator &operator=(const_array_iterator const &other) = delete;
-        const_array_iterator &operator                                     =(const_array_iterator &&other) noexcept;
+        const_array_iterator &operator=(const_array_iterator &&other) noexcept;
 
         ~const_array_iterator();
 
@@ -69,7 +69,7 @@ namespace ember::containers::internal {
         array_iterator(array_iterator &&other) noexcept;
 
         array_iterator &operator=(array_iterator const &other) = delete;
-        array_iterator &operator                               =(array_iterator &&other) noexcept;
+        array_iterator &operator=(array_iterator &&other) noexcept;
 
         ~array_iterator();
 
@@ -151,6 +151,16 @@ namespace ember::containers {
          */
         template<typename... args_t>
         void emplace_back(args_t &&...args);
+
+        /**
+         * @brief Changes the number of elements stored to size.
+         * @details If the current size of the array is greater than size then extra items will be destructed. If the
+         * current size of the array is less than size then extra items will be constructed on the end.
+         * @param size 
+         * @param args List of arguments to pass to the constructor if required.
+         */
+        template<typename... args_t>
+        void resize(std::size_t const size, args_t &&...args);
 
         /**
          * @brief Returns the number of elements.
