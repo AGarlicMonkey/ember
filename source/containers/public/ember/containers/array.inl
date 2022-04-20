@@ -337,7 +337,7 @@ namespace ember::containers {
                 //Reallocate the memory with 1 extra element for the end iterator.
                 std::byte *new_memory = memory::alloc(sizeof(value_type) * (new_capacity + 1), alignof(value_type));
                 EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to reallocate array." });
-                auto *new_first{ reinterpret_cast<pointer_type>(memory) };
+                auto *new_first{ reinterpret_cast<pointer_type>(new_memory) };
 
                 if constexpr(std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
                     for(std::size_t i{ 0 }; i < elems; ++i) {
