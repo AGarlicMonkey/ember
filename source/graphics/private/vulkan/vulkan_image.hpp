@@ -12,7 +12,7 @@ namespace ember::graphics {
         descriptor desc{};
 
         VkDevice device{ VK_NULL_HANDLE };
-        VkImage image_handle{ VK_NULL_HANDLE };
+        VkImage handle{ VK_NULL_HANDLE };
 
         device_memory_allocator *memory_allocator{ nullptr };
         device_memory_allocator::chunk const *allocated_chunk{ nullptr };
@@ -20,8 +20,8 @@ namespace ember::graphics {
         //FUNCTIONS
     public:
         vulkan_image() = delete;
-        inline vulkan_image(descriptor desc, VkDevice device, VkImage image_handle, device_memory_allocator *memory_allocator, device_memory_allocator::chunk const *allocated_chunk);
-        inline vulkan_image(descriptor desc, VkDevice device, VkImage image_handle);
+        inline vulkan_image(descriptor desc, VkDevice device, VkImage handle, device_memory_allocator *memory_allocator, device_memory_allocator::chunk const *allocated_chunk);
+        inline vulkan_image(descriptor desc, VkDevice device, VkImage handle);
 
         vulkan_image(vulkan_image const &other) = delete;
         inline vulkan_image(vulkan_image &&other) noexcept;
@@ -33,7 +33,7 @@ namespace ember::graphics {
 
         descriptor const &get_descriptor() const override;
 
-        inline VkImage get_image() const;
+        inline VkImage get_handle() const;
 
         static VkImageUsageFlags convert_usage(usage_mode const usage);
         static VkImageType convert_type(type const type);

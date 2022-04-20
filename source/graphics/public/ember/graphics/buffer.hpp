@@ -31,6 +31,8 @@ namespace ember::graphics {
     public:
         virtual ~buffer() = default;
 
+        virtual descriptor const &get_descriptor() const = 0;
+
         /**
          * @brief Maps the region of a buffer into host accessible memory.
          * @param offset 

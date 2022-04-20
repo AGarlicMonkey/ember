@@ -1,6 +1,10 @@
 #include "vulkan_buffer.hpp"
 
 namespace ember::graphics {
+    buffer::descriptor const &vulkan_buffer::get_descriptor() const {
+        return desc;
+    }
+
     void *vulkan_buffer::map(std::size_t const offset, std::size_t const bytes) {
         void *host_visible_memory{ nullptr };
         vkMapMemory(device, allocated_chunk->memory, allocated_chunk->offset + offset, bytes, 0, &host_visible_memory);

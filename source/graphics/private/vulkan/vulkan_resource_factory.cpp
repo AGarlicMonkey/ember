@@ -66,7 +66,7 @@ namespace ember::graphics {
 #endif
     }
 
-    unique_ptr<buffer> vulkan_resource_factory::create_buffer(buffer::descriptor const &descriptor, std::string_view name) const {
+    unique_ptr<buffer> vulkan_resource_factory::create_buffer(buffer::descriptor descriptor, std::string_view name) const {
         //TODO: custom fixed size array
         std::array const shared_queue_indices{ family_indices.graphics, family_indices.compute, family_indices.transfer };
         bool const is_exclusive{ descriptor.sharing_mode == sharing_mode::exclusive };
@@ -94,7 +94,7 @@ namespace ember::graphics {
 
         SET_RESOURCE_NAME(buffer_handle, VK_OBJECT_TYPE_BUFFER, name.data());
 
-        return make_unique<vulkan_buffer>(device, buffer_handle, memory_allocator, allocated_chunk);
+        return make_unique<vulkan_buffer>(descriptor, device, buffer_handle, memory_allocator, allocated_chunk);
     }
 
     unique_ptr<image> vulkan_resource_factory::create_image(image::descriptor descriptor, std::string_view name) const {
@@ -137,7 +137,7 @@ namespace ember::graphics {
         return make_unique<vulkan_image>(descriptor, device, image_handle, memory_allocator, allocated_chunk);
     }
 
-    unique_ptr<image_view> vulkan_resource_factory::create_image_view(image const &image, image_view::descriptor const &descriptor, std::string_view name) const {
+    unique_ptr<image_view> vulkan_resource_factory::create_image_view(image_view::descriptor descriptor, image const &image, std::string_view name) const {
         image::descriptor const &image_descriptor{ image.get_descriptor() };
         VkImageAspectFlags const aspect_flags{ static_cast<VkImageAspectFlags>(image_descriptor.format == image::format::D32_SFLOAT ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT) };
 
@@ -145,7 +145,7 @@ namespace ember::graphics {
             .sType      = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
             .pNext      = nullptr,
             .flags      = 0,
-            .image      = resource_cast<vulkan_image const>(&image)->get_image(),
+            .image      = resource_cast<vulkan_image const>(&image)->get_handle(),
             .viewType   = vulkan_image_view::convert_type(descriptor.type),
             .format     = vulkan_image::convert_format(image_descriptor.format),
             .components = {
@@ -166,10 +166,10 @@ namespace ember::graphics {
         VkImageView image_view_handle{ VK_NULL_HANDLE };
         EMBER_VULKAN_VERIFY_RESULT(vkCreateImageView(device, &create_info, &global_host_allocation_callbacks, &image_view_handle), "Failed to create VkImageView");
 
-        return make_unique<vulkan_image_view>(device, image_view_handle);
+        return make_unique<vulkan_image_view>(descriptor, device, image_view_handle);
     }
 
-    unique_ptr<graphics_pipeline_object> vulkan_resource_factory::create_graphics_pipeline_object(graphics_pipeline_object::descriptor const &descriptor, std::string_view name) const {
+    unique_ptr<graphics_pipeline_object> vulkan_resource_factory::create_graphics_pipeline_object(graphics_pipeline_object::descriptor descriptor, std::string_view name) const {
         //Descriptor set layouts
         array<VkDescriptorSetLayout> descriptor_layouts(descriptor.descriptor_set_layouts.size());
         for(std::size_t i{ 0 }; i < descriptor_layouts.size(); ++i) {
@@ -198,8 +198,8 @@ namespace ember::graphics {
             .pPushConstantRanges    = push_constant_ranges.data(),
         };
 
-        VkPipelineLayout pipeline_layout{ VK_NULL_HANDLE };
-        EMBER_VULKAN_VERIFY_RESULT(vkCreatePipelineLayout(device, &pipeline_layout_info, &global_host_allocation_callbacks, &pipeline_layout), "Failed to create VkPipelineLayout.");
+        VkPipelineLayout pipeline_layout_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreatePipelineLayout(device, &pipeline_layout_info, &global_host_allocation_callbacks, &pipeline_layout_handle), "Failed to create VkPipelineLayout.");
 
         //TODO: custom static array
         std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages{};
@@ -389,22 +389,22 @@ namespace ember::graphics {
             .pDepthStencilState  = &depth_stencil_info,
             .pColorBlendState    = &colour_blend_info,
             .pDynamicState       = &dynamic_viewport_state_info,
-            .layout              = pipeline_layout,
-            .renderPass          = resource_cast<vulkan_render_pass const>(descriptor.render_pass)->get_render_pass(),
+            .layout              = pipeline_layout_handle,
+            .renderPass          = resource_cast<vulkan_render_pass const>(descriptor.render_pass)->get_handle(),
             .subpass             = 0,
             .basePipelineHandle  = VK_NULL_HANDLE,
             .basePipelineIndex   = -1,
         };
 
-        VkPipeline pipeline{ VK_NULL_HANDLE };
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateGraphicsPipelines(device, nullptr, 1, &pipeline_info, &global_host_allocation_callbacks, &pipeline), "Failed to create VkPipeline.");
+        VkPipeline pipeline_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateGraphicsPipelines(device, nullptr, 1, &pipeline_info, &global_host_allocation_callbacks, &pipeline_handle), "Failed to create VkPipeline.");
 
-        SET_RESOURCE_NAME(pipeline, VK_OBJECT_TYPE_PIPELINE, name.data());
+        SET_RESOURCE_NAME(pipeline_handle, VK_OBJECT_TYPE_PIPELINE, name.data());
 
-        return make_unique<vulkan_graphics_pipeline_object>(device, pipeline, pipeline_layout);
+        return make_unique<vulkan_graphics_pipeline_object>(descriptor, device, pipeline_handle, pipeline_layout_handle);
     }
 
-    unique_ptr<descriptor_set_layout> vulkan_resource_factory::create_descriptor_set_layout(descriptor_set_layout::descriptor const &descriptor, std::string_view name) const {
+    unique_ptr<descriptor_set_layout> vulkan_resource_factory::create_descriptor_set_layout(descriptor_set_layout::descriptor descriptor, std::string_view name) const {
         array<VkDescriptorSetLayoutBinding> layout_bindings(descriptor.bindings.size());
         for(std::size_t i{ 0 }; i < layout_bindings.size(); ++i) {
             auto const &binding{ descriptor.bindings[i] };
@@ -425,15 +425,15 @@ namespace ember::graphics {
             .pBindings    = layout_bindings.data(),
         };
 
-        VkDescriptorSetLayout layout{ VK_NULL_HANDLE };
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateDescriptorSetLayout(device, &create_info, &global_host_allocation_callbacks, &layout), "Failed to create VkDescriptorSetLayout.");
+        VkDescriptorSetLayout layout_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateDescriptorSetLayout(device, &create_info, &global_host_allocation_callbacks, &layout_handle), "Failed to create VkDescriptorSetLayout.");
 
-        SET_RESOURCE_NAME(layout, VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, name.data());
+        SET_RESOURCE_NAME(layout_handle, VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, name.data());
 
-        return make_unique<vulkan_descriptor_set_layout>(device, layout);
+        return make_unique<vulkan_descriptor_set_layout>(descriptor, device, layout_handle);
     }
 
-    unique_ptr<render_pass> vulkan_resource_factory::create_render_pass(render_pass::descriptor const &descriptor, std::string_view name) const {
+    unique_ptr<render_pass> vulkan_resource_factory::create_render_pass(render_pass::descriptor descriptor, std::string_view name) const {
         //Convert attachments
         std::size_t const colour_attachment_size{ descriptor.colour_attachments.size() };
         array<VkAttachmentDescription> attachments(colour_attachment_size);
@@ -507,11 +507,11 @@ namespace ember::graphics {
             .pDependencies   = &dependecy,
         };
 
-        VkRenderPass render_pass{ nullptr };
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateRenderPass(device, &render_pass_info, &global_host_allocation_callbacks, &render_pass), "Failed to create RenderPass.");
+        VkRenderPass render_pass_handle{ nullptr };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateRenderPass(device, &render_pass_info, &global_host_allocation_callbacks, &render_pass_handle), "Failed to create RenderPass.");
 
-        SET_RESOURCE_NAME(render_pass, VK_OBJECT_TYPE_RENDER_PASS, name.data());
+        SET_RESOURCE_NAME(render_pass_handle, VK_OBJECT_TYPE_RENDER_PASS, name.data());
 
-        return make_unique<vulkan_render_pass>(device, render_pass);
+        return make_unique<vulkan_render_pass>(descriptor, device, render_pass_handle);
     }
 }

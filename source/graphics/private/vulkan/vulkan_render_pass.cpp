@@ -3,6 +3,10 @@
 #include "ember/core/log.hpp"
 
 namespace ember::graphics {
+    render_pass::descriptor const &vulkan_render_pass::get_descriptor() const {
+        return desc;
+    }
+
     VkAttachmentLoadOp vulkan_render_pass::convert_load_op(load_operation const load_op) {
         switch(load_op) {
             case load_operation::load:

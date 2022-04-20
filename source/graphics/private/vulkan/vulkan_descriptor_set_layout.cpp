@@ -3,6 +3,10 @@
 #include <ember/core/log.hpp>
 
 namespace ember::graphics {
+    descriptor_set_layout::descriptor const &vulkan_descriptor_set_layout::get_descriptor() const {
+        return desc;
+    }
+
     VkDescriptorType vulkan_descriptor_set_layout::convert_descriptor_type(descriptor_type const type) {
         switch(type) {
             case descriptor_type::uniform_buffer:

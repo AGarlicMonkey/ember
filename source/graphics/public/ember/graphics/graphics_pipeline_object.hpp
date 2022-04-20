@@ -92,5 +92,7 @@ namespace ember::graphics {
         //FUNCTIONS
     public:
         virtual ~graphics_pipeline_object() = default;
+
+        virtual descriptor const &get_descriptor() const = 0;
     };
 }

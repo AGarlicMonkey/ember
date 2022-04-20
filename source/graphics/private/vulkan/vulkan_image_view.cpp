@@ -3,6 +3,10 @@
 #include <ember/core/log.hpp>
 
 namespace ember::graphics {
+    image_view::descriptor const &vulkan_image_view::get_descriptor() const {
+        return desc;
+    }
+
     VkImageViewType vulkan_image_view::convert_type(type const type) {
         switch(type) {
             case image_view::type::_2d:

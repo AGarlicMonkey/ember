@@ -28,5 +28,7 @@ namespace ember::graphics {
         //FUNCTIONS
     public:
         virtual ~image_view() = default;
+
+        virtual descriptor const &get_descriptor() const = 0;
     };
 }

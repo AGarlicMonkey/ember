@@ -46,5 +46,7 @@ namespace ember::graphics {
         //FUNCTIONS
     public:
         virtual ~descriptor_set_layout() = default;
+
+        virtual descriptor const &get_descriptor() const = 0;
     };
 }

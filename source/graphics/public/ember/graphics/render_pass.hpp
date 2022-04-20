@@ -49,5 +49,7 @@ namespace ember::graphics {
         //FUNCTIONS
     public:
         virtual ~render_pass() = default;
+
+        virtual descriptor const &get_descriptor() const = 0;
     };
 }

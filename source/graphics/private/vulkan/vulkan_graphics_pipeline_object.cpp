@@ -3,6 +3,10 @@
 #include "ember/core/log.hpp"
 
 namespace ember::graphics {
+    graphics_pipeline_object::descriptor const &vulkan_graphics_pipeline_object::get_descriptor() const {
+        return desc;
+    }
+
     VkFormat vulkan_graphics_pipeline_object::convert_attribute_format(vertex_attribute_format const format) {
         switch(format) {
             case vertex_attribute_format::R32_SFLOAT:

@@ -8,13 +8,15 @@ namespace ember::graphics {
     class vulkan_image_view : public image_view {
         //VARIABLES
     private:
+        descriptor desc{};
+
         VkDevice device{ VK_NULL_HANDLE };
-        VkImageView image_view_handle{ VK_NULL_HANDLE };
+        VkImageView handle{ VK_NULL_HANDLE };
 
         //FUNCTIONS
     public:
         vulkan_image_view() = delete;
-        inline vulkan_image_view(VkDevice device, VkImageView image_view_handle);
+        inline vulkan_image_view(descriptor desc, VkDevice device, VkImageView handle);
 
         vulkan_image_view(vulkan_image_view const &other) = delete;
         inline vulkan_image_view(vulkan_image_view &&other) noexcept;
@@ -24,7 +26,9 @@ namespace ember::graphics {
 
         inline ~vulkan_image_view() override;
 
-        inline VkImageView get_image_view() const;
+        descriptor const &get_descriptor() const override;
+
+        inline VkImageView get_handle() const;
 
         static VkImageViewType convert_type(type const type);
     };
