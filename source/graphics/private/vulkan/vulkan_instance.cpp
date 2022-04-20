@@ -19,8 +19,8 @@
 #include "verification.hpp"
 #include "vulkan_device.hpp"
 
-#include <map>
-#include <set>
+#include <ember/containers/ordered_map.hpp>
+#include <ember/containers/set.hpp>
 
 using namespace ember::containers;
 using namespace ember::memory;
@@ -231,7 +231,7 @@ namespace ember::graphics {
 #endif
 
             //Score avilable devices. Anything below 0 is considered in-complete and shouldn't be selected
-            std::map<std::int32_t, VkPhysicalDevice> device_Scores{};//TODO: custom map
+            ordered_map<std::int32_t, VkPhysicalDevice> device_Scores{};
             for(auto const &physical_device : physical_devices) {
                 device_Scores[vulkan_device::score_physical_device(physical_device, required_device_extensions)] = physical_device;
             }
@@ -280,8 +280,7 @@ namespace ember::graphics {
         auto const queue_family_indices{ vulkan_device::get_physical_device_queue_family_indices(physical_device) };
         unique_ptr<vulkan_device> selected_device{};
         {
-            //TODO: use custom set
-            std::set<std::uint32_t> unique_family_indices{
+            set<std::uint32_t> unique_family_indices{
                 queue_family_indices.graphics,
                 queue_family_indices.compute,
                 queue_family_indices.transfer,

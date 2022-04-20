@@ -1,9 +1,9 @@
 #pragma once
 
-#include <list>
 #include <vulkan/vulkan.h>
 #include <ember/memory/memory.hpp>
 #include <ember/containers/array.hpp>
+#include <ember/containers/linked_list.hpp>
 
 namespace ember::graphics {
     /**
@@ -43,8 +43,7 @@ namespace ember::graphics {
             VkDeviceSize bytes{ 0 };
             std::uint32_t memory_type_index{ 0 };
 
-            //TODO: custom linked list
-            std::list<chunk> chunks{};
+            containers::linked_list<chunk> chunks{};
 
             //FUNCTIONS
         public:

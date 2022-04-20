@@ -4,7 +4,7 @@
 #include "vulkan_shader.hpp"
 
 #include <ember/memory/unique_ptr.hpp>
-#include <unordered_map>
+#include <ember/containers/map.hpp>
 #include <vulkan/vulkan.h>
 
 namespace ember::graphics {
@@ -17,8 +17,7 @@ namespace ember::graphics {
     private:
         VkDevice device{ VK_NULL_HANDLE };
 
-        //TODO: use custom map type
-        std::unordered_map<std::string, memory::unique_ptr<vulkan_shader>> compiled_modules{};
+        containers::map<std::string, memory::unique_ptr<vulkan_shader>> compiled_modules{};
 
         //FUNCTIONS
     public:

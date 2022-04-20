@@ -19,9 +19,9 @@
 #include "vulkan_swapchain.hpp"
 
 #include <ember/containers/array.hpp>
+#include <ember/containers/set.hpp>
 #include <ember/memory/unique_ptr.hpp>
 #include <ember/platform/window.hpp>
-#include <set>
 
 using namespace ember::containers;
 using namespace ember::maths;
@@ -214,10 +214,9 @@ namespace ember::graphics {
 
     queue_family_indices vulkan_device::get_physical_device_queue_family_indices(VkPhysicalDevice device) {
         queue_family_indices indices{};
-        //TODO: custom set
-        std::set<std::uint32_t> graphics_families{};
-        std::set<std::uint32_t> compute_families{};
-        std::set<std::uint32_t> transfer_families{};
+        set<std::uint32_t> graphics_families{};
+        set<std::uint32_t> compute_families{};
+        set<std::uint32_t> transfer_families{};
 
         std::uint32_t queue_family_count{ 0 };
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, nullptr);

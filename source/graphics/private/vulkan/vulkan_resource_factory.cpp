@@ -13,7 +13,7 @@
 #include "vulkan_render_pass.hpp"
 #include "vulkan_shader.hpp"
 
-#include <array>
+#include <ember/containers/static_array.hpp>
 #include <ember/containers/array.hpp>
 
 using namespace ember::containers;
@@ -67,8 +67,7 @@ namespace ember::graphics {
     }
 
     unique_ptr<buffer> vulkan_resource_factory::create_buffer(buffer::descriptor descriptor, std::string_view name) const {
-        //TODO: custom fixed size array
-        std::array const shared_queue_indices{ family_indices.graphics, family_indices.compute, family_indices.transfer };
+        static_array<std::uint32_t, 3> const shared_queue_indices{ family_indices.graphics, family_indices.compute, family_indices.transfer };
         bool const is_exclusive{ descriptor.sharing_mode == sharing_mode::exclusive };
 
         VkBufferCreateInfo const create_info{
@@ -98,8 +97,7 @@ namespace ember::graphics {
     }
 
     unique_ptr<image> vulkan_resource_factory::create_image(image::descriptor descriptor, std::string_view name) const {
-        //TODO: custom static array
-        std::array const shared_queue_indices{ family_indices.graphics, family_indices.compute, family_indices.transfer };
+        static_array<std::uint32_t, 3> const shared_queue_indices{ family_indices.graphics, family_indices.compute, family_indices.transfer };
         bool const is_exclusive{ descriptor.sharing_mode == sharing_mode::exclusive };
         bool const is_cube{ descriptor.type == image::type::cube };
         std::uint32_t const array_layers{ is_cube ? descriptor.array_count * 6u : descriptor.array_count };
@@ -201,8 +199,7 @@ namespace ember::graphics {
         VkPipelineLayout pipeline_layout_handle{ VK_NULL_HANDLE };
         EMBER_VULKAN_VERIFY_RESULT(vkCreatePipelineLayout(device, &pipeline_layout_info, &global_host_allocation_callbacks, &pipeline_layout_handle), "Failed to create VkPipelineLayout.");
 
-        //TODO: custom static array
-        std::array<VkPipelineShaderStageCreateInfo, 2> shader_stages{};
+        static_array<VkPipelineShaderStageCreateInfo, 2> shader_stages{};
 
         //Vertex shader
         shader_stages[0] = VkPipelineShaderStageCreateInfo{

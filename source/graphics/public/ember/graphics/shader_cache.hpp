@@ -7,7 +7,7 @@
 #include <ember/core/export.hpp>
 #include <filesystem>
 #include <string>
-#include <unordered_map>
+#include <ember/containers/map.hpp>
 
 namespace ember::graphics {
     /**
@@ -16,9 +16,8 @@ namespace ember::graphics {
     class EMBER_API shader_cache {
         //VARIABLES
     private:
-        //TODO: use custom map type
-        inline static std::unordered_map<std::string, std::string> raw_shaders{};                           /**< Contains raw glsl shader code with the name as the key. */
-        inline static std::unordered_map<std::string, containers::array<std::uint32_t>> compiled_shaders{}; /**< Contains SPIR-V byte code compiled shader with the name as key. */
+        inline static containers::map<std::string, std::string> raw_shaders{};                           /**< Contains raw glsl shader code with the name as the key. */
+        inline static containers::map<std::string, containers::array<std::uint32_t>> compiled_shaders{}; /**< Contains SPIR-V byte code compiled shader with the name as key. */
 
         //FUNCTIONS
     public:
@@ -34,7 +33,7 @@ namespace ember::graphics {
 
         /**
          * @brief Adds a shader compilation job.
-         * @details It best to use the macro EMBER_REGISTER_SHADER rather than call this function directly
+         * @details It is best to use the macro EMBER_REGISTER_SHADER rather than call this function directly
          * @param shader_name 
          * @param source_path 
          * @param shader_stage 
