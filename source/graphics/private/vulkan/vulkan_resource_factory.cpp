@@ -7,6 +7,7 @@
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
 #include "vulkan_descriptor_set_layout.hpp"
+#include "vulkan_fence.hpp"
 #include "vulkan_framebuffer.hpp"
 #include "vulkan_graphics_pipeline_object.hpp"
 #include "vulkan_image.hpp"
@@ -535,6 +536,23 @@ namespace ember::graphics {
         VkFramebuffer handle{ VK_NULL_HANDLE };
         EMBER_VULKAN_VERIFY_RESULT(vkCreateFramebuffer(device, &create_info, &global_host_allocation_callbacks, &handle), "Failed to create VkFramebuffer.");
 
+        SET_RESOURCE_NAME(handle, VK_OBJECT_TYPE_FRAMEBUFFER, name.data());
+
         return make_unique<vulkan_framebuffer>(descriptor, device, handle);
+    }
+
+    unique_ptr<fence> vulkan_resource_factory::create_fence(fence::descriptor descriptor, std::string_view name) const {
+        VkFenceCreateInfo const create_info{
+            .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = descriptor.signaled ? VK_FENCE_CREATE_SIGNALED_BIT : 0u,
+        };
+
+        VkFence handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateFence(device, &create_info, &global_host_allocation_callbacks, &handle), "Failed to create VkFence.");
+
+        SET_RESOURCE_NAME(handle, VK_OBJECT_TYPE_FENCE, name.data());
+
+        return make_unique<vulkan_fence>(descriptor, device, handle);
     }
 }

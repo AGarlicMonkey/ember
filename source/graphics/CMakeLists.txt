@@ -75,6 +75,9 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_framebuffer.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_framebuffer.cpp
 
+    ${SOURCE_PRIVATE}/vulkan/vulkan_fence.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_fence.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_fence.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.cpp

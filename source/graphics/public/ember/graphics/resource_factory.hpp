@@ -7,6 +7,7 @@
 #include "ember/graphics/image.hpp"
 #include "ember/graphics/image_view.hpp"
 #include "ember/graphics/render_pass.hpp"
+#include "ember/graphics/fence.hpp"
 
 #include <ember/memory/unique_ptr.hpp>
 #include <string_view>
@@ -72,5 +73,13 @@ namespace ember::graphics {
          * @return 
          */
         virtual memory::unique_ptr<framebuffer> create_framebuffer(framebuffer::descriptor descriptor, std::string_view name) const = 0;
+
+        /**
+         * @brief
+         * @param descriptor 
+         * @param name 
+         * @return 
+         */
+        virtual memory::unique_ptr<fence> create_fence(fence::descriptor descriptor, std::string_view name) const = 0;
     };
 }
