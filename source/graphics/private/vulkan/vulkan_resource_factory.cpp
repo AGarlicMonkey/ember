@@ -7,14 +7,15 @@
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
 #include "vulkan_descriptor_set_layout.hpp"
+#include "vulkan_framebuffer.hpp"
 #include "vulkan_graphics_pipeline_object.hpp"
 #include "vulkan_image.hpp"
 #include "vulkan_image_view.hpp"
 #include "vulkan_render_pass.hpp"
 #include "vulkan_shader.hpp"
 
-#include <ember/containers/static_array.hpp>
 #include <ember/containers/array.hpp>
+#include <ember/containers/static_array.hpp>
 
 using namespace ember::containers;
 using namespace ember::memory;
@@ -510,5 +511,30 @@ namespace ember::graphics {
         SET_RESOURCE_NAME(render_pass_handle, VK_OBJECT_TYPE_RENDER_PASS, name.data());
 
         return make_unique<vulkan_render_pass>(descriptor, device, render_pass_handle);
+    }
+
+    unique_ptr<framebuffer> vulkan_resource_factory::create_framebuffer(framebuffer::descriptor descriptor, std::string_view name) const {
+        array<VkImageView> attachments{};
+        attachments.reserve(descriptor.attachments.size());
+        for(auto &attachment : descriptor.attachments) {
+            attachments.push_back(resource_cast<vulkan_image_view const>(attachment)->get_handle());
+        }
+
+        VkFramebufferCreateInfo const create_info{
+            .sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+            .pNext           = nullptr,
+            .flags           = 0,
+            .renderPass      = resource_cast<vulkan_render_pass const>(descriptor.render_pass)->get_handle(),
+            .attachmentCount = static_cast<std::uint32_t>(attachments.size()),
+            .pAttachments    = attachments.data(),
+            .width           = descriptor.width,
+            .height          = descriptor.height,
+            .layers          = 1,
+        };
+
+        VkFramebuffer handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateFramebuffer(device, &create_info, &global_host_allocation_callbacks, &handle), "Failed to create VkFramebuffer.");
+
+        return make_unique<vulkan_framebuffer>(descriptor, device, handle);
     }
 }

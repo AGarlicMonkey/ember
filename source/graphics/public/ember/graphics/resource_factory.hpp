@@ -2,6 +2,7 @@
 
 #include "ember/graphics/buffer.hpp"
 #include "ember/graphics/descriptor_set_layout.hpp"
+#include "ember/graphics/framebuffer.hpp"
 #include "ember/graphics/graphics_pipeline_object.hpp"
 #include "ember/graphics/image.hpp"
 #include "ember/graphics/image_view.hpp"
@@ -64,5 +65,12 @@ namespace ember::graphics {
          * @return 
          */
         virtual memory::unique_ptr<render_pass> create_render_pass(render_pass::descriptor descriptor, std::string_view name) const = 0;
+        /**
+         * @brief 
+         * @param descriptor 
+         * @param name 
+         * @return 
+         */
+        virtual memory::unique_ptr<framebuffer> create_framebuffer(framebuffer::descriptor descriptor, std::string_view name) const = 0;
     };
 }

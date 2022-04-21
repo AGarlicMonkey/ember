@@ -71,6 +71,9 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_framebuffer.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_framebuffer.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_framebuffer.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.inl
