@@ -339,6 +339,32 @@ TEST(array_tests, can_reserve) {
     EXPECT_EQ(arr[2], 3);
 }
 
+TEST(array_tests, can_clear) {
+    struct destructor_helper {
+        std::uint32_t &count;
+        destructor_helper(std::uint32_t &count)
+            : count{ count } {};
+        ~destructor_helper() {
+            ++count;
+        };
+    };
+
+    array<destructor_helper> arr{};
+
+    std::uint32_t count{ 0 };
+
+    arr.emplace_back(count);
+    arr.emplace_back(count);
+    arr.emplace_back(count);
+
+    ASSERT_EQ(arr.size(), 3);
+
+    arr.clear();
+
+    EXPECT_EQ(arr.size(), 0);
+    EXPECT_EQ(count, 3);
+}
+
 // TEST(array_tests, can_shrink_to_fit) {
 //     EXPECT_TRUE(false);
 // }

@@ -171,6 +171,11 @@ namespace ember::containers {
         void resize(std::size_t const size, args_t &&...args);
 
         /**
+         * @brief Clears all of the elements in the array
+         */
+        void clear();
+
+        /**
          * @brief Returns the number of elements.
          * @return 
          */

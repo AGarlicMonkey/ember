@@ -274,6 +274,14 @@ namespace ember::containers {
     }
 
     template<typename T>
+    void array<T>::clear() {
+        for(std::size_t i{ 0 }; i < elems; ++i) {
+            first[i].~T();
+        }
+        elems = 0;
+    }
+
+    template<typename T>
     std::size_t array<T>::size() const noexcept {
         return elems;
     }
