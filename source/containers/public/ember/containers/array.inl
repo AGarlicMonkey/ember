@@ -244,6 +244,14 @@ namespace ember::containers {
     }
 
     template<typename T>
+    void array<T>::reserve(std::size_t new_capacity) {
+        if(cap < new_capacity) {
+            cap = new_capacity;
+            reallocate_array(cap, reallocate_type::preserve_current_items);
+        }
+    }
+
+    template<typename T>
     template<typename... args_t>
     void array<T>::resize(std::size_t const size, args_t &&...args) {
         if(cap < size) {

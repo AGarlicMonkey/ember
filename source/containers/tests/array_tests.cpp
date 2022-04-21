@@ -315,9 +315,29 @@ TEST(array_tests, resizing_calls_move_or_copy) {
     EXPECT_TRUE(moved);
 }
 
-// TEST(array_tests, can_reserve) {
-//     EXPECT_TRUE(false);
-// }
+TEST(array_tests, can_reserve) {
+    array<std::uint32_t> arr{};
+
+    ASSERT_EQ(arr.capacity(), 0);
+
+    arr.reserve(5);
+
+    EXPECT_EQ(arr.capacity(), 5);
+
+    arr.reserve(1);
+
+    EXPECT_EQ(arr.capacity(), 5);
+
+    arr.push_back(1);
+    arr.push_back(2);
+    arr.push_back(3);
+    arr.reserve(8);
+
+    EXPECT_EQ(arr.capacity(), 8);
+    EXPECT_EQ(arr[0], 1);
+    EXPECT_EQ(arr[1], 2);
+    EXPECT_EQ(arr[2], 3);
+}
 
 // TEST(array_tests, can_shrink_to_fit) {
 //     EXPECT_TRUE(false);
