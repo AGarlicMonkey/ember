@@ -2,12 +2,13 @@
 
 #include "ember/graphics/buffer.hpp"
 #include "ember/graphics/descriptor_set_layout.hpp"
+#include "ember/graphics/fence.hpp"
 #include "ember/graphics/framebuffer.hpp"
 #include "ember/graphics/graphics_pipeline_object.hpp"
 #include "ember/graphics/image.hpp"
 #include "ember/graphics/image_view.hpp"
 #include "ember/graphics/render_pass.hpp"
-#include "ember/graphics/fence.hpp"
+#include "ember/graphics/semaphore.hpp"
 
 #include <ember/memory/unique_ptr.hpp>
 #include <string_view>
@@ -81,5 +82,11 @@ namespace ember::graphics {
          * @return 
          */
         virtual memory::unique_ptr<fence> create_fence(fence::descriptor descriptor, std::string_view name) const = 0;
+        /**
+         * @brief
+         * @param name 
+         * @return 
+         */
+        virtual memory::unique_ptr<semaphore> create_semaphore(std::string_view name) const = 0;
     };
 }

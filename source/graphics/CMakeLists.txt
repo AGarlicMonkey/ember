@@ -80,7 +80,6 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_fence.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.inl
-    ${SOURCE_PRIVATE}/vulkan/vulkan_semaphore.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader_cache.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader_cache.inl

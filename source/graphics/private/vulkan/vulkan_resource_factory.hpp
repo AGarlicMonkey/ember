@@ -39,6 +39,7 @@ namespace ember::graphics {
         memory::unique_ptr<framebuffer> create_framebuffer(framebuffer::descriptor descriptor, std::string_view name) const override;
 
         memory::unique_ptr<fence> create_fence(fence::descriptor descriptor, std::string_view name) const override;
+        memory::unique_ptr<semaphore> create_semaphore(std::string_view name) const override;
     };
 }
 

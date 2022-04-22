@@ -13,6 +13,7 @@
 #include "vulkan_image.hpp"
 #include "vulkan_image_view.hpp"
 #include "vulkan_render_pass.hpp"
+#include "vulkan_semaphore.hpp"
 #include "vulkan_shader.hpp"
 
 #include <ember/containers/array.hpp>
@@ -554,5 +555,20 @@ namespace ember::graphics {
         SET_RESOURCE_NAME(handle, VK_OBJECT_TYPE_FENCE, name.data());
 
         return make_unique<vulkan_fence>(descriptor, device, handle);
+    }
+
+    unique_ptr<semaphore> vulkan_resource_factory::create_semaphore(std::string_view name) const {
+        VkSemaphoreCreateInfo const create_info{
+            .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+            .pNext = nullptr,
+            .flags = 0,
+        };
+
+        VkSemaphore handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateSemaphore(device, &create_info, &global_host_allocation_callbacks, &handle), "Failed to Create VkSemaphore.");
+
+        SET_RESOURCE_NAME(handle, VK_OBJECT_TYPE_SEMAPHORE, name.data());
+
+        return make_unique<vulkan_semaphore>(device, handle);
     }
 }
