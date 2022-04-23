@@ -40,6 +40,9 @@ namespace ember::graphics {
 }
 
 namespace ember::graphics {
+    /**
+     * @brief Can record transfer operations.
+     */
     class EMBER_API transfer_command_buffer : public command_buffer {
         //FUNCTIONS
     public:
@@ -59,8 +62,9 @@ namespace ember::graphics {
          * @param source_offset Offset into the source to start the copy.
          * @param destination Buffer to copy to.
          * @param destination_offset Offset into the destination to copy into.
+         * @param bytes How many bytes to copy over
          */
-        void copy_buffer_to_buffer(buffer &source, std::size_t const source_offset, buffer &destination, std::size_t const destination_offset);
+        void copy_buffer_to_buffer(buffer const *const source, std::size_t const source_offset, buffer const *const destination, std::size_t const destination_offset, std::size_t const bytes);
         /**
          * @brief Copy the contents from a buffer into an image.
          * @param source Buffer to copy from.
@@ -71,7 +75,7 @@ namespace ember::graphics {
          * @param destination_base_layer If the image is an array and/or a cube map, which index to start the copy from. Otherwise will be 0.
          * @param destination_layer_count If the image is an array and/or a cube map, how many layers to copy. Otherwise will be 1.
          */
-        void copy_buffer_to_image(buffer &source, std::size_t const source_offset, image &destination, std::size_t const destination_offset, maths::vec3u const &destination_extent, std::uint32_t const destination_base_layer = 0, std::uint32_t const destination_layer_count = 1);
+        void copy_buffer_to_image(buffer const *const source, std::size_t const source_offset, image const *const destination, std::size_t const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer = 0, std::uint32_t const destination_layer_count = 1);
 
         /**
          * @brief Copy the contents of an image into a buffer.
@@ -83,7 +87,7 @@ namespace ember::graphics {
          * @param destination Buffer to copy to.
          * @param destination_offset  Offset into the destination to copy into.
          */
-        void copy_image_to_buffer(image &source, maths::vec3i const &source_offset, maths::vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer &destination, std::size_t const destination_offset);
+        void copy_image_to_buffer(image const *const source, maths::vec3i const source_offset, maths::vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer const *const destination, std::size_t const destination_offset);
 
         /**
          * @brief Creates a memory barrier for a buffer. Controlling the execution order of commands on the buffer.
@@ -94,7 +98,7 @@ namespace ember::graphics {
          * @param source_tage The pipeline stage that gets executed before the barrier.
          * @param destination_stage The pipeline stage executed after the barrier that waits for the results of the sourceStage.
          */
-        void buffer_memory_barrier(buffer &buffer, buffer_memory_barrier_info const &barrier_info, pipeline_stage const source_tage, pipeline_stage const destination_stage);
+        void buffer_memory_barrier(buffer const *const buffer, buffer_memory_barrier_info const barrier_info, pipeline_stage const source_tage, pipeline_stage const destination_stage);
         /**
          * @brief Creates a memory barrier for a image. Controlling the execution order of commands on the image. 
          * @details Any commands done on the image before the barrier are guarenteed to happen before commands
@@ -104,7 +108,7 @@ namespace ember::graphics {
          * @param source_tage The pipeline stage that gets executed before the barrier. 
          * @param destination_stage The pipeline stage executed after the barrier that waits for the results of the sourceStage.
          */
-        void image_memory_barrier(image &image, image_memory_barrier_info const &barrier_info, pipeline_stage const source_tage, pipeline_stage const destination_stage);
+        void image_memory_barrier(image const *const image, image_memory_barrier_info const barrier_info, pipeline_stage const source_tage, pipeline_stage const destination_stage);
     };
 }
 

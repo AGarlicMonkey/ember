@@ -2,6 +2,7 @@
 
 #include "ember/graphics/compute_command_buffer.hpp"
 
+#include <ember/containers/array.hpp>
 #include <ember/core/export.hpp>
 #include <ember/maths/vector.hpp>
 #include <span>
@@ -58,7 +59,7 @@ namespace ember::graphics {
          * @param render_area What area to render to in the framebuffer.
          * @param clear_values An a array of clear values. Each element in the array represents an attachment in the framebuffer.
          */
-        void begin_render_pass(render_pass &render_pass, framebuffer &framebuffer, render_area const &render_area, std::span<clear_value> clear_values);
+        void begin_render_pass(render_pass const *const render_pass, framebuffer const *const framebuffer, render_area const render_area, containers::array<clear_value> clear_values);
         /**
          * @brief Ends the current render pass. Must be called before starting a new one.
          */
@@ -81,21 +82,21 @@ namespace ember::graphics {
          * @brief 
          * @param pipeline_object 
          */
-        void bind_pipeline_object(graphics_pipeline_object &pipeline_object);
+        void bind_pipeline_object(graphics_pipeline_object const *const pipeline_object);
 
         /**
          * @brief Bind a vertex buffer to be used in the next draw call.
          * @param vertex_buffer 
          * @param offset Offset into the buffer where the vertices begin.
          */
-        void bind_vertex_buffer(buffer &vertex_buffer, std::size_t const offset);
+        void bind_vertex_buffer(buffer const *const vertex_buffer, std::size_t const offset);
         /**
          * @brief Bind an index buffer to be used in the next draw call.
          * @param index_buffer 
          * @param offset Offset into the buffer where the indices begin.
          * @param index_type 
          */
-        void bind_index_buffer(buffer &index_buffer, std::size_t const offset, index_type index_type);
+        void bind_index_buffer(buffer const *const index_buffer, std::size_t const offset, index_type index_type);
 
         /**
          * @brief Executes a draw call with the currently bound vertex and index buffers.
@@ -108,7 +109,7 @@ namespace ember::graphics {
          * @param swapchain The swapchain to present.
          * @param image_index The index of the image in the swapchain to present.
          */
-        void present(swapchain &swapchain, std::size_t const image_index);
+        void present(swapchain const *const swapchain, std::size_t const image_index);
     };
 }
 

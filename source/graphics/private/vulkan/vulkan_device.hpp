@@ -5,6 +5,7 @@
 #include "types.hpp"
 #include "vulkan_resource_factory.hpp"
 #include "vulkan_shader_cache.hpp"
+#include "vulkan_graphics_queue.hpp"
 
 #include <cinttypes>
 #include <ember/containers/array.hpp>
@@ -12,14 +13,6 @@
 
 namespace ember::graphics {
     class vulkan_device : public device {
-        //TYPES
-    private:
-        struct queue_data {
-            std::uint32_t index{ -1u };
-            VkQueue queue{ VK_NULL_HANDLE };
-            VkCommandPool command_pool{ VK_NULL_HANDLE };
-        };
-
         //VARIABLES
     private:
         VkInstance instance{ VK_NULL_HANDLE };
@@ -33,9 +26,10 @@ namespace ember::graphics {
         memory::unique_ptr<vulkan_resource_factory> factory{ nullptr };
         memory::unique_ptr<vulkan_shader_cache> cache{ nullptr };
 
-        queue_data graphics_queue_data{};
-        queue_data compute_queue_data{};
-        queue_data transfer_queue_data{};
+        memory::unique_ptr<vulkan_graphics_queue> vk_graphics_queue{ nullptr };
+        //TODO: Other queues
+        //queue_data compute_queue_data{};
+        //queue_data transfer_queue_data{};
 
         //FUNCTIONS
     public:
@@ -55,9 +49,9 @@ namespace ember::graphics {
 
         memory::unique_ptr<swapchain> create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const override;
 
-        ~vulkan_device() {
-            vkDestroyDevice(logical_device, &global_allocator);
-        }
+        graphics_queue *get_graphics_queue() const override;
+        compute_queue *get_compute_queue() const override;
+        transfer_queue *get_transfer_queue() const override;
 
         static queue_family_indices get_physical_device_queue_family_indices(VkPhysicalDevice device);
         static std::int32_t score_physical_device(VkPhysicalDevice physical_device, containers::array<char const *> const &required_extensions);

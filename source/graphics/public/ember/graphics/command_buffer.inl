@@ -1,13 +1,29 @@
 namespace ember::graphics {
+    command_buffer::command_buffer() = default;
+
     void command_buffer::reset() {
+        //TODO: Call destructors
+
         pos = 0;
     }
 
-    template<typename command_type, typename... args_t>
-    command_type &command_buffer::alloc_command(args_t &&...args) requires std::is_trivially_destructible_v<command_type> {
-        std::byte *const memory{ alloc(sizeof(command_type)) };
+    command_buffer_iterator command_buffer::begin() const {
+        return { buffer_memory, pos };
+    }
 
-        command_type *const command{ new(memory) command_type{ std::forward<args_t>(args)... } };
-        return *command;
+    command_buffer_iterator command_buffer::end() const {
+        return { buffer_memory + pos, pos };
+    }
+
+    template<command_type type, typename... args_type>
+    void command_buffer::record_command(args_type &&...args) {
+        std::size_t constexpr type_size{ sizeof(command_type) };
+        std::size_t constexpr command_size{ sizeof(recorded_command<type>) };
+
+        std::byte *memory{ alloc(type_size + command_size) };
+
+        new(memory) command_type{ type };
+        memory += type_size;
+        new(memory) recorded_command<type>{ std::forward<args_type>(args)... };
     }
 }

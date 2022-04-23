@@ -11,6 +11,9 @@ namespace ember::graphics {
 }
 
 namespace ember::graphics {
+    /**
+     * @brief Facilitates the presentation of rendering results to a window.
+     */
     class swapchain {
         //TYPES
     public:

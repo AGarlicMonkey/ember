@@ -1,0 +1,10 @@
+#pragma once
+
+#include <vulkan/vulkan.h>
+
+#if EMBER_GRAPHICS_DEBUG_UTILITIES
+extern PFN_vkSetDebugUtilsObjectNameEXT fp_vkSetDebugUtilsObjectNameEXT;
+
+extern PFN_vkCmdBeginDebugUtilsLabelEXT fp_vkCmdBeginDebugUtilsLabelEXT;
+extern PFN_vkCmdEndDebugUtilsLabelEXT fp_vkCmdEndDebugUtilsLabelEXT;
+#endif

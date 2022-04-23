@@ -7,6 +7,7 @@
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
 #include "vulkan_descriptor_set_layout.hpp"
+#include "vulkan_extension_functions.hpp"
 #include "vulkan_fence.hpp"
 #include "vulkan_framebuffer.hpp"
 #include "vulkan_graphics_pipeline_object.hpp"
@@ -23,10 +24,6 @@ using namespace ember::containers;
 using namespace ember::memory;
 
 namespace {
-#if EMBER_GRAPHICS_DEBUG_UTILITIES
-    PFN_vkSetDebugUtilsObjectNameEXT fp_vkSetDebugUtilsObjectNameEXT;
-#endif
-
     VkMemoryPropertyFlags get_memory_property_flags(ember::graphics::memory_type memory_type) {
         switch(memory_type) {
             case ember::graphics::memory_type::host_visible:
@@ -57,16 +54,10 @@ namespace {
 #endif
 
 namespace ember::graphics {
-    vulkan_resource_factory::vulkan_resource_factory(VkInstance instance, VkDevice device, queue_family_indices family_indices, device_memory_allocator *memory_allocator)
+    vulkan_resource_factory::vulkan_resource_factory(VkDevice device, queue_family_indices family_indices, device_memory_allocator *memory_allocator)
         : device{ device }
         , family_indices{ family_indices }
         , memory_allocator{ memory_allocator } {
-#if EMBER_GRAPHICS_DEBUG_UTILITIES
-        if(fp_vkSetDebugUtilsObjectNameEXT == nullptr) {
-            fp_vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT"));
-            EMBER_CHECK(fp_vkSetDebugUtilsObjectNameEXT != nullptr);
-        }
-#endif
     }
 
     unique_ptr<buffer> vulkan_resource_factory::create_buffer(buffer::descriptor descriptor, std::string_view name) const {

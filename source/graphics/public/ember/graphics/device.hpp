@@ -12,6 +12,9 @@ namespace ember::graphics {
     class resource_factory;
     class shader_cache;
 
+    class graphics_queue;
+    class compute_queue;
+    class transfer_queue;
 }
 
 namespace ember::graphics {
@@ -43,5 +46,21 @@ namespace ember::graphics {
          * @return 
          */
         virtual memory::unique_ptr<swapchain> create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const = 0;
+
+        /**
+         * @brief Returns the queue used for submitting graphics_command_buffers. Runs asynchronously to other queues.
+         * @return 
+         */
+        virtual graphics_queue *get_graphics_queue() const = 0;
+        /**
+         * @brief Returns the queue used for submitting compute_command_buffers. Runs asynchronously to other queues.
+         * @return 
+         */
+        virtual compute_queue *get_compute_queue() const = 0;
+        /**
+         * @brief Returns the queue used for submitting transfer_command_buffers. Runs asynchronously to other queues.
+         * @return 
+         */
+        virtual transfer_queue *get_transfer_queue() const = 0;
     };
 }

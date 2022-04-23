@@ -34,6 +34,7 @@ set(
     ${SOURCE_PRIVATE}/vulkan/log.hpp
     ${SOURCE_PRIVATE}/vulkan/types.hpp
     ${SOURCE_PRIVATE}/vulkan/verification.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_extension_functions.hpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.cpp
@@ -46,6 +47,10 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.cpp
+
+    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_queue.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_queue.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_queue.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.inl
@@ -120,6 +125,12 @@ add_library(
     ${SOURCE_PUBLIC}/command_buffer.hpp
     ${SOURCE_PUBLIC}/command_buffer.inl
     ${SOURCE_PRIVATE}/command_buffer.cpp
+    ${SOURCE_PUBLIC}/command_buffer_iterator.hpp
+    ${SOURCE_PUBLIC}/command_buffer_iterator.inl
+    ${SOURCE_PRIVATE}/command_buffer_iterator.cpp
+    ${SOURCE_PRIVATE}/commands.hpp
+    ${SOURCE_PRIVATE}/commands.cpp
+    ${SOURCE_PUBLIC}/command_types.hpp
 
     ${SOURCE_PUBLIC}/resource.hpp
     ${SOURCE_PUBLIC}/buffer.hpp

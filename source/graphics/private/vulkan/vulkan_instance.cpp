@@ -43,6 +43,13 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     return VK_FALSE;
 }
 
+#if EMBER_GRAPHICS_DEBUG_UTILITIES
+PFN_vkSetDebugUtilsObjectNameEXT fp_vkSetDebugUtilsObjectNameEXT;
+
+PFN_vkCmdBeginDebugUtilsLabelEXT fp_vkCmdBeginDebugUtilsLabelEXT;
+PFN_vkCmdEndDebugUtilsLabelEXT fp_vkCmdEndDebugUtilsLabelEXT;
+#endif
+
 namespace {
     VkResult create_debug_utils_messenger_EXT(VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT const *pCreateInfo, VkAllocationCallbacks const *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger) {
         auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
@@ -201,6 +208,22 @@ namespace ember::graphics {
             }
 #endif
         }
+
+        //Initialise all of the debug extension function
+#if EMBER_GRAPHICS_DEBUG_UTILITIES
+        if(fp_vkSetDebugUtilsObjectNameEXT == nullptr) {
+            fp_vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT"));
+            EMBER_CHECK(fp_vkSetDebugUtilsObjectNameEXT != nullptr);
+        }
+        if(fp_vkCmdBeginDebugUtilsLabelEXT == nullptr) {
+            fp_vkCmdBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkCmdBeginDebugUtilsLabelEXT"));
+            EMBER_CHECK(fp_vkCmdBeginDebugUtilsLabelEXT != nullptr);
+        }
+        if(fp_vkCmdEndDebugUtilsLabelEXT == nullptr) {
+            fp_vkCmdEndDebugUtilsLabelEXT = reinterpret_cast<PFN_vkCmdEndDebugUtilsLabelEXT>(vkGetInstanceProcAddr(instance, "vkCmdEndDebugUtilsLabelEXT"));
+            EMBER_CHECK(fp_vkCmdEndDebugUtilsLabelEXT != nullptr);
+        }
+#endif
 
         array<char const *> required_device_extensions {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME,

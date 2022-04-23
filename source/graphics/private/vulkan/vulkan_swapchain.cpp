@@ -10,10 +10,10 @@ using namespace ember::maths;
 using namespace ember::memory;
 
 namespace ember::graphics {
-    vulkan_swapchain::vulkan_swapchain(VkInstance instance, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR swapchain, VkFormat swapchain_image_format, VkExtent2D swapchain_extent, array<unique_ptr<vulkan_image>> images)
+    vulkan_swapchain::vulkan_swapchain(VkInstance instance, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR handle, VkFormat swapchain_image_format, VkExtent2D swapchain_extent, array<unique_ptr<vulkan_image>> images)
         : instance{ instance }
         , device{ device }
-        , swapchain{ swapchain }
+        , handle{ handle }
         , surface{ surface }
         , swapchain_image_format{ swapchain_image_format }
         , swapchain_extent{ swapchain_extent }
@@ -22,8 +22,8 @@ namespace ember::graphics {
 
     std::pair<std::uint32_t, vulkan_swapchain::result> vulkan_swapchain::aquire_next_image(semaphore const *available_semaphore) {
         std::uint32_t out_image_index{ 0 };
-        VkSemaphore vk_semaphore{ available_semaphore != nullptr ? resource_cast<vulkan_semaphore const>(available_semaphore)->get_semaphore() : VK_NULL_HANDLE };
-        VkResult const result{ vkAcquireNextImageKHR(device, swapchain, UINT64_MAX, vk_semaphore, VK_NULL_HANDLE, &out_image_index) };
+        VkSemaphore semaphore_handle{ available_semaphore != nullptr ? resource_cast<vulkan_semaphore const>(available_semaphore)->get_handle() : VK_NULL_HANDLE };
+        VkResult const result{ vkAcquireNextImageKHR(device, handle, UINT64_MAX, semaphore_handle, VK_NULL_HANDLE, &out_image_index) };
 
         return { out_image_index, convert_result(result) };
     }

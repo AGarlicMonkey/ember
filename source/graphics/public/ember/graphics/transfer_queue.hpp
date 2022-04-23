@@ -13,8 +13,8 @@ namespace ember::graphics {
 
 namespace ember::graphics {
     struct transfer_submit_info {
-        containers::array<std::pair<semaphore const *, pipeline_stage>> wait_Semaphores{}; /**< What semaphore each submission will wait on at which stage. */
-        containers::array<transfer_command_buffer const *> command_buffers{};              /**< Which command buffers to execute. */
+        containers::array<std::pair<semaphore const *, pipeline_stage>> wait_semaphores{}; /**< What semaphore each submission will wait on at which stage. */
+        containers::array<transfer_command_bufferconst *> command_buffers{};               /**< Which command buffers to execute. */
         containers::array<semaphore const *> signal_semaphores{};                          /**< The semaphores that will be signaled when execution has finished.*/
     };
 }
@@ -36,7 +36,7 @@ namespace ember::graphics {
         inline transfer_queue(transfer_queue &&other) noexcept;
 
         transfer_queue &operator=(transfer_queue const &other) = delete;
-        inline transfer_queue &operator=(transfer_queue &&other) noexcept;
+        inline transfer_queue &operator                        =(transfer_queue &&other) noexcept;
 
         inline ~transfer_queue();
 
@@ -48,8 +48,7 @@ namespace ember::graphics {
 
         /**
          * @brief Submit command buffers to be processed. 
-         * @details All buffers in a single submission will start in order but will likely finish out of order.
-         * Each call to this submit function will need to wait on previous submissions.
+         * @details All buffers in a single submission will start and finish in order.
          * @param submit_info 
          * @param signal_fence An optional fence that will be signaled when the submission is complete.
          */

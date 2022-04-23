@@ -1,6 +1,8 @@
 #pragma once
 
-#include <concepts>
+#include "ember/graphics/command_buffer_iterator.hpp"
+#include "ember/graphics/command_types.hpp"
+
 #include <cstddef>
 
 namespace ember::graphics {
@@ -14,7 +16,7 @@ namespace ember::graphics {
 
         //FUNCTIONS
     public:
-        command_buffer();
+        inline command_buffer();
 
         command_buffer(command_buffer const &other) = delete;
         command_buffer(command_buffer &&other) noexcept;
@@ -29,11 +31,28 @@ namespace ember::graphics {
          */
         inline void reset();
 
-    protected:
-        template<typename command_type, typename... args_t>
-        command_type &alloc_command(args_t &&...args) requires std::is_trivially_destructible_v<command_type>;
+        /**
+         * @brief Returns an iterator to the beginning of this command buffer.
+         * @return 
+         */
+        inline command_buffer_iterator begin() const;
+        /**
+         * @brief Returns an iterator to the end of this command buffer.
+         * @return 
+         */
+        inline command_buffer_iterator end() const;
 
-    private: 
+    protected:
+        /**
+         * @brief Record a command into this buffer.
+         * @tparam type Type of command to record.
+         * @tparam args_type 
+         * @param args Construction args for the command.
+         */
+        template<command_type type, typename... args_type>
+        void record_command(args_type &&...args);
+
+    private:
         std::byte *alloc(std::size_t bytes);
     };
 }

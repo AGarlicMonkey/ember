@@ -7,8 +7,7 @@ namespace ember::graphics {
 
     graphics_queue::~graphics_queue() = default;
 
-    transfer_command_buffer graphics_queue::allocate_command_buffer() {
-        //TODO:
+    graphics_command_buffer graphics_queue::allocate_command_buffer() {
         return {};
     }
 }

@@ -1,14 +1,11 @@
 #pragma once
 
 #include "ember/graphics/swapchain.hpp"
+#include "vulkan_image.hpp"
 
 #include <ember/containers/array.hpp>
 #include <ember/memory/unique_ptr.hpp>
 #include <vulkan/vulkan.h>
-
-namespace ember::graphics {
-    class vulkan_image;
-}
 
 namespace ember::graphics {
     class vulkan_swapchain : public swapchain {
@@ -17,7 +14,7 @@ namespace ember::graphics {
         VkInstance instance{ VK_NULL_HANDLE };
         VkDevice device{ VK_NULL_HANDLE };
         VkSurfaceKHR surface{ VK_NULL_HANDLE };
-        VkSwapchainKHR swapchain{ VK_NULL_HANDLE };
+        VkSwapchainKHR handle{ VK_NULL_HANDLE };
 
         VkFormat swapchain_image_format{};
         VkExtent2D swapchain_extent{};
@@ -27,7 +24,7 @@ namespace ember::graphics {
         //FUNCTIONS
     public:
         vulkan_swapchain() = delete;
-        vulkan_swapchain(VkInstance instance, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR swapchain, VkFormat swapchain_image_format, VkExtent2D swapchain_extent, containers::array<memory::unique_ptr<vulkan_image>> images);
+        vulkan_swapchain(VkInstance instance, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR handle, VkFormat swapchain_image_format, VkExtent2D swapchain_extent, containers::array<memory::unique_ptr<vulkan_image>> images);
 
         vulkan_swapchain(vulkan_swapchain const &other) = delete;
         inline vulkan_swapchain(vulkan_swapchain &&other) noexcept;
@@ -44,7 +41,7 @@ namespace ember::graphics {
 
         containers::array<image *> get_images() const override;
 
-        inline VkSwapchainKHR get_swapchain() const;
+        inline VkSwapchainKHR get_handle() const;
 
         static result convert_result(VkResult const result);
 

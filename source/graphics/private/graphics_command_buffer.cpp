@@ -1,14 +1,17 @@
 #include "ember/graphics/graphics_command_buffer.hpp"
 
+#include "commands.hpp"
+
 using namespace ember::maths;
+using namespace ember::containers;
 
 namespace ember::graphics {
-    void graphics_command_buffer::begin_render_pass(render_pass &render_pass, framebuffer &framebuffer, render_area const &render_area, std::span<clear_value> clear_values) {
-        //TODO
+    void graphics_command_buffer::begin_render_pass(render_pass const *const render_pass, framebuffer const *const framebuffer, render_area const render_area, array<clear_value> clear_values) {
+        record_command<command_type::begin_render_pass_command>(render_pass, framebuffer, render_area, std::move(clear_values));
     }
 
     void graphics_command_buffer::end_render_pass() {
-        //TODO
+        record_command<command_type::end_render_pass_command>();
     }
 
     void graphics_command_buffer::set_viewport(vec2i const position, vec2u const size) {
@@ -19,23 +22,23 @@ namespace ember::graphics {
         //TODO
     }
 
-    void graphics_command_buffer::bind_pipeline_object(graphics_pipeline_object &pipeline_object) {
-        //TODO
+    void graphics_command_buffer::bind_pipeline_object(graphics_pipeline_object const *const pipeline_object) {
+        record_command<command_type::bind_graphics_pipeline_object_command>(pipeline_object);
     }
 
-    void graphics_command_buffer::bind_vertex_buffer(buffer &vertex_buffer, std::size_t const offset) {
-        //TODO
+    void graphics_command_buffer::bind_vertex_buffer(buffer const *const vertex_buffer, std::size_t const offset) {
+        record_command<command_type::bind_vertex_buffer_command>(vertex_buffer, offset);
     }
 
-    void graphics_command_buffer::bind_index_buffer(buffer &index_buffer, std::size_t const offset, index_type index_type) {
-        //TODO
+    void graphics_command_buffer::bind_index_buffer(buffer const *const index_buffer, std::size_t const offset, index_type index_type) {
+        record_command<command_type::bind_index_buffer_command>(index_buffer, offset, index_type);
     }
 
     void graphics_command_buffer::draw_indexed(std::size_t const index_count) {
-        //TODO
+        record_command<command_type::draw_indexed_command>(index_count);
     }
 
-    void graphics_command_buffer::present(swapchain &swapchain, std::size_t const image_index) {
-        //TODO
+    void graphics_command_buffer::present(swapchain const *const swapchain, std::size_t const image_index) {
+        record_command<command_type::present_command>(swapchain, image_index);
     }
 }

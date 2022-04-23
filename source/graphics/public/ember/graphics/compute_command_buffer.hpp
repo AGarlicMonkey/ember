@@ -4,6 +4,7 @@
 
 #include <ember/core/export.hpp>
 #include <ember/maths/vector.hpp>
+#include <string>
 
 namespace ember::graphics {
     class compute_pipeline_object;
@@ -11,6 +12,9 @@ namespace ember::graphics {
 }
 
 namespace ember::graphics {
+    /**
+     * @brief Can record transfer and compute operations.
+     */
     class EMBER_API compute_command_buffer : public transfer_command_buffer {
         //FUNCTIONS
     public:
@@ -24,18 +28,30 @@ namespace ember::graphics {
 
         inline ~compute_command_buffer() override;
 
+#if EMBER_GRAPHICS_DEBUG_UTILITIES
+        /**
+         * @brief Pushes a user marker into the command buffer.
+         * @param name 
+         */
+        void push_user_marker(std::string name);
+        /**
+         * @brief Pops the most recently pushed command from the buffer.
+         */
+        void pop_user_marker();
+#endif
+
         /**
          * @brief 
          * @param pipeline_object 
          */
-        void bind_pipeline_object(compute_pipeline_object &pipeline_object);
+        void bind_pipeline_object(compute_pipeline_object const *const pipeline_object);
 
         /**
          * @brief 
          * @param descriptor_set 
          * @param set_num 
          */
-        void bind_descriptor_set(descriptor_set &descriptor_set, std::uint32_t const set_num);
+        void bind_descriptor_set(descriptor_set const *const descriptor_set, std::uint32_t const set_num);
         /**
          * @brief 
          * @param offset 
@@ -48,8 +64,37 @@ namespace ember::graphics {
          * @brief Disptach a compute workload.
          * @param group_count How many groups on each axis to dispatch.
          */
-        void disptach(maths::vec3u group_count);
+        void disptach(maths::vec3u const group_count);
     };
 }
+
+#if EMBER_GRAPHICS_DEBUG_UTILITIES
+namespace ember::graphics::internal {
+    class scoped_user_marker {
+    private:
+        compute_command_buffer &buffer;
+
+    public:
+        scoped_user_marker(compute_command_buffer &buffer, std::string name)
+            : buffer{ buffer } {
+            buffer.push_user_marker(std::move(name));
+        }
+
+        //TODO: other ctors
+
+        ~scoped_user_marker() {
+            buffer.pop_user_marker();
+        }
+    };
+}
+
+    /**
+     * @brief Automatically pushses and pops a user marker.
+     */
+    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name) \
+        internal::scoped_user_marker{ command_buffer, name };
+#else
+    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name)
+#endif
 
 #include "compute_command_buffer.inl"

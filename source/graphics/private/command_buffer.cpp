@@ -3,11 +3,9 @@
 #include <ember/memory/memory.hpp>
 
 static std::size_t constexpr initial_buffer_size{ EMBER_KB(1) };
-static std::size_t constexpr command_alignment{ 16 };
+static std::size_t constexpr command_alignment{ 0 };//Commands are tightly packed
 
 namespace ember::graphics {
-    command_buffer::command_buffer() = default;
-
     command_buffer::command_buffer(command_buffer &&other) noexcept
         : buffer_memory{ other.buffer_memory }
         , buffer_size{ other.buffer_size }
@@ -26,6 +24,8 @@ namespace ember::graphics {
     }
 
     command_buffer::~command_buffer() {
+        //TODO: Call destructors
+
         if(buffer_memory != nullptr) {
             memory::free(buffer_memory);
         }
@@ -37,6 +37,8 @@ namespace ember::graphics {
                 buffer_size   = initial_buffer_size;
                 buffer_memory = memory::alloc(buffer_size, command_alignment);
             } else {
+                //TODO: Proper copy everything over
+
                 buffer_size *= 2;
                 buffer_memory = memory::realloc(buffer_memory, buffer_size, command_alignment);
             }
