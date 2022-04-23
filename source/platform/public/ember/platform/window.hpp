@@ -15,7 +15,7 @@ namespace ember::platform {
     public:
         struct descriptor {
             std::string title{ "Ember Window" };
-            maths::vec2i size{};
+            maths::vec2i size{ 800, 600 };
         };
 
         //FUNCTIONS
