@@ -32,7 +32,6 @@ namespace ember::graphics {
         bind_vertex_buffer_command,
         bind_index_buffer_command,
         draw_indexed_command,
-        present_command,
     };
 
     template<command_type type>

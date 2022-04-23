@@ -58,49 +58,17 @@ namespace ember::graphics {
         : instance{ instance }
         , physical_device{ physical_device }
         , logical_device{ logical_device }
-        , family_indices{ family_indices } {
+        , family_indices{ family_indices }
+        , queue{ physical_device, logical_device, family_indices } {
         memory_allocator = make_unique<device_memory_allocator>(logical_device, physical_device);
         factory          = make_unique<vulkan_resource_factory>(logical_device, this->family_indices, memory_allocator.get());
         cache            = make_unique<vulkan_shader_cache>(logical_device);
-
-        VkCommandPoolCreateInfo command_pool_create_info {
-            .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
-            .pNext = nullptr,
-#if !EMBER_CORE_ENABLE_PROFILING
-            .flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT, /**< Internal API command buffers in ember are short lived as we always copy in a custom command buffer to them. */
-#else
-            .flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,//Commands buffers are reset when profiling
-#endif
-        };
-
-        //Graphics
-        command_pool_create_info.queueFamilyIndex = family_indices.graphics;
-        VkCommandPool graphics_command_pool{ VK_NULL_HANDLE };
-        EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &graphics_command_pool), "Failed to create graphics queue pool.");
-        VkQueue graphics_queue_handle{ VK_NULL_HANDLE };
-        vkGetDeviceQueue(logical_device, family_indices.graphics, 0, &graphics_queue_handle);
-
-        vk_graphics_queue = make_unique<vulkan_graphics_queue>(physical_device, logical_device, graphics_queue_handle, graphics_command_pool);
-
-        //Compute
-        // compute_queue_data.index                  = this->family_indices.graphics;
-        // command_pool_create_info.queueFamilyIndex = compute_queue_data.index;
-        // EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &compute_queue_data.command_pool), "Failed to create compute queue pool");
-        // vkGetDeviceQueue(logical_device, compute_queue_data.index, 0, &compute_queue_data.queue);
-
-        //Transfer
-        // transfer_queue_data.index                 = this->family_indices.graphics;
-        // command_pool_create_info.queueFamilyIndex = transfer_queue_data.index;
-        // EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &transfer_queue_data.command_pool), "Failed to create transfer queue pool");
-        // vkGetDeviceQueue(logical_device, transfer_queue_data.index, 0, &transfer_queue_data.queue);
     }
 
     vulkan_device::~vulkan_device() {
         //Call dtor to make sure memory is freed before destroying the device.
         memory_allocator.reset();
         cache.reset();
-
-        vk_graphics_queue.reset();
 
         vkDestroyDevice(logical_device, &global_host_allocation_callbacks);
     }
@@ -216,16 +184,16 @@ namespace ember::graphics {
         return make_unique<vulkan_swapchain>(instance, logical_device, surface, swapchain, surface_format.format, extent, std::move(vulkan_images));
     }
 
-    graphics_queue *vulkan_device::get_graphics_queue() const {
-        return vk_graphics_queue.get();
+    void vulkan_device::submit_to_graphics_queue(graphics_submit_info const &submit_info, fence const *const signal_fence) {
+        queue.submit(submit_info, signal_fence);
     }
 
-    compute_queue *vulkan_device::get_compute_queue() const {
-        return nullptr;
+    void vulkan_device::submit_to_compute_queue(compute_submit_info const &submit_info, fence const *const signal_fence) {
+        queue.submit(submit_info, signal_fence);
     }
 
-    transfer_queue *vulkan_device::get_transfer_queue() const {
-        return nullptr;
+    void vulkan_device::submit_to_transfer_queue(transfer_submit_info const &submit_info, fence const *const signal_fence) {
+        queue.submit(submit_info, signal_fence);
     }
 
     queue_family_indices vulkan_device::get_physical_device_queue_family_indices(VkPhysicalDevice device) {

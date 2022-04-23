@@ -47,10 +47,9 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.cpp
-
-    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_queue.hpp
-    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_queue.inl
-    ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_queue.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_queue.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_queue.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_queue.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.inl
@@ -98,6 +97,8 @@ add_library(
     ${SOURCE_PUBLIC}/exception.hpp
     ${SOURCE_PRIVATE}/resource_cast.hpp
     ${SOURCE_PRIVATE}/resource_cast.inl
+    ${SOURCE_PUBLIC}/submission_types.hpp
+    ${SOURCE_PUBLIC}/pipeline_stage.hpp
 
     ${SOURCE_PUBLIC}/graphics.hpp
     ${SOURCE_PRIVATE}/graphics.cpp
@@ -105,13 +106,6 @@ add_library(
     ${SOURCE_PUBLIC}/device.hpp
     ${SOURCE_PUBLIC}/resource_factory.hpp
     ${SOURCE_PUBLIC}/swapchain.hpp
-
-    ${SOURCE_PUBLIC}/graphics_queue.hpp
-    ${SOURCE_PUBLIC}/graphics_queue.inl
-    ${SOURCE_PUBLIC}/compute_queue.hpp
-    ${SOURCE_PUBLIC}/compute_queue.inl
-    ${SOURCE_PUBLIC}/transfer_queue.hpp
-    ${SOURCE_PUBLIC}/transfer_queue.inl
 
     ${SOURCE_PUBLIC}/graphics_command_buffer.hpp
     ${SOURCE_PUBLIC}/graphics_command_buffer.inl
