@@ -29,6 +29,8 @@ namespace ember::graphics {
         descriptor const &get_descriptor() const override;
 
         void wait() override;
+        bool poll() override;
+        
         void reset() override;
 
         inline VkFence get_handle() const;

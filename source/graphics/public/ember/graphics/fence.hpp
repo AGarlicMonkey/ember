@@ -22,6 +22,12 @@ namespace ember::graphics {
          */
         virtual void wait() = 0;
         /**
+         * @brief Checks to see if the fence has been signaled or not.
+         * @return True if signaled false if unsignaled.
+         */
+        virtual bool poll() = 0;
+        
+        /**
          * @brief Resets the fence back into an unsignaled state.
          */
         virtual void reset() = 0;
