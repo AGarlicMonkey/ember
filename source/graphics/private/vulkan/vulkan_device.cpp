@@ -63,10 +63,14 @@ namespace ember::graphics {
         factory          = make_unique<vulkan_resource_factory>(logical_device, this->family_indices, memory_allocator.get());
         cache            = make_unique<vulkan_shader_cache>(logical_device);
 
-        VkCommandPoolCreateInfo command_pool_create_info{
+        VkCommandPoolCreateInfo command_pool_create_info {
             .sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext = nullptr,
+#if !EMBER_CORE_ENABLE_PROFILING
             .flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT, /**< Internal API command buffers in ember are short lived as we always copy in a custom command buffer to them. */
+#else
+            .flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,//Commands buffers are reset when profiling
+#endif
         };
 
         //Graphics

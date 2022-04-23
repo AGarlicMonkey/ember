@@ -20,12 +20,6 @@
 using namespace ember::containers;
 
 namespace {
-//TODO: This stuff
-#if EMBER_CORE_ENABLE_PROFILING
-    PFN_vkGetCalibratedTimestampsEXT fp_vkGetCalibratedTimestampsEXT;
-    PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT;
-#endif
-
     VkIndexType get_index_type(ember::graphics::index_type const type) {
         switch(type) {
             case ember::graphics::index_type::uint16:
@@ -92,8 +86,10 @@ namespace ember::graphics {
         VkCommandBuffer vk_command_buffer{ VK_NULL_HANDLE };
         EMBER_VULKAN_VERIFY_RESULT(vkAllocateCommandBuffers(logical_device, &buffer_alloc_info, &vk_command_buffer), "Failed to allocate VkCommandBuffer.");
 
-        TracyVkCtx ctx{ TracyVkContextCalibrated(physical_device, logical_device, handle, vk_command_buffer, , ) };//TODO: calibrated stuff
-
+        //TODO: Currently doesn't work - tracy will need it's own unique cmd buffer and not to be destroyed every frame
+#if 0
+        TracyVkCtx ctx{ TracyVkContextCalibrated(physical_device, logical_device, handle, vk_command_buffer, fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT, fp_vkGetCalibratedTimestampsEXT) };
+#endif
         {
             VkCommandBufferBeginInfo const begin_info{
                 .sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
@@ -264,6 +260,9 @@ namespace ember::graphics {
             }
         }
 
+#if 0
+        TracyVkCollect(ctx, vk_command_buffer);
         TracyVkDestroy(ctx);
+#endif
     }
 }

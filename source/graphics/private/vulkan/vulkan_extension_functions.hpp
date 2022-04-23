@@ -8,3 +8,8 @@ extern PFN_vkSetDebugUtilsObjectNameEXT fp_vkSetDebugUtilsObjectNameEXT;
 extern PFN_vkCmdBeginDebugUtilsLabelEXT fp_vkCmdBeginDebugUtilsLabelEXT;
 extern PFN_vkCmdEndDebugUtilsLabelEXT fp_vkCmdEndDebugUtilsLabelEXT;
 #endif
+
+#if EMBER_CORE_ENABLE_PROFILING
+extern PFN_vkGetCalibratedTimestampsEXT fp_vkGetCalibratedTimestampsEXT;
+extern PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT;
+#endif

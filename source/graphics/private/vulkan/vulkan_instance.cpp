@@ -50,6 +50,11 @@ PFN_vkCmdBeginDebugUtilsLabelEXT fp_vkCmdBeginDebugUtilsLabelEXT;
 PFN_vkCmdEndDebugUtilsLabelEXT fp_vkCmdEndDebugUtilsLabelEXT;
 #endif
 
+#if EMBER_CORE_ENABLE_PROFILING
+PFN_vkGetCalibratedTimestampsEXT fp_vkGetCalibratedTimestampsEXT;
+PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT;
+#endif
+
 namespace {
     VkResult create_debug_utils_messenger_EXT(VkInstance instance, VkDebugUtilsMessengerCreateInfoEXT const *pCreateInfo, VkAllocationCallbacks const *pAllocator, VkDebugUtilsMessengerEXT *pDebugMessenger) {
         auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
@@ -209,7 +214,6 @@ namespace ember::graphics {
 #endif
         }
 
-        //Initialise all of the debug extension function
 #if EMBER_GRAPHICS_DEBUG_UTILITIES
         if(fp_vkSetDebugUtilsObjectNameEXT == nullptr) {
             fp_vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(instance, "vkSetDebugUtilsObjectNameEXT"));
@@ -230,6 +234,9 @@ namespace ember::graphics {
 
 #if EMBER_GRAPHICS_TRACK_MEMORY
                 VK_EXT_MEMORY_BUDGET_EXTENSION_NAME,
+#endif
+#if EMBER_CORE_ENABLE_PROFILING
+                VK_EXT_CALIBRATED_TIMESTAMPS_EXTENSION_NAME
 #endif
         };
 
@@ -339,6 +346,17 @@ namespace ember::graphics {
             EMBER_VULKAN_VERIFY_RESULT(vkCreateDevice(physical_device, &create_info, &global_host_allocation_callbacks, &logical_device), "Failed to create logical device for vulkan. ");
             selected_device = make_unique<vulkan_device>(instance, physical_device, logical_device, queue_family_indices);
         }
+
+#if EMBER_CORE_ENABLE_PROFILING
+        if(fp_vkGetCalibratedTimestampsEXT == nullptr) {
+            fp_vkGetCalibratedTimestampsEXT = reinterpret_cast<PFN_vkGetCalibratedTimestampsEXT>(vkGetInstanceProcAddr(instance, "vkGetCalibratedTimestampsEXT"));
+            EMBER_CHECK(fp_vkGetCalibratedTimestampsEXT != nullptr);
+        }
+        if(fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT == nullptr) {
+            fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceCalibrateableTimeDomainsEXT"));
+            EMBER_CHECK(fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT != nullptr);
+        }
+#endif
 
         EMBER_LOG(EmberGraphicsVulkan, log_level::info, "Creation of Vulkan instance was successful!");
         return make_unique<vulkan_instance>(instance, debug_messenger, std::move(selected_device));
