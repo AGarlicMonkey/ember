@@ -75,7 +75,7 @@ namespace ember::graphics {
 
     VkPresentModeKHR vulkan_swapchain::choose_present_mode(array<VkPresentModeKHR> const &available_present_modes) {
         for(auto const &present_mode : available_present_modes) {
-            if(present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            if(present_mode == VK_PRESENT_MODE_MAILBOX_KHR) {//NOTE: Mailbox is a vsync
                 return present_mode;
             }
         }

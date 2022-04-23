@@ -13,6 +13,7 @@ namespace ember::graphics {
     class resource_factory;
     class shader_cache;
     class fence;
+    class semaphore;
 
     class graphics_queue;
     class compute_queue;
@@ -73,7 +74,8 @@ namespace ember::graphics {
          * @brief Presents the swapchain to the window it's attached to.
          * @param swapchain The swapchain to present.
          * @param image_index The index of the image in the swapchain to present.
+         * @param wait_semaphore The semaphore to wait on before presenting. Usually signaled when the image is done being rendered to.
          */
-        virtual void present_swapchain(swapchain const *const swapchain, std::size_t const image_index) = 0;
+        virtual void present_swapchain(swapchain const *const swapchain, std::size_t const image_index, semaphore const* const wait_semaphore) = 0;
     };
 }

@@ -11,6 +11,7 @@
 namespace ember::graphics {
     class command_buffer;
     class fence;
+    class semaphore;
     class swapchain;
 }
 
@@ -21,6 +22,8 @@ namespace ember::graphics {
         struct queue {
             VkQueue handle{ VK_NULL_HANDLE };
             VkCommandPool command_pool{ VK_NULL_HANDLE };//TODO: Pool per frame
+
+            VkCommandBuffer alloc_command_buffer();
 
 #if EMBER_CORE_ENABLE_PROFILING
             VkCommandPool profiling_pool{ VK_NULL_HANDLE };
@@ -57,7 +60,7 @@ namespace ember::graphics {
         void submit(compute_submit_info const &submit_info, fence const *const signal_fence);
         void submit(transfer_submit_info const &submit_info, fence const *const signal_fence);
 
-        void present(swapchain const *const swapchain, std::size_t const image_index);
+        void present(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore);
 
     private:
         void record_and_submit_commands(VkCommandBuffer vk_buffer, command_buffer const &command_buffer);

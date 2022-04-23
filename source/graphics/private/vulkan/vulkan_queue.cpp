@@ -93,7 +93,7 @@ namespace ember::graphics {
         };
 
         for(auto const *command_buffer : submit_info.command_buffers) {
-            VkCommandBuffer vk_command_buffer{ VK_NULL_HANDLE };
+            VkCommandBuffer vk_command_buffer{ VK_NULL_HANDLE };//TODO: Need to cache these or free them
             EMBER_VULKAN_VERIFY_RESULT(vkAllocateCommandBuffers(logical_device, &buffer_alloc_info, &vk_command_buffer), "Failed to allocate VkCommandBuffer.");
 
             VkCommandBufferBeginInfo const begin_info{
@@ -152,14 +152,17 @@ namespace ember::graphics {
         //TODO
     }
 
-    void vulkan_queue::present(swapchain const *const swapchain, std::size_t const image_index) {
+    void vulkan_queue::present(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) {
         VkSwapchainKHR const swapchain_handle{ resource_cast<vulkan_swapchain const>(swapchain)->get_handle() };
+        VkSemaphore const semaphore_handle{ resource_cast<vulkan_semaphore const>(wait_semaphore)->get_handle() };
+
         auto const index{ static_cast<std::uint32_t>(image_index) };
+
         VkPresentInfoKHR const present_submit_info{
             .sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
             .pNext              = nullptr,
-            .waitSemaphoreCount = 0,
-            .pWaitSemaphores    = nullptr,
+            .waitSemaphoreCount = 1,
+            .pWaitSemaphores    = &semaphore_handle,
             .swapchainCount     = 1,
             .pSwapchains        = &swapchain_handle,
             .pImageIndices      = &index,
