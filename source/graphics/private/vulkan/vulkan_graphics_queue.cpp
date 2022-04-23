@@ -109,7 +109,7 @@ namespace ember::graphics {
                             .sType      = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
                             .pNext      = nullptr,
                             .pLabelName = command->name.c_str(),
-                            .color      = {},
+                            .color      = { command->colour.r, command->colour.g, command->colour.b, command->colour.a },
                         };
 
                         fp_vkCmdBeginDebugUtilsLabelEXT(vk_command_buffer, &label);

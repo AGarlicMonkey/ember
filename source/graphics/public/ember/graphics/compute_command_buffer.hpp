@@ -33,7 +33,7 @@ namespace ember::graphics {
          * @brief Pushes a user marker into the command buffer.
          * @param name 
          */
-        void push_user_marker(std::string name);
+        void push_user_marker(std::string name, maths::vec4f const colour);
         /**
          * @brief Pops the most recently pushed command from the buffer.
          */
@@ -75,9 +75,9 @@ namespace ember::graphics::internal {
         compute_command_buffer &buffer;
 
     public:
-        scoped_user_marker(compute_command_buffer &buffer, std::string name)
+        scoped_user_marker(compute_command_buffer &buffer, std::string name, maths::vec4f const colour)
             : buffer{ buffer } {
-            buffer.push_user_marker(std::move(name));
+            buffer.push_user_marker(std::move(name), colour);
         }
 
         //TODO: other ctors
@@ -88,13 +88,16 @@ namespace ember::graphics::internal {
     };
 }
 
+    #define INTERNAL_EMBER_GRAPHICS_CAT2(a, b, c) a##b##c
+    #define INTERNAL_EMBER_GRAPHICS_CAT(a, b, c) INTERNAL_EMBER_GRAPHICS_CAT2(a, b, c)
+
     /**
      * @brief Automatically pushses and pops a user marker.
      */
-    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name) \
-        internal::scoped_user_marker{ command_buffer, name };
+    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name, colour) \
+        ember::graphics::internal::scoped_user_marker INTERNAL_EMBER_GRAPHICS_CAT(scoped_user_marker, __COUNT__, __LINE__){ command_buffer, name, colour };
 #else
-    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name)
+    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name, colour)
 #endif
 
 #include "compute_command_buffer.inl"

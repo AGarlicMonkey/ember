@@ -11,19 +11,9 @@
 #include <span>
 #include <string>
 #include <ember/containers/array.hpp>
+#include <ember/maths/vector.hpp>
 
 namespace ember::graphics {
-    //General command buffer
-#if EMBER_GRAPHICS_DEBUG_UTILITIES
-    template<>
-    struct recorded_command<command_type::push_user_marker_command> {
-        std::string name{};
-    };
-
-    template<>
-    struct recorded_command<command_type::pop_user_marker_command> {};
-#endif
-
     //Transfer command buffer
     template<>
     struct recorded_command<command_type::copy_buffer_to_buffer_command> {
@@ -46,6 +36,17 @@ namespace ember::graphics {
     };
 
     //Compute command buffer
+#if EMBER_GRAPHICS_DEBUG_UTILITIES
+    template<>
+    struct recorded_command<command_type::push_user_marker_command> {
+        std::string name{};
+        maths::vec4f colour{};
+    };
+
+    template<>
+    struct recorded_command<command_type::pop_user_marker_command> {};
+#endif
+
     template<>
     struct recorded_command<command_type::bind_compute_pipeline_object_command> {
     };
