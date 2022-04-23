@@ -55,7 +55,7 @@ namespace ember::containers {
 
         template<typename array_type_1>
         bool operator!=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept {
-            return !(lhs.ptr == rhs.ptr);
+            return !(lhs == rhs);
         }
 
         template<typename array_type>
@@ -109,7 +109,7 @@ namespace ember::containers {
 
         template<typename array_type_1>
         bool operator!=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept {
-            return !(lhs.ptr == rhs.ptr);
+            return !(lhs == rhs);
         }
     }
 
