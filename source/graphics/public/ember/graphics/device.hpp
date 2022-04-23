@@ -69,5 +69,11 @@ namespace ember::graphics {
          */
         virtual void submit_to_transfer_queue(transfer_submit_info const &submit_info, fence const *const signal_fence) = 0;
 
+        /**
+         * @brief Presents the swapchain to the window it's attached to.
+         * @param swapchain The swapchain to present.
+         * @param image_index The index of the image in the swapchain to present.
+         */
+        virtual void present_swapchain(swapchain const *const swapchain, std::size_t const image_index) = 0;
     };
 }

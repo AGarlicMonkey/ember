@@ -106,12 +106,6 @@ namespace ember::graphics {
     struct recorded_command<command_type::draw_indexed_command> {
         std::size_t const index_count;
     };
-
-    template<>
-    struct recorded_command<command_type::present_command> {
-        swapchain const *const swapchain;
-        std::size_t const image_index;
-    };
 }
 
 namespace ember::graphics {

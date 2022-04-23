@@ -196,6 +196,10 @@ namespace ember::graphics {
         queue.submit(submit_info, signal_fence);
     }
 
+    void vulkan_device::present_swapchain(swapchain const *const swapchain, std::size_t const image_index) {
+        queue.present(swapchain, image_index);
+    }
+
     queue_family_indices vulkan_device::get_physical_device_queue_family_indices(VkPhysicalDevice device) {
         queue_family_indices indices{};
         set<std::uint32_t> graphics_families{};

@@ -38,7 +38,7 @@ namespace ember::graphics {
 
     array<image *> vulkan_swapchain::get_images() const {
         array<image *> out_images{};
-        //out_images.reserve(images.size()); //TODO
+        out_images.reserve(images.size());
 
         for(auto const &image : images) {
             out_images.push_back(image.get());

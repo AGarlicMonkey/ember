@@ -11,6 +11,7 @@
 namespace ember::graphics {
     class command_buffer;
     class fence;
+    class swapchain;
 }
 
 namespace ember::graphics {
@@ -55,6 +56,8 @@ namespace ember::graphics {
         void submit(graphics_submit_info const &submit_info, fence const *const signal_fence);
         void submit(compute_submit_info const &submit_info, fence const *const signal_fence);
         void submit(transfer_submit_info const &submit_info, fence const *const signal_fence);
+
+        void present(swapchain const *const swapchain, std::size_t const image_index);
 
     private:
         void record_and_submit_commands(VkCommandBuffer vk_buffer, command_buffer const &command_buffer);

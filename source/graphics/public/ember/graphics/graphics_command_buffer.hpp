@@ -103,13 +103,6 @@ namespace ember::graphics {
          * @param index_count How many indices from the index buffer to draw.
          */
         void draw_indexed(std::size_t const index_count);
-
-        /**
-         * @brief Presents the swapchain to the window it's attached to.
-         * @param swapchain The swapchain to present.
-         * @param image_index The index of the image in the swapchain to present.
-         */
-        void present(swapchain const *const swapchain, std::size_t const image_index);
     };
 }
 

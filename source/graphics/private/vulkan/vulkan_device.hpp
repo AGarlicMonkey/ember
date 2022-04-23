@@ -49,6 +49,7 @@ namespace ember::graphics {
         void submit_to_compute_queue(compute_submit_info const &submit_info, fence const *const signal_fence) override;
         void submit_to_transfer_queue(transfer_submit_info const &submit_info, fence const *const signal_fence) override;
 
+        void present_swapchain(swapchain const *const swapchain, std::size_t const image_index) override;
 
         static queue_family_indices get_physical_device_queue_family_indices(VkPhysicalDevice device);
         static std::int32_t score_physical_device(VkPhysicalDevice physical_device, containers::array<char const *> const &required_extensions);

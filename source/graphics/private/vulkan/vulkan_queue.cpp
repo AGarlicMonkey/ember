@@ -141,22 +141,6 @@ namespace ember::graphics {
             VkFence const fence_handle{ signal_fence != nullptr ? resource_cast<vulkan_fence const>(signal_fence)->get_handle() : VK_NULL_HANDLE };
 
             EMBER_VULKAN_VERIFY_RESULT(vkQueueSubmit(graphics_queue.handle, 1, &graphics_submit_info, fence_handle), "Failed to submit VkCommandBuffer.");
-
-            //Add the present submission
-            // VkSwapchainKHR const swapchain_handle{ resource_cast<vulkan_swapchain const>(command->swapchain)->get_handle() };
-            // auto const image_index{ static_cast<std::uint32_t>(command->image_index) };
-
-            // VkPresentInfoKHR const present_submit_info{
-            //     .sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
-            //     .pNext              = nullptr,
-            //     .waitSemaphoreCount = 0,
-            //     .pWaitSemaphores    = nullptr,
-            //     .swapchainCount     = 1,
-            //     .pSwapchains        = &swapchain_handle,
-            //     .pImageIndices      = &image_index,
-            // };
-
-            // EMBER_VULKAN_VERIFY_RESULT(vkQueuePresentKHR(handle, &present_submit_info), "Error submitting swapchain.");
         }
     }
 
@@ -166,6 +150,22 @@ namespace ember::graphics {
 
     void vulkan_queue::submit(transfer_submit_info const &submit_info, fence const *const signal_fence) {
         //TODO
+    }
+
+    void vulkan_queue::present(swapchain const *const swapchain, std::size_t const image_index) {
+        VkSwapchainKHR const swapchain_handle{ resource_cast<vulkan_swapchain const>(swapchain)->get_handle() };
+        auto const index{ static_cast<std::uint32_t>(image_index) };
+        VkPresentInfoKHR const present_submit_info{
+            .sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+            .pNext              = nullptr,
+            .waitSemaphoreCount = 0,
+            .pWaitSemaphores    = nullptr,
+            .swapchainCount     = 1,
+            .pSwapchains        = &swapchain_handle,
+            .pImageIndices      = &index,
+        };
+
+        EMBER_VULKAN_VERIFY_RESULT(vkQueuePresentKHR(graphics_queue.handle, &present_submit_info), "Error submitting swapchain.");
     }
 
     void vulkan_queue::record_and_submit_commands(VkCommandBuffer vk_buffer, command_buffer const &command_buffer) {

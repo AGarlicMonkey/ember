@@ -45,8 +45,6 @@ namespace ember::graphics {
                 return sizeof(recorded_command<command_type::bind_index_buffer_command>);
             case command_type::draw_indexed_command:
                 return sizeof(recorded_command<command_type::draw_indexed_command>);
-            case command_type::present_command:
-                return sizeof(recorded_command<command_type::present_command>);
             default:
                 EMBER_CHECK(false);
                 return 0;
