@@ -11,7 +11,7 @@ namespace ember::graphics {
         VkPhysicalDevice physical_device{ VK_NULL_HANDLE };
         VkDevice logical_device{ VK_NULL_HANDLE };
         VkQueue handle{ VK_NULL_HANDLE };
-        VkCommandPool command_pool{ VK_NULL_HANDLE };
+        VkCommandPool command_pool{ VK_NULL_HANDLE }; //TODO: Create own command pool and have 1 per frame in flight. Then just reset the whole pool at the beginning of the submission
 
         //FUNCTIONS
     public:

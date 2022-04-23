@@ -76,6 +76,11 @@ namespace ember::graphics {
     }
 
     void vulkan_graphics_queue::submit(graphics_submit_info const &submit_info, fence const *const signal_fence) {
+        //TODO: There really needs to be a better way to either let the backend know what frame we're on or move
+        //more of the frame synchronisation into the back end iteself.
+        //Resetting here only works with a current debug set up where we don't process multiple frames.
+        vkResetCommandPool(logical_device, command_pool, 0);
+
         VkCommandBufferAllocateInfo const buffer_alloc_info{
             .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
             .pNext              = nullptr,
@@ -258,8 +263,6 @@ namespace ember::graphics {
                 }
             }
         }
-
-        vkFreeCommandBuffers(logical_device, command_pool, 1, &vk_command_buffer);
 
         TracyVkDestroy(ctx);
     }
