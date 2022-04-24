@@ -3,6 +3,7 @@
 #include "ember/graphics/transfer_command_buffer.hpp"
 
 #include <ember/core/export.hpp>
+#include <ember/core/profiling.hpp>
 #include <ember/maths/vector.hpp>
 #include <string>
 
@@ -28,7 +29,7 @@ namespace ember::graphics {
 
         inline ~compute_command_buffer() override;
 
-#if EMBER_GRAPHICS_DEBUG_UTILITIES
+#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
         /**
          * @brief Pushes a user marker into the command buffer.
          * @param name 
@@ -68,7 +69,7 @@ namespace ember::graphics {
     };
 }
 
-#if EMBER_GRAPHICS_DEBUG_UTILITIES
+#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
 namespace ember::graphics::internal {
     class scoped_user_marker {
     private:
@@ -94,8 +95,9 @@ namespace ember::graphics::internal {
     /**
      * @brief Automatically pushses and pops a user marker.
      */
-    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name, colour) \
-        ember::graphics::internal::scoped_user_marker INTERNAL_EMBER_GRAPHICS_CAT(scoped_user_marker, __COUNT__, __LINE__){ command_buffer, name, colour };
+    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name, colour)                                                                                      \
+        ember::graphics::internal::scoped_user_marker INTERNAL_EMBER_GRAPHICS_CAT(scoped_user_marker, __COUNT__, __LINE__){ command_buffer, name, colour }; \
+        EMBER_PROFILE_SCOPE(name)
 #else
     #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name, colour)
 #endif

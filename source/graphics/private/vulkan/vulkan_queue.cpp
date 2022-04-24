@@ -97,7 +97,12 @@ namespace ember::graphics {
             VkCommandBuffer vk_command_buffer{ alloc_buffer(graphics_queue) };
 
             EMBER_VULKAN_VERIFY_RESULT(vkBeginCommandBuffer(vk_command_buffer, &begin_info), "Failed to begin recording.");
-            record_commands(vk_command_buffer, *command_buffer);
+
+            record_commands(graphics_queue, vk_command_buffer, *command_buffer);
+#if EMBER_CORE_ENABLE_PROFILING
+            TracyVkCollect(graphics_queue.profiling_context, vk_command_buffer);
+#endif
+
             EMBER_VULKAN_VERIFY_RESULT(vkEndCommandBuffer(vk_command_buffer), "Failed to end recording.");
 
             recorded_command_buffers.push_back(vk_command_buffer);
@@ -183,12 +188,15 @@ namespace ember::graphics {
         EMBER_VULKAN_VERIFY_RESULT(vkQueuePresentKHR(graphics_queue.handle, &present_submit_info), "Error submitting swapchain.");
     }
 
-    void vulkan_queue::record_commands(VkCommandBuffer vk_buffer, command_buffer const &command_buffer) {
+    void vulkan_queue::record_commands(queue &queue, VkCommandBuffer vk_buffer, command_buffer const &command_buffer) {
+        EMBER_PROFILE_FUNCTION;
+
         for(auto &&[type, command_memory] : command_buffer) {
             switch(type) {
-#if EMBER_GRAPHICS_DEBUG_UTILITIES
+#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
                 case command_type::push_user_marker_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::push_user_marker_command> *>(command_memory) };
+    #if EMBER_GRAPHICS_DEBUG_UTILITIES
 
                     VkDebugUtilsLabelEXT const label{
                         .sType      = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
@@ -198,9 +206,22 @@ namespace ember::graphics {
                     };
 
                     fp_vkCmdBeginDebugUtilsLabelEXT(vk_buffer, &label);
+    #endif
+    #if EMBER_CORE_ENABLE_PROFILING
+                    //TODO: Colour zones
+                    if(!queue.source_datas.contains(command->name)) {
+                        queue.source_datas[command->name] = tracy::SourceLocationData{ command->name.c_str(), __FUNCTION__, __FILE__, (uint32_t)__LINE__, 0 };
+                    }
+                    queue.scoped_events.emplace(queue.profiling_context, &queue.source_datas.at(command->name), vk_buffer, true);
+    #endif
                 } break;
                 case command_type::pop_user_marker_command:
+    #if EMBER_GRAPHICS_DEBUG_UTILITIES
                     fp_vkCmdEndDebugUtilsLabelEXT(vk_buffer);
+    #endif
+    #if EMBER_CORE_ENABLE_PROFILING
+                    queue.scoped_events.pop();
+    #endif
                     break;
 #endif
                 case command_type::copy_buffer_to_buffer_command:
@@ -301,7 +322,20 @@ namespace ember::graphics {
         EMBER_VULKAN_VERIFY_RESULT(vkCreateCommandPool(logical_device, &command_pool_create_info, &global_host_allocation_callbacks, &queue.command_pool), "Failed to create VkCommandPool.");
 
 #if EMBER_CORE_ENABLE_PROFILING
-        //TODO
+        if(family_index != family_indices.transfer) {
+            VkCommandBuffer init_buff{ VK_NULL_HANDLE };
+            VkCommandBufferAllocateInfo const buffer_alloc_info{
+                .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+                .pNext              = nullptr,
+                .commandPool        = queue.command_pool,
+                .level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                .commandBufferCount = 1,
+            };
+            vkAllocateCommandBuffers(logical_device, &buffer_alloc_info, &init_buff);
+            queue.profiling_context = TracyVkContextCalibrated(physical_device, logical_device, queue.handle, init_buff, fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT, fp_vkGetCalibratedTimestampsEXT);
+            vkFreeCommandBuffers(logical_device, queue.command_pool, 1, &init_buff);
+            //TODO: Name the contexts
+        }
 #endif
 
         return queue;
@@ -323,7 +357,7 @@ namespace ember::graphics {
         vkDestroyCommandPool(logical_device, queue.command_pool, &global_host_allocation_callbacks);
 
 #if EMBER_CORE_ENABLE_PROFILING
-//TracyVkDestroy(ctx);
+        TracyVkDestroy(queue.profiling_context);
 #endif
     }
 

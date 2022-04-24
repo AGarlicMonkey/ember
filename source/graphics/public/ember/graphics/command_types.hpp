@@ -4,8 +4,8 @@
 
 namespace ember::graphics {
     enum class command_type : std::uint8_t {
-        //General
-#if EMBER_GRAPHICS_DEBUG_UTILITIES
+    //General
+#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
         push_user_marker_command,
         pop_user_marker_command,
 #endif
