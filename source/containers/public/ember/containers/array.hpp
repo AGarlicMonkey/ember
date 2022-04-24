@@ -243,6 +243,12 @@ namespace ember::containers {
         std::size_t capacity() const noexcept;
 
         /**
+         * @brief Returns true if this array contains no elements.
+         * @return 
+         */
+        [[nodiscard]] bool empty() const noexcept;
+
+        /**
          * @brief Returns the item at the front of the array.
          * @return 
          */

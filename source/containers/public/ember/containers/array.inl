@@ -434,6 +434,11 @@ namespace ember::containers {
     }
 
     template<typename T>
+    bool array<T>::empty() const noexcept {
+        return elems == 0;
+    }
+
+    template<typename T>
     array<T>::reference_type array<T>::front() {
         EMBER_CHECK(elems > 0);
         return *first;

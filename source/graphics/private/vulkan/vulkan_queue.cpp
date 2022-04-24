@@ -15,6 +15,7 @@
 
 #include <ember/containers/array.hpp>
 #include <ember/core/log.hpp>
+#include <ember/core/profiling.hpp>
 
 using namespace ember::containers;
 
@@ -79,69 +80,80 @@ namespace ember::graphics {
     }
 
     void vulkan_queue::submit(graphics_submit_info const &submit_info, fence const *const signal_fence) {
-        //TODO: There really needs to be a better way to either let the backend know what frame we're on or move
-        //more of the frame synchronisation into the back end iteself.
-        //Resetting here only works with a current debug set up where we don't process multiple frames.
-        vkResetCommandPool(logical_device, graphics_queue.command_pool, 0);
+        EMBER_PROFILE_FUNCTION;
 
-        VkCommandBufferAllocateInfo const buffer_alloc_info{
-            .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
-            .pNext              = nullptr,
-            .commandPool        = graphics_queue.command_pool,
-            .level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-            .commandBufferCount = 1,
+        reset_available_buffers(graphics_queue);
+
+        VkCommandBufferBeginInfo const begin_info{
+            .sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+            .pInheritanceInfo = nullptr,
         };
 
+        //Record all command buffers
+        array<VkCommandBuffer> recorded_command_buffers{};
+
         for(auto const *command_buffer : submit_info.command_buffers) {
-            VkCommandBuffer vk_command_buffer{ VK_NULL_HANDLE };//TODO: Need to cache these or free them
-            EMBER_VULKAN_VERIFY_RESULT(vkAllocateCommandBuffers(logical_device, &buffer_alloc_info, &vk_command_buffer), "Failed to allocate VkCommandBuffer.");
+            VkCommandBuffer vk_command_buffer{ alloc_buffer(graphics_queue) };
 
-            VkCommandBufferBeginInfo const begin_info{
-                .sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-                .flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-                .pInheritanceInfo = nullptr,
-            };
             EMBER_VULKAN_VERIFY_RESULT(vkBeginCommandBuffer(vk_command_buffer, &begin_info), "Failed to begin recording.");
-
-            record_and_submit_commands(vk_command_buffer, *command_buffer);
-
+            record_commands(vk_command_buffer, *command_buffer);
             EMBER_VULKAN_VERIFY_RESULT(vkEndCommandBuffer(vk_command_buffer), "Failed to end recording.");
 
-            //Hit the present command so submit our current buffer
-            array<VkSemaphore> wait_semaphores{};
-            array<VkPipelineStageFlags> wait_stages{};
-            std::size_t const wait_semaphore_count{ submit_info.wait_semaphores.size() };
-            wait_semaphores.resize(wait_semaphore_count);
-            wait_stages.resize(wait_semaphore_count);
-
-            for(std::size_t i{ 0 }; i < wait_semaphore_count; ++i) {
-                wait_semaphores[i] = resource_cast<vulkan_semaphore const>(submit_info.wait_semaphores[i].first)->get_handle();
-                wait_stages[i]     = convert_stage(submit_info.wait_semaphores[i].second);
-            }
-
-            array<VkSemaphore> signal_semaphores{};
-            std::size_t const signal_semaphore_count{ submit_info.signal_semaphores.size() };
-            signal_semaphores.resize(signal_semaphore_count);
-            for(std::size_t i{ 0 }; i < signal_semaphore_count; ++i) {
-                signal_semaphores[i] = resource_cast<vulkan_semaphore const>(submit_info.signal_semaphores[i])->get_handle();
-            }
-
-            VkSubmitInfo const graphics_submit_info{
-                .sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-                .pNext                = nullptr,
-                .waitSemaphoreCount   = static_cast<std::uint32_t>(wait_semaphore_count),
-                .pWaitSemaphores      = wait_semaphores.data(),
-                .pWaitDstStageMask    = wait_stages.data(),
-                .commandBufferCount   = 1,
-                .pCommandBuffers      = &vk_command_buffer,
-                .signalSemaphoreCount = static_cast<std::uint32_t>(signal_semaphore_count),
-                .pSignalSemaphores    = signal_semaphores.data(),
-            };
-
-            VkFence const fence_handle{ signal_fence != nullptr ? resource_cast<vulkan_fence const>(signal_fence)->get_handle() : VK_NULL_HANDLE };
-
-            EMBER_VULKAN_VERIFY_RESULT(vkQueueSubmit(graphics_queue.handle, 1, &graphics_submit_info, fence_handle), "Failed to submit VkCommandBuffer.");
+            recorded_command_buffers.push_back(vk_command_buffer);
         }
+
+        //Do the actual queue submission
+        array<VkSemaphore> wait_semaphores{};
+        array<VkPipelineStageFlags> wait_stages{};
+        std::size_t const wait_semaphore_count{ submit_info.wait_semaphores.size() };
+        wait_semaphores.resize(wait_semaphore_count);
+        wait_stages.resize(wait_semaphore_count);
+        for(std::size_t i{ 0 }; i < wait_semaphore_count; ++i) {
+            wait_semaphores[i] = resource_cast<vulkan_semaphore const>(submit_info.wait_semaphores[i].first)->get_handle();
+            wait_stages[i]     = convert_stage(submit_info.wait_semaphores[i].second);
+        }
+
+        array<VkSemaphore> signal_semaphores{};
+        std::size_t const signal_semaphore_count{ submit_info.signal_semaphores.size() };
+        signal_semaphores.resize(signal_semaphore_count);
+        for(std::size_t i{ 0 }; i < signal_semaphore_count; ++i) {
+            signal_semaphores[i] = resource_cast<vulkan_semaphore const>(submit_info.signal_semaphores[i])->get_handle();
+        }
+
+        VkSubmitInfo const graphics_submit_info{
+            .sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .pNext                = nullptr,
+            .waitSemaphoreCount   = static_cast<std::uint32_t>(wait_semaphore_count),
+            .pWaitSemaphores      = wait_semaphores.data(),
+            .pWaitDstStageMask    = wait_stages.data(),
+            .commandBufferCount   = static_cast<std::uint32_t>(recorded_command_buffers.size()),
+            .pCommandBuffers      = recorded_command_buffers.data(),
+            .signalSemaphoreCount = static_cast<std::uint32_t>(signal_semaphore_count),
+            .pSignalSemaphores    = signal_semaphores.data(),
+        };
+
+        VkFence const fence_handle{ signal_fence != nullptr ? resource_cast<vulkan_fence const>(signal_fence)->get_handle() : VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkQueueSubmit(graphics_queue.handle, 1, &graphics_submit_info, fence_handle), "Failed to submit user batch.");
+
+        //Insert our own fence right after this queue so we know when the buffers are free to use again.
+        VkFence buffer_fence{ VK_NULL_HANDLE };
+
+        if(!graphics_queue.pooled_fences.empty()) {
+            buffer_fence = graphics_queue.pooled_fences.back();
+            graphics_queue.pooled_fences.pop_back();
+        } else {
+            VkFenceCreateInfo const create_info{
+                .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = 0u,
+            };
+            EMBER_VULKAN_VERIFY_RESULT(vkCreateFence(logical_device, &create_info, &global_host_allocation_callbacks, &buffer_fence), "Failed to create VkFence.");
+        }
+
+        EMBER_VULKAN_VERIFY_RESULT(vkQueueSubmit(graphics_queue.handle, 0, nullptr, buffer_fence), "Failed to pool fence.");
+
+        graphics_queue.pending_buffers.emplace_back(std::move(recorded_command_buffers), buffer_fence);
     }
 
     void vulkan_queue::submit(compute_submit_info const &submit_info, fence const *const signal_fence) {
@@ -171,7 +183,7 @@ namespace ember::graphics {
         EMBER_VULKAN_VERIFY_RESULT(vkQueuePresentKHR(graphics_queue.handle, &present_submit_info), "Error submitting swapchain.");
     }
 
-    void vulkan_queue::record_and_submit_commands(VkCommandBuffer vk_buffer, command_buffer const &command_buffer) {
+    void vulkan_queue::record_commands(VkCommandBuffer vk_buffer, command_buffer const &command_buffer) {
         for(auto &&[type, command_memory] : command_buffer) {
             switch(type) {
 #if EMBER_GRAPHICS_DEBUG_UTILITIES
@@ -280,7 +292,7 @@ namespace ember::graphics {
         VkCommandPoolCreateInfo const command_pool_create_info{
             .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext            = nullptr,
-            .flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT, /**< Internal API command buffers in ember are short lived as we always copy in a custom command buffer to them. */
+            .flags            = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
             .queueFamilyIndex = family_index,
         };
 
@@ -296,10 +308,72 @@ namespace ember::graphics {
     }
 
     void vulkan_queue::destroy_queue(queue &queue) {
+        vkQueueWaitIdle(queue.handle);
+
+        vkFreeCommandBuffers(logical_device, queue.command_pool, queue.pooled_buffers.size(), queue.pooled_buffers.data());
+        for(auto *fence : queue.pooled_fences) {
+            vkDestroyFence(logical_device, fence, &global_host_allocation_callbacks);
+        }
+
+        for(auto &pending : queue.pending_buffers) {
+            vkFreeCommandBuffers(logical_device, queue.command_pool, pending.buffers.size(), pending.buffers.data());
+            vkDestroyFence(logical_device, pending.fence, &global_host_allocation_callbacks);
+        }
+
         vkDestroyCommandPool(logical_device, queue.command_pool, &global_host_allocation_callbacks);
+
 #if EMBER_CORE_ENABLE_PROFILING
-//TODO
 //TracyVkDestroy(ctx);
 #endif
+    }
+
+    void vulkan_queue::reset_available_buffers(queue &queue) {
+        EMBER_PROFILE_FUNCTION;
+
+        auto const are_buffers_finished = [&](pending_buffer_info const &info) {
+            return vkGetFenceStatus(logical_device, info.fence) == VK_SUCCESS;
+        };
+
+        array<VkFence> fences_to_reset{};//Reset these after erasing otherwise we will never remove them from the loop.
+
+        for(auto &pending_buffer : queue.pending_buffers) {
+            if(are_buffers_finished(pending_buffer)) {
+                //TODO: Use insert on array
+                for(auto *buff : pending_buffer.buffers) {
+                    vkResetCommandBuffer(buff, 0);
+                    queue.pooled_buffers.emplace_back(buff);
+                }
+
+                queue.pooled_fences.emplace_back(pending_buffer.fence);
+                fences_to_reset.emplace_back(pending_buffer.fence);
+            }
+        }
+
+        queue.pending_buffers.erase(std::remove_if(queue.pending_buffers.begin(), queue.pending_buffers.end(), are_buffers_finished), queue.pending_buffers.end());
+
+        if(!fences_to_reset.empty()) {
+            vkResetFences(logical_device, fences_to_reset.size(), fences_to_reset.data());
+        }
+    }
+
+    VkCommandBuffer vulkan_queue::alloc_buffer(queue &queue) {
+        VkCommandBuffer buff{ VK_NULL_HANDLE };
+
+        if(!queue.pooled_buffers.empty()) {
+            buff = queue.pooled_buffers.back();
+            queue.pooled_buffers.pop_back();
+        } else {
+            VkCommandBufferAllocateInfo const buffer_alloc_info{
+                .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+                .pNext              = nullptr,
+                .commandPool        = graphics_queue.command_pool,
+                .level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+                .commandBufferCount = 1,
+            };
+            EMBER_VULKAN_VERIFY_RESULT(vkAllocateCommandBuffers(logical_device, &buffer_alloc_info, &buff), "Failed to allocate VkCommandBuffer.");
+        }
+
+        EMBER_CHECK(buff != VK_NULL_HANDLE);
+        return buff;
     }
 }

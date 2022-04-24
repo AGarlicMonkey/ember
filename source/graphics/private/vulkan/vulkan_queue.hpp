@@ -3,6 +3,8 @@
 #include "ember/graphics/submission_types.hpp"
 #include "types.hpp"
 
+#include <ember/containers/array.hpp>
+
 #if EMBER_CORE_ENABLE_PROFILING
     #include <TracyVulkan.hpp>
 #endif
@@ -19,15 +21,20 @@ namespace ember::graphics {
     class vulkan_queue {
         //TYPES
     private:
+        struct pending_buffer_info {
+            containers::array<VkCommandBuffer> buffers{};
+            VkFence fence{};
+        };
+
         struct queue {
             VkQueue handle{ VK_NULL_HANDLE };
-            VkCommandPool command_pool{ VK_NULL_HANDLE };//TODO: Pool per frame
+            VkCommandPool command_pool{ VK_NULL_HANDLE };//TODO: It would be nice to have a pool per frame and just reset at the beginning but the current abstraction does not allow for that.
 
-            VkCommandBuffer alloc_command_buffer();
+            containers::array<VkCommandBuffer> pooled_buffers{};
+            containers::array<VkFence> pooled_fences{};
+            containers::array<pending_buffer_info> pending_buffers{};
 
 #if EMBER_CORE_ENABLE_PROFILING
-            VkCommandPool profiling_pool{ VK_NULL_HANDLE };
-            VkCommandBuffer profiling_command_buffer{ VK_NULL_HANDLE };
             TracyVkCtx profiling_context{ nullptr };
 #endif
         };
@@ -63,10 +70,13 @@ namespace ember::graphics {
         void present(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore);
 
     private:
-        void record_and_submit_commands(VkCommandBuffer vk_buffer, command_buffer const &command_buffer);
+        static void record_commands(VkCommandBuffer vk_buffer, command_buffer const &command_buffer);
 
         queue create_queue(std::uint32_t const family_index);
         void destroy_queue(queue &queue);
+
+        void reset_available_buffers(queue &queue);
+        VkCommandBuffer alloc_buffer(queue &queue);
     };
 }
 
