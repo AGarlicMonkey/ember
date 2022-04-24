@@ -66,6 +66,8 @@ namespace ember::graphics {
     }
 
     vulkan_device::~vulkan_device() {
+        queue.release_resources();
+
         //Call dtor to make sure memory is freed before destroying the device.
         memory_allocator.reset();
         cache.reset();
@@ -196,8 +198,12 @@ namespace ember::graphics {
         queue.submit(submit_info, signal_fence);
     }
 
-    void vulkan_device::present_swapchain(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) {
-        queue.present(swapchain, image_index, wait_semaphore);
+    swapchain::result vulkan_device::present_swapchain(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) {
+        return queue.present(swapchain, image_index, wait_semaphore);
+    }
+
+    void vulkan_device::wait_until_idle() const {
+        vkDeviceWaitIdle(logical_device);
     }
 
     queue_family_indices vulkan_device::get_physical_device_queue_family_indices(VkPhysicalDevice device) {

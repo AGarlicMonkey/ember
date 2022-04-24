@@ -71,13 +71,7 @@ namespace ember::graphics {
         transfer_queue = create_queue(family_indices.transfer);
     }
 
-    vulkan_queue::~vulkan_queue() {
-        vkDeviceWaitIdle(logical_device);//Make sure we're idle before any resource clean up
-
-        destroy_queue(graphics_queue);
-        destroy_queue(compute_queue);
-        destroy_queue(transfer_queue);
-    }
+    vulkan_queue::~vulkan_queue() = default;
 
     void vulkan_queue::submit(graphics_submit_info const &submit_info, fence const *const signal_fence) {
         EMBER_PROFILE_FUNCTION;
@@ -169,7 +163,7 @@ namespace ember::graphics {
         //TODO
     }
 
-    void vulkan_queue::present(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) {
+    swapchain::result vulkan_queue::present(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) {
         VkSwapchainKHR const swapchain_handle{ resource_cast<vulkan_swapchain const>(swapchain)->get_handle() };
         VkSemaphore const semaphore_handle{ resource_cast<vulkan_semaphore const>(wait_semaphore)->get_handle() };
 
@@ -185,7 +179,13 @@ namespace ember::graphics {
             .pImageIndices      = &index,
         };
 
-        EMBER_VULKAN_VERIFY_RESULT(vkQueuePresentKHR(graphics_queue.handle, &present_submit_info), "Error submitting swapchain.");
+        return vulkan_swapchain::convert_result(vkQueuePresentKHR(graphics_queue.handle, &present_submit_info));
+    }
+
+    void vulkan_queue::release_resources() {
+        destroy_queue(graphics_queue);
+        destroy_queue(compute_queue);
+        destroy_queue(transfer_queue);
     }
 
     void vulkan_queue::record_commands(queue &queue, VkCommandBuffer vk_buffer, command_buffer const &command_buffer) {
@@ -197,7 +197,6 @@ namespace ember::graphics {
                 case command_type::push_user_marker_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::push_user_marker_command> *>(command_memory) };
     #if EMBER_GRAPHICS_DEBUG_UTILITIES
-
                     VkDebugUtilsLabelEXT const label{
                         .sType      = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT,
                         .pNext      = nullptr,

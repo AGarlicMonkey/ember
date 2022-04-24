@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ember/graphics/swapchain.hpp"
 #include "ember/graphics/submission_types.hpp"
+#include "ember/graphics/swapchain.hpp"
 
 #include <ember/memory/unique_ptr.hpp>
 
@@ -76,6 +76,11 @@ namespace ember::graphics {
          * @param image_index The index of the image in the swapchain to present.
          * @param wait_semaphore The semaphore to wait on before presenting. Usually signaled when the image is done being rendered to.
          */
-        virtual void present_swapchain(swapchain const *const swapchain, std::size_t const image_index, semaphore const* const wait_semaphore) = 0;
+        virtual swapchain::result present_swapchain(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) = 0;
+
+        /**
+         * @brief Pauses the current thread until the device is idle.
+         */
+        virtual void wait_until_idle() const = 0;
     };
 }
