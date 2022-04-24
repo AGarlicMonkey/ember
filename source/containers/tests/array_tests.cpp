@@ -148,6 +148,88 @@ TEST(array_tests, can_pop_items) {
     EXPECT_TRUE(dtor_called);
 }
 
+TEST(array_tests, can_erase_items) {
+    struct helper_type {
+        std::uint32_t &count;
+        bool call{ true };
+
+        helper_type(std::uint32_t &count)
+            : count{ count } {};
+        helper_type(helper_type const &other) = default;
+        helper_type(helper_type &&other) noexcept
+            : count{ other.count } {
+            other.call = false;
+        }
+        helper_type &operator=(helper_type const &other) noexcept = default;
+        helper_type &operator=(helper_type &&other) noexcept {
+            count      = other.count;
+            other.call = false;
+            return *this;
+        }
+        ~helper_type() {
+            if(call) {
+                ++count;
+            }
+        };
+    };
+
+    std::uint32_t count{ 0 };
+
+    array<std::uint32_t> int_arr{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    array<helper_type> dtor_arr{ helper_type{ count }, helper_type{ count }, helper_type{ count }, helper_type{ count } };
+
+    //Reset here as copying from the initialiser list will increase
+    count = 0;
+
+    auto iter_1{ int_arr.erase(int_arr.end() - 1) };
+    EXPECT_EQ(int_arr.size(), 9);
+    EXPECT_EQ(iter_1, int_arr.end());
+    EXPECT_EQ(int_arr[0], 0);
+    EXPECT_EQ(int_arr[1], 1);
+    EXPECT_EQ(int_arr[2], 2);
+    EXPECT_EQ(int_arr[3], 3);
+    EXPECT_EQ(int_arr[4], 4);
+    EXPECT_EQ(int_arr[5], 5);
+    EXPECT_EQ(int_arr[6], 6);
+    EXPECT_EQ(int_arr[7], 7);
+    EXPECT_EQ(int_arr[8], 8);
+
+    auto iter_2{ int_arr.erase(int_arr.begin()) };
+    EXPECT_EQ(int_arr.size(), 8);
+    EXPECT_EQ(*iter_2, 1);
+    EXPECT_EQ(int_arr[0], 1);
+    EXPECT_EQ(int_arr[1], 2);
+    EXPECT_EQ(int_arr[2], 3);
+    EXPECT_EQ(int_arr[3], 4);
+    EXPECT_EQ(int_arr[4], 5);
+    EXPECT_EQ(int_arr[5], 6);
+    EXPECT_EQ(int_arr[6], 7);
+    EXPECT_EQ(int_arr[7], 8);
+
+    auto iter_3{ int_arr.erase(int_arr.begin() + 1, int_arr.begin() + 4) };
+    auto last_elem{ int_arr.end() - 1 };
+    EXPECT_EQ(int_arr.size(), 5);
+    EXPECT_EQ(*iter_3, 5);
+    EXPECT_EQ(int_arr[0], 1);
+    EXPECT_EQ(int_arr[1], 5);
+    EXPECT_EQ(int_arr[2], 6);
+    EXPECT_EQ(int_arr[3], 7);
+    EXPECT_EQ(int_arr[4], 8);
+    EXPECT_EQ(int_arr.back(), 8);
+    EXPECT_EQ(*last_elem, 8);
+
+    int_arr.erase(int_arr.begin(), int_arr.end());
+    EXPECT_EQ(int_arr.size(), 0);
+
+    dtor_arr.erase(dtor_arr.begin());
+    EXPECT_EQ(dtor_arr.size(), 3);
+    EXPECT_EQ(count, 1);
+
+    dtor_arr.erase(dtor_arr.begin() + 1, dtor_arr.end() - 1);
+    EXPECT_EQ(dtor_arr.size(), 2);
+    EXPECT_EQ(count, 1);
+}
+
 TEST(array_tests, calls_destructor) {
     struct helper_type {
         std::uint32_t &count;

@@ -15,37 +15,55 @@ namespace ember::containers {
 
         template<typename array_type>
         const_array_iterator<array_type>::const_array_iterator(const_array_iterator &&other) noexcept = default;
+        template<typename array_type>
+
+        const_array_iterator<array_type>::const_array_iterator(const_array_iterator const &other) = default;
 
         template<typename array_type>
         const_array_iterator<array_type> &const_array_iterator<array_type>::operator=(const_array_iterator &&other) noexcept = default;
+
+        template<typename array_type>
+        const_array_iterator<array_type> &const_array_iterator<array_type>::operator=(const_array_iterator const &other) = default;
 
         template<typename array_type>
         const_array_iterator<array_type>::~const_array_iterator() = default;
 
         template<typename array_type>
         const_array_iterator<array_type>::pointer_type const_array_iterator<array_type>::operator->() const {
-            EMBER_CHECK(ptr < array->last);
+            EMBER_CHECK(ptr < last());
             return ptr;
         }
 
         template<typename array_type>
         const_array_iterator<array_type>::reference_type const_array_iterator<array_type>::operator*() const {
-            EMBER_CHECK(ptr < array->last);
+            EMBER_CHECK(ptr < last());
             return *ptr;
         }
 
         template<typename array_type>
         const_array_iterator<array_type> &const_array_iterator<array_type>::operator++() {
-            EMBER_CHECK(ptr < array->last);
+            EMBER_CHECK(ptr < last());
             ++ptr;
             return *this;
         }
 
         template<typename array_type>
         const_array_iterator<array_type> &const_array_iterator<array_type>::operator--() {
-            EMBER_CHECK(ptr < array->last);
+            EMBER_CHECK(ptr > first());
             --ptr;
             return *this;
+        }
+
+        template<typename array_type_1>
+        const_array_iterator<array_type_1> operator+(const_array_iterator<array_type_1> const &lhs, std::size_t const num) {
+            EMBER_CHECK(lhs.ptr + num <= lhs.last());
+            return const_array_iterator<array_type_1>{ lhs.array, lhs.ptr + num };
+        }
+
+        template<typename array_type_1>
+        const_array_iterator<array_type_1> operator-(const_array_iterator<array_type_1> const &lhs, std::size_t const num) {
+            EMBER_CHECK(lhs.ptr - num >= lhs.first());
+            return const_array_iterator<array_type_1>{ lhs.array, lhs.ptr - num };
         }
 
         template<typename array_type_1>
@@ -56,6 +74,36 @@ namespace ember::containers {
         template<typename array_type_1>
         bool operator!=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept {
             return !(lhs == rhs);
+        }
+
+        template<typename array_type_1>
+        bool operator<(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr < rhs.ptr;
+        }
+
+        template<typename array_type_1>
+        bool operator<=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr <= rhs.ptr;
+        }
+
+        template<typename array_type_1>
+        bool operator>(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr > rhs.ptr;
+        }
+
+        template<typename array_type_1>
+        bool operator>=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr >= rhs.ptr;
+        }
+
+        template<typename array_type>
+        typename const_array_iterator<array_type>::pointer_type const_array_iterator<array_type>::first() const {
+            return this->array->first;
+        }
+
+        template<typename array_type>
+        typename const_array_iterator<array_type>::pointer_type const_array_iterator<array_type>::last() const {
+            return this->array->first + this->array->elems;
         }
 
         template<typename array_type>
@@ -71,35 +119,53 @@ namespace ember::containers {
         array_iterator<array_type>::array_iterator(array_iterator &&other) noexcept = default;
 
         template<typename array_type>
+        array_iterator<array_type>::array_iterator(array_iterator const &other) = default;
+
+        template<typename array_type>
         array_iterator<array_type> &array_iterator<array_type>::operator=(array_iterator &&other) noexcept = default;
+
+        template<typename array_type>
+        array_iterator<array_type> &array_iterator<array_type>::operator=(array_iterator const &other) = default;
 
         template<typename array_type>
         array_iterator<array_type>::~array_iterator() = default;
 
         template<typename array_type>
         array_iterator<array_type>::pointer_type array_iterator<array_type>::operator->() {
-            EMBER_CHECK(ptr < array->last);
+            EMBER_CHECK(ptr < last());
             return ptr;
         }
 
         template<typename array_type>
         array_iterator<array_type>::reference_type array_iterator<array_type>::operator*() {
-            EMBER_CHECK(ptr < array->last);
+            EMBER_CHECK(ptr < last());
             return *ptr;
         }
 
         template<typename array_type>
         array_iterator<array_type> &array_iterator<array_type>::operator++() {
-            EMBER_CHECK(ptr < array->last);
+            EMBER_CHECK(ptr < last());
             ++ptr;
             return *this;
         }
 
         template<typename array_type>
         array_iterator<array_type> &array_iterator<array_type>::operator--() {
-            EMBER_CHECK(ptr < array->last);
+            EMBER_CHECK(ptr > first());
             --ptr;
             return *this;
+        }
+
+        template<typename array_type_1>
+        array_iterator<array_type_1> operator+(array_iterator<array_type_1> const &lhs, std::size_t const num) {
+            EMBER_CHECK(lhs.ptr + num <= lhs.last());
+            return array_iterator<array_type_1>{ lhs.array, lhs.ptr + num };
+        }
+
+        template<typename array_type_1>
+        array_iterator<array_type_1> operator-(array_iterator<array_type_1> const &lhs, std::size_t const num) {
+            EMBER_CHECK(lhs.ptr - num >= lhs.first());
+            return array_iterator<array_type_1>{ lhs.array, lhs.ptr - num };
         }
 
         template<typename array_type_1>
@@ -110,6 +176,36 @@ namespace ember::containers {
         template<typename array_type_1>
         bool operator!=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept {
             return !(lhs == rhs);
+        }
+
+        template<typename array_type_1>
+        bool operator<(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr < rhs.ptr;
+        }
+
+        template<typename array_type_1>
+        bool operator<=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr <= rhs.ptr;
+        }
+
+        template<typename array_type_1>
+        bool operator>(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr > rhs.ptr;
+        }
+
+        template<typename array_type_1>
+        bool operator>=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept {
+            return lhs.ptr >= rhs.ptr;
+        }
+
+        template<typename array_type>
+        typename array_iterator<array_type>::pointer_type array_iterator<array_type>::first() const {
+            return this->array->first;
+        }
+
+        template<typename array_type>
+        typename array_iterator<array_type>::pointer_type array_iterator<array_type>::last() const {
+            return this->array->first + this->array->elems;
         }
     }
 
@@ -176,7 +272,6 @@ namespace ember::containers {
         memory::free(other.memory);
         other.memory = nullptr;
         other.first  = nullptr;
-        other.last   = nullptr;
     }
 
     template<typename T>
@@ -209,7 +304,6 @@ namespace ember::containers {
         memory::free(other.memory);
         other.memory = nullptr;
         other.first  = nullptr;
-        other.last   = nullptr;
 
         return *this;
     }
@@ -227,9 +321,7 @@ namespace ember::containers {
         if(elems + 1 > cap) {
             double_size();
         }
-
-        ++elems;
-        new(last++) value_type{ val };
+        new(&first[elems++]) value_type{ val };
     }
 
     template<typename T>
@@ -238,9 +330,7 @@ namespace ember::containers {
         if(elems + 1 > cap) {
             double_size();
         }
-
-        ++elems;
-        new(last++) value_type{ std::forward<args_t>(args)... };
+        new(&first[elems++]) value_type{ std::forward<args_t>(args)... };
     }
 
     template<typename T>
@@ -248,6 +338,50 @@ namespace ember::containers {
         if(elems > 0) {
             first[elems - 1].~T();
             --elems;
+        }
+    }
+
+    template<typename T>
+    array<T>::iterator array<T>::erase(iterator where) {
+        return erase(where, where + 1);
+    }
+
+    template<typename T>
+    array<T>::iterator array<T>::erase(iterator from, iterator to) {
+        EMBER_CHECK(to <= end());
+
+        if(from == to) {
+            return to;
+        }
+
+        if(to == end()) {
+            std::size_t count{ 0 };
+
+            //If we're erasing until the end then we can just destruct the last elements
+            for(; from != end(); ++from, ++count) {
+                (*from).~T();
+            }
+
+            elems -= count;
+
+            return end();
+        } else {
+            std::size_t count{ 0 };
+
+            //Destruct the items we are going to remove
+            for(auto iter{ from }; iter != to; ++iter, ++count) {
+                (*from).~T();
+            }
+
+            //Shift the entire array over the removed elemends
+            for(auto iter{ to }, move_to{ from }; iter != end(); ++iter, ++move_to) {
+                *move_to = std::move(*iter);
+                (*iter).~T();
+            }
+
+            elems -= count;
+
+            return from;
         }
     }
 
@@ -268,7 +402,7 @@ namespace ember::containers {
         }
 
         if(elems < size) {
-            //Grow the array    
+            //Grow the array
             for(std::size_t i{ elems }; i < size; ++i) {
                 new(&first[i]) T{ std::forward<args_t>(args)... };
             }
@@ -314,13 +448,13 @@ namespace ember::containers {
     template<typename T>
     array<T>::reference_type array<T>::back() {
         EMBER_CHECK(elems > 0);
-        return *(last - 1);
+        return *(first + (elems - 1));
     }
 
     template<typename T>
     array<T>::const_reference_type array<T>::back() const {
         EMBER_CHECK(elems > 0);
-        return *(last - 1);
+        return *(first + (elems - 1));
     }
 
     template<typename T>
@@ -345,12 +479,12 @@ namespace ember::containers {
 
     template<typename T>
     array<T>::iterator array<T>::end() noexcept {
-        return iterator{ this, last };
+        return iterator{ this, first + elems };
     }
 
     template<typename T>
     array<T>::const_iterator array<T>::end() const noexcept {
-        return const_iterator{ this, last };
+        return const_iterator{ this, first + elems };
     }
 
     template<typename T>
@@ -369,19 +503,16 @@ namespace ember::containers {
     void array<T>::allocate_array(std::size_t const capacity) {
         EMBER_CHECK(memory == nullptr);
 
-        //Allocate the memory with 1 extra element for the end iterator.
-        memory = memory::alloc(sizeof(value_type) * (capacity + 1), alignof(value_type));
+        memory = memory::alloc(sizeof(value_type) * capacity, alignof(value_type));
         EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to allocate array." });
         first = reinterpret_cast<pointer_type>(memory);
-        last  = first + elems;
     }
 
     template<typename T>
     void array<T>::reallocate_array(std::size_t const new_capacity, reallocate_type const type) {
         if(memory != nullptr) {
             if(type == reallocate_type::preserve_current_items) {
-                //Reallocate the memory with 1 extra element for the end iterator.
-                std::byte *new_memory = memory::alloc(sizeof(value_type) * (new_capacity + 1), alignof(value_type));
+                std::byte *new_memory = memory::alloc(sizeof(value_type) * new_capacity, alignof(value_type));
                 EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to reallocate array." });
                 auto *new_first{ reinterpret_cast<pointer_type>(new_memory) };
 
@@ -398,13 +529,10 @@ namespace ember::containers {
                 memory::free(memory);
                 memory = new_memory;
                 first  = new_first;
-                last   = first + elems;
             } else {
-                //Reallocate the memory with 1 extra element for the end iterator.
-                memory = memory::realloc(memory, sizeof(value_type) * (new_capacity + 1), alignof(value_type));
+                memory = memory::realloc(memory, sizeof(value_type) * new_capacity, alignof(value_type));
                 EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to reallocate array." });
                 first = reinterpret_cast<pointer_type>(memory);
-                last  = first + elems;
             }
         } else {
             allocate_array(new_capacity);

@@ -18,17 +18,17 @@ namespace ember::containers::internal {
         //VARIABLES
     private:
         array_type const *array{ nullptr };
-        array_type::pointer_type ptr{ nullptr };
+        pointer_type ptr{ nullptr };
 
         //FUNCTIONS
     public:
         const_array_iterator();
         const_array_iterator(array_type const *array, typename array_type::pointer_type start);
 
-        const_array_iterator(const_array_iterator const &other) = delete;
+        const_array_iterator(const_array_iterator const &other);
         const_array_iterator(const_array_iterator &&other) noexcept;
 
-        const_array_iterator &operator=(const_array_iterator const &other) = delete;
+        const_array_iterator &operator=(const_array_iterator const &other);
         const_array_iterator &operator=(const_array_iterator &&other) noexcept;
 
         ~const_array_iterator();
@@ -40,9 +40,28 @@ namespace ember::containers::internal {
         const_array_iterator &operator--();
 
         template<typename array_type_1>
+        friend const_array_iterator<array_type_1> operator+(const_array_iterator<array_type_1> const &lhs, std::size_t const num);
+        template<typename array_type_1>
+        friend const_array_iterator<array_type_1> operator-(const_array_iterator<array_type_1> const &lhs, std::size_t const num);
+
+        template<typename array_type_1>
         friend bool operator==(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
         template<typename array_type_1>
         friend bool operator!=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
+
+        template<typename array_type_1>
+        friend bool operator<(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
+        template<typename array_type_1>
+        friend bool operator<=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
+
+        template<typename array_type_1>
+        friend bool operator>(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
+        template<typename array_type_1>
+        friend bool operator>=(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
+
+    private:
+        pointer_type first() const;
+        pointer_type last() const;
     };
 
     template<typename array_type>
@@ -65,10 +84,10 @@ namespace ember::containers::internal {
         array_iterator();
         array_iterator(array_type *array, pointer_type start);
 
-        array_iterator(array_iterator const &other) = delete;
+        array_iterator(array_iterator const &other);
         array_iterator(array_iterator &&other) noexcept;
 
-        array_iterator &operator=(array_iterator const &other) = delete;
+        array_iterator &operator=(array_iterator const &other);
         array_iterator &operator=(array_iterator &&other) noexcept;
 
         ~array_iterator();
@@ -80,9 +99,28 @@ namespace ember::containers::internal {
         array_iterator &operator--();
 
         template<typename array_type_1>
+        friend array_iterator<array_type_1> operator+(array_iterator<array_type_1> const &lhs, std::size_t const num);
+        template<typename array_type_1>
+        friend array_iterator<array_type_1> operator-(array_iterator<array_type_1> const &lhs, std::size_t const num);
+
+        template<typename array_type_1>
         friend bool operator==(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
         template<typename array_type_1>
         friend bool operator!=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
+
+        template<typename array_type_1>
+        friend bool operator<(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
+        template<typename array_type_1>
+        friend bool operator<=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
+
+        template<typename array_type_1>
+        friend bool operator>(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
+        template<typename array_type_1>
+        friend bool operator>=(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
+
+    private:
+        pointer_type first() const;
+        pointer_type last() const;
     };
 }
 
@@ -117,7 +155,6 @@ namespace ember::containers {
     private:
         std::byte *memory{ nullptr };  /**< Underlying memory of the array. */
         pointer_type first{ nullptr }; /**< Points past the first item of the array. */
-        pointer_type last{ nullptr };  /**< Points past the last item of the array. */
 
         std::size_t elems{ 0 }; /**< How many items are currently stored in this array. */
         std::size_t cap{ 0 };   /**< Total capacity of the array. */
@@ -156,6 +193,20 @@ namespace ember::containers {
          * @brief Removes an element from the end of this array
          */
         void pop_back();
+
+        /**
+         * @brief Erases an element from the array at the specified point.
+         * @param where Where to remove the element from.
+         * @return Returns an iterator after the removed element.
+         */
+        iterator erase(iterator where);
+        /**
+         * @brief Erases elements in the range [from, to).
+         * @param from Where to start erasing from (inclusive).
+         * @param to Where to erasse to (exclusive).
+         * @return Returns an iterator after the last removed element.
+         */
+        iterator erase(iterator from, iterator to);
 
         /**
          * @brief Increases the capacity of the array to meet new_capacity. If the 
