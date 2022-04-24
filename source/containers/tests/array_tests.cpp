@@ -124,6 +124,30 @@ TEST(array_tests, can_insert_new_items) {
     EXPECT_EQ(arr[2].b, 2);
 }
 
+TEST(array_tests, can_pop_items) {
+    struct helper_type {
+        bool &called;
+        helper_type(bool &called)
+            : called{ called } {};
+        ~helper_type() {
+            called = true;
+        };
+    };
+
+    array<helper_type> arr{};
+
+    bool dtor_called{ false };
+
+    arr.emplace_back(dtor_called);
+
+    ASSERT_EQ(arr.size(), 1);
+
+    arr.pop_back();
+
+    EXPECT_EQ(arr.size(), 0);
+    EXPECT_TRUE(dtor_called);
+}
+
 TEST(array_tests, calls_destructor) {
     struct helper_type {
         std::uint32_t &count;

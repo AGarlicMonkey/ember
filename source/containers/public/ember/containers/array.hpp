@@ -153,6 +153,11 @@ namespace ember::containers {
         void emplace_back(args_t &&...args);
 
         /**
+         * @brief Removes an element from the end of this array
+         */
+        void pop_back();
+
+        /**
          * @brief Increases the capacity of the array to meet new_capacity. If the 
          * current capacity is already larger than new_capatacity then this function
          * does nothing.

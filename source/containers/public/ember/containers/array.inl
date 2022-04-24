@@ -244,6 +244,14 @@ namespace ember::containers {
     }
 
     template<typename T>
+    void array<T>::pop_back() {
+        if(elems > 0) {
+            first[elems - 1].~T();
+            --elems;
+        }
+    }
+
+    template<typename T>
     void array<T>::reserve(std::size_t new_capacity) {
         if(cap < new_capacity) {
             cap = new_capacity;
