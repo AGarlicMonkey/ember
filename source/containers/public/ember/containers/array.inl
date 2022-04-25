@@ -530,6 +530,7 @@ namespace ember::containers {
                         new(&new_first[i]) value_type{ first[i] };
                     }
                 }
+                destruct_items(); //Make sure we destruct the previous items, even if we moved.
 
                 memory::free(memory);
                 memory = new_memory;

@@ -161,7 +161,7 @@ TEST(array_tests, can_erase_items) {
             other.call = false;
         }
         helper_type &operator=(helper_type const &other) noexcept = default;
-        helper_type &operator=(helper_type &&other) noexcept {
+        helper_type &operator                                     =(helper_type &&other) noexcept {
             count      = other.count;
             other.call = false;
             return *this;
@@ -250,7 +250,7 @@ TEST(array_tests, calls_destructor) {
         arr.emplace_back(count);
 
         ASSERT_EQ(arr.size(), 4);
-        ASSERT_EQ(count, 0);
+        count = 0;//dtor is called when reallocating.
     }
 
     EXPECT_EQ(count, 4);
@@ -277,6 +277,8 @@ TEST(array_tests, can_copy) {
 
     arr_2.emplace_back(count);
     arr_2.emplace_back(count);
+
+    count = 0;//dtor is called when reallocating
 
     arr_2 = arr_1;
 
@@ -306,6 +308,8 @@ TEST(array_tests, can_move) {
 
     arr_2.emplace_back(count);
     arr_2.emplace_back(count);
+
+    count = 0;//dtor is called when reallocating
 
     std::size_t const size{ arr_1.size() };
     std::size_t const capacity{ arr_1.capacity() };
@@ -358,14 +362,14 @@ TEST(array_tests, can_resize) {
         EXPECT_EQ(h.x, 100);
     }
 
-    resize_destruct_helper::x = 0;
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+    arr_3.emplace_back();
+    arr_3.emplace_back();
 
-    arr_3.emplace_back();
-    arr_3.emplace_back();
-    arr_3.emplace_back();
-    arr_3.emplace_back();
-    arr_3.emplace_back();
-    arr_3.emplace_back();
+    resize_destruct_helper::x = 0;
 
     ASSERT_EQ(arr_3.size(), 6);
     ASSERT_NE(arr_3.capacity(), 0);
@@ -462,6 +466,8 @@ TEST(array_tests, can_clear) {
     arr.emplace_back(count);
     arr.emplace_back(count);
     arr.emplace_back(count);
+
+    count = 0;//Reset count as dtors are called when resizing now
 
     ASSERT_EQ(arr.size(), 3);
 
