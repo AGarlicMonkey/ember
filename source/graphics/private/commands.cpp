@@ -5,12 +5,6 @@
 namespace ember::graphics {
     std::size_t get_size_of_command(command_type const type) {
         switch(type) {
-#if EMBER_GRAPHICS_DEBUG_UTILITIES
-            case command_type::push_user_marker_command:
-                return sizeof(recorded_command<command_type::push_user_marker_command>);
-            case command_type::pop_user_marker_command:
-                return sizeof(recorded_command<command_type::pop_user_marker_command>);
-#endif
             case command_type::copy_buffer_to_buffer_command:
                 return sizeof(recorded_command<command_type::copy_buffer_to_buffer_command>);
             case command_type::copy_buffer_to_image_command:
@@ -21,6 +15,12 @@ namespace ember::graphics {
                 return sizeof(recorded_command<command_type::buffer_memory_barrier_command>);
             case command_type::image_memory_barrier_command:
                 return sizeof(recorded_command<command_type::image_memory_barrier_command>);
+#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+            case command_type::push_user_marker_command:
+                return sizeof(recorded_command<command_type::push_user_marker_command>);
+            case command_type::pop_user_marker_command:
+                return sizeof(recorded_command<command_type::pop_user_marker_command>);
+#endif
             case command_type::bind_compute_pipeline_object_command:
                 return sizeof(recorded_command<command_type::bind_compute_pipeline_object_command>);
             case command_type::bind_descriptor_set_command:

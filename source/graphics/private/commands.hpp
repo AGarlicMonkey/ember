@@ -8,10 +8,10 @@
 
 #include <cinttypes>
 #include <cstddef>
-#include <span>
-#include <string>
 #include <ember/containers/array.hpp>
 #include <ember/maths/vector.hpp>
+#include <span>
+#include <string>
 
 namespace ember::graphics {
     //Transfer command buffer
@@ -73,8 +73,7 @@ namespace ember::graphics {
     };
 
     template<>
-    struct recorded_command<command_type::end_render_pass_command> {
-    };
+    struct recorded_command<command_type::end_render_pass_command> {};
 
     template<>
     struct recorded_command<command_type::set_viewport_command> {

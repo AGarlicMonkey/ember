@@ -4,12 +4,6 @@
 
 namespace ember::graphics {
     enum class command_type : std::uint8_t {
-    //General
-#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
-        push_user_marker_command,
-        pop_user_marker_command,
-#endif
-
         //Transfer
         copy_buffer_to_buffer_command,
         copy_buffer_to_image_command,
@@ -18,6 +12,10 @@ namespace ember::graphics {
         image_memory_barrier_command,
 
         //Compute
+#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+        push_user_marker_command,
+        pop_user_marker_command,
+#endif
         bind_compute_pipeline_object_command,
         bind_descriptor_set_command,
         push_constant_command,
