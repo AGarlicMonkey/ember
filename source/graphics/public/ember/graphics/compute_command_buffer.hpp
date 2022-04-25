@@ -29,7 +29,7 @@ namespace ember::graphics {
 
         inline ~compute_command_buffer() override;
 
-#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+#if EMBER_GRAPHICS_ENABLE_USER_MARKERS
         /**
          * @brief Pushes a user marker into the command buffer.
          * @param name 
@@ -69,7 +69,7 @@ namespace ember::graphics {
     };
 }
 
-#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+#if EMBER_GRAPHICS_ENABLE_USER_MARKERS
 namespace ember::graphics::internal {
     class scoped_user_marker {
     private:

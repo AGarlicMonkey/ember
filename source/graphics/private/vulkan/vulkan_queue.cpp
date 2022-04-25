@@ -193,7 +193,7 @@ namespace ember::graphics {
 
         for(auto &&[type, command_memory] : command_buffer) {
             switch(type) {
-#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+#if EMBER_GRAPHICS_ENABLE_USER_MARKERS
                 case command_type::push_user_marker_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::push_user_marker_command> *>(command_memory) };
     #if EMBER_GRAPHICS_DEBUG_UTILITIES

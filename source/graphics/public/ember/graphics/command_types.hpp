@@ -2,6 +2,8 @@
 
 #include <cinttypes>
 
+#define EMBER_GRAPHICS_ENABLE_USER_MARKERS EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+
 namespace ember::graphics {
     enum class command_type : std::uint8_t {
         //Transfer
@@ -12,7 +14,7 @@ namespace ember::graphics {
         image_memory_barrier_command,
 
         //Compute
-#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+#if EMBER_GRAPHICS_ENABLE_USER_MARKERS
         push_user_marker_command,
         pop_user_marker_command,
 #endif

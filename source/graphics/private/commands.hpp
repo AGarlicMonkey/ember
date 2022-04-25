@@ -36,7 +36,7 @@ namespace ember::graphics {
     };
 
     //Compute command buffer
-#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+#if EMBER_GRAPHICS_ENABLE_USER_MARKERS
     template<>
     struct recorded_command<command_type::push_user_marker_command> {
         std::string name{};

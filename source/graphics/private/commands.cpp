@@ -15,7 +15,7 @@ namespace ember::graphics {
                 return sizeof(recorded_command<command_type::buffer_memory_barrier_command>);
             case command_type::image_memory_barrier_command:
                 return sizeof(recorded_command<command_type::image_memory_barrier_command>);
-#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+#if EMBER_GRAPHICS_ENABLE_USER_MARKERS
             case command_type::push_user_marker_command:
                 return sizeof(recorded_command<command_type::push_user_marker_command>);
             case command_type::pop_user_marker_command:

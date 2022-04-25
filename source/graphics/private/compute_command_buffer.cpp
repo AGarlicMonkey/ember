@@ -5,7 +5,7 @@
 using namespace ember::maths;
 
 namespace ember::graphics {
-#if EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+#if EMBER_GRAPHICS_ENABLE_USER_MARKERS
     void compute_command_buffer::push_user_marker(std::string name, vec4f const colour) {
         record_command<command_type::push_user_marker_command>(std::move(name), colour);
     }
