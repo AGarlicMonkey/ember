@@ -65,10 +65,10 @@ namespace ember::maths {
     }
 
     template<size_t R, size_t C, number T>
-    mat<R, C, T>::row_val::row_val() = default;
+    constexpr mat<R, C, T>::row_val::row_val() = default;
 
     template<size_t R, size_t C, number T>
-    mat<R, C, T>::row_val::row_val(std::initializer_list<T> const list) {
+    constexpr mat<R, C, T>::row_val::row_val(std::initializer_list<T> const list) {
         row.insert(row.begin(), list.begin(), list.end());
     }
 
@@ -83,15 +83,15 @@ namespace ember::maths {
     }
 
     template<size_t R, size_t C, number T>
-    mat<R, C, T>::row_ref::row_ref() = default;
+    constexpr mat<R, C, T>::row_ref::row_ref() = default;
 
     template<size_t R, size_t C, number T>
-    mat<R, C, T>::row_ref::row_ref(std::initializer_list<std::reference_wrapper<T>> const list) {
+    constexpr mat<R, C, T>::row_ref::row_ref(std::initializer_list<std::reference_wrapper<T>> const list) {
         row.insert(row.begin(), list.begin(), list.end());
     }
 
     template<size_t R, size_t C, number T>
-    typename mat<R, C, T>::row_ref &mat<R, C, T>::row_ref::operator=(row_ref const &other) {
+    constexpr typename mat<R, C, T>::row_ref &mat<R, C, T>::row_ref::operator=(row_ref const &other) {
         for(size_t i{ 0 }; i < C; ++i) {
             row[i].get() = other[i];
         }
@@ -100,7 +100,7 @@ namespace ember::maths {
     }
 
     template<size_t R, size_t C, number T>
-    typename mat<R, C, T>::row_ref &mat<R, C, T>::row_ref::operator=(row_val const &other) {
+    constexpr typename mat<R, C, T>::row_ref &mat<R, C, T>::row_ref::operator=(row_val const &other) {
         for(size_t i{ 0 }; i < C; ++i) {
             row[i].get() = other[i];
         }

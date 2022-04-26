@@ -19,8 +19,8 @@ namespace ember::maths {
         struct row_val {
             std::vector<T> row;
 
-            row_val();
-            row_val(std::initializer_list<T> const list);
+            constexpr row_val();
+            constexpr row_val(std::initializer_list<T> const list);
 
             friend constexpr row_val operator*(row_val const &c, T scalar) {
                 row_val result{};
@@ -59,11 +59,11 @@ namespace ember::maths {
         struct row_ref {
             std::vector<std::reference_wrapper<T>> row;
 
-            row_ref();
-            row_ref(std::initializer_list<std::reference_wrapper<T>> const list);
+            constexpr row_ref();
+            constexpr row_ref(std::initializer_list<std::reference_wrapper<T>> const list);
 
-            row_ref &operator=(row_ref const &other);
-            row_ref &operator=(row_val const &other);
+            constexpr row_ref &operator=(row_ref const &other);
+            constexpr row_ref &operator=(row_val const &other);
 
             friend constexpr row_val operator*(row_ref const &c, T scalar) {
                 row_val result{};
