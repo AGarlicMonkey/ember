@@ -272,6 +272,8 @@ namespace ember::containers {
         memory::free(other.memory);
         other.memory = nullptr;
         other.first  = nullptr;
+        other.elems  = 0;
+        other.cap    = 0;
     }
 
     template<typename T>
@@ -304,6 +306,8 @@ namespace ember::containers {
         memory::free(other.memory);
         other.memory = nullptr;
         other.first  = nullptr;
+        other.elems  = 0;
+        other.cap    = 0;
 
         return *this;
     }
@@ -313,6 +317,11 @@ namespace ember::containers {
         if(memory != nullptr) {
             destruct_items();
             memory::free(memory);
+
+            memory = nullptr;
+            first  = nullptr;
+            elems  = 0;
+            cap    = 0;
         }
     }
 
@@ -530,7 +539,7 @@ namespace ember::containers {
                         new(&new_first[i]) value_type{ first[i] };
                     }
                 }
-                destruct_items(); //Make sure we destruct the previous items, even if we moved.
+                destruct_items();//Make sure we destruct the previous items, even if we moved.
 
                 memory::free(memory);
                 memory = new_memory;
