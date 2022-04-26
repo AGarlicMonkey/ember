@@ -7,46 +7,45 @@ static std::size_t constexpr command_alignment{ 0 };//Commands are tightly packe
 
 namespace ember::graphics {
     command_buffer::command_buffer(command_buffer &&other) noexcept
-        : buffer_memory{ other.buffer_memory }
-        , buffer_size{ other.buffer_size }
-        , pos{ other.pos } {
-        other.buffer_memory = nullptr;
+        : head{ other.head }
+        , arenas{ std::move(other.arenas) }
+        , current_arena{ other.current_arena } {
     }
 
     command_buffer &command_buffer::operator=(command_buffer &&other) noexcept {
-        buffer_memory = other.buffer_memory;
-        buffer_size   = other.buffer_size;
-        pos           = other.pos;
-
-        other.buffer_memory = nullptr;
+        head          = other.head;
+        arenas        = std::move(other.arenas);
+        current_arena = other.current_arena;
 
         return *this;
     }
 
     command_buffer::~command_buffer() {
-        //TODO: Call destructors
-
-        if(buffer_memory != nullptr) {
-            memory::free(buffer_memory);
+        if(!arenas.empty()) {
+            destruct_items();
+            for(auto &arena : arenas) {
+                memory::free(arena.memory);
+            }
         }
     }
 
     std::byte *command_buffer::alloc(std::size_t bytes) {
-        if(pos + bytes > buffer_size) {
-            if(buffer_size == 0) {
-                buffer_size   = initial_buffer_size;
-                buffer_memory = memory::alloc(buffer_size, command_alignment);
-            } else {
-                //TODO: Proper copy everything over
-
-                buffer_size *= 2;
-                buffer_memory = memory::realloc(buffer_memory, buffer_size, command_alignment);
-            }
+        if(current_arena == nullptr || current_arena->pos + bytes > current_arena->size) {
+            arenas.emplace_back(memory::alloc(initial_buffer_size, command_alignment), initial_buffer_size);
+            current_arena = &arenas.back();
         }
 
-        std::byte *const memory{ buffer_memory + pos };
-        pos += bytes;
+        std::byte *const memory{ current_arena->memory + current_arena->pos };
+        current_arena->pos += bytes;
 
         return memory;
+    }
+
+    void command_buffer::destruct_items() {
+        command *current{ head };
+        while(current != nullptr) {
+            current->destruct();
+            current = current->next;
+        }
     }
 }

@@ -11,8 +11,6 @@ namespace ember::graphics {
         //VARIABLES
     private:
         std::byte *ptr{ nullptr };
-        std::size_t pos{ 0 };
-        std::size_t max{ 0 };
 
         //FUNCTIONS
     public:
@@ -34,7 +32,7 @@ namespace ember::graphics {
         inline friend bool operator!=(command_buffer_iterator const &lhs, command_buffer_iterator const &rhs);
 
     private:
-        inline command_buffer_iterator(std::byte *ptr, std::size_t max);
+        inline command_buffer_iterator(std::byte *ptr);
     };
 }
 

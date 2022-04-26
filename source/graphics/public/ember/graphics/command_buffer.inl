@@ -2,17 +2,16 @@ namespace ember::graphics {
     command_buffer::command_buffer() = default;
 
     void command_buffer::reset() {
-        //TODO: Call destructors
-
-        pos = 0;
+        destruct_items();
+        head = nullptr;
     }
 
     command_buffer_iterator command_buffer::begin() const {
-        return { buffer_memory, pos };
+        return { reinterpret_cast<std::byte *>(head) };
     }
 
     command_buffer_iterator command_buffer::end() const {
-        return { buffer_memory + pos, pos };
+        return { nullptr };
     }
 
     template<command_type type, typename... args_type>
@@ -24,6 +23,13 @@ namespace ember::graphics {
 
         new(memory) command_type{ type };
         memory += type_size;
-        new(memory) recorded_command<type>{ std::forward<args_type>(args)... };
+        auto *command{ new(memory) recorded_command<type>{ std::forward<args_type>(args)... } };
+
+        if(current != nullptr) {
+            current->next = command;
+            current       = current->next;
+        } else {
+            head = current = command;
+        }
     }
 }

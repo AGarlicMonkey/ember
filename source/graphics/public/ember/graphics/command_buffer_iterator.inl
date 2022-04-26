@@ -9,8 +9,7 @@ namespace ember::graphics {
         return !(lhs == rhs);
     }
 
-    command_buffer_iterator::command_buffer_iterator(std::byte *ptr, std::size_t max)
-        : ptr{ ptr }
-        , max{ max } {
+    command_buffer_iterator::command_buffer_iterator(std::byte *ptr)
+        : ptr{ ptr } {
     }
 }

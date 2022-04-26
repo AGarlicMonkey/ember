@@ -34,6 +34,19 @@ namespace ember::graphics {
         draw_indexed_command,
     };
 
+    struct command {
+        command *next{ nullptr };
+        virtual void destruct() = 0;
+    };
+
+    template<typename command_t>
+    struct command_destructor : public command {
+        void destruct() override {
+            auto *this_command{ static_cast<command_t *>(this) };
+            this_command->~command_t();
+        }
+    };
+
     template<command_type type>
     struct recorded_command;
 }

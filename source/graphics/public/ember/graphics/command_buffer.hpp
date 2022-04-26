@@ -4,15 +4,26 @@
 #include "ember/graphics/command_types.hpp"
 
 #include <cstddef>
+#include <ember/containers/array.hpp>
 
 namespace ember::graphics {
     class command_buffer {
+        //TYPES
+    private:
+        //TODO: Would like everything in a single memory block but it gets complicated moving / copying commands
+        //so for now we'll allocate different arenas.
+        struct arena {
+            std::byte *memory{ nullptr };
+            std::size_t size{ 0 };
+            std::size_t pos{ 0 };
+        };
+
         //VARIABLES
     private:
-        std::byte *buffer_memory{ nullptr };
-        std::size_t buffer_size{ 0 };
-
-        std::size_t pos{ 0 }; /**< Current position from the start of the command buffer. */
+        command *head{ nullptr };
+        command *current{ nullptr };
+        containers::array<arena> arenas{};
+        arena *current_arena{ nullptr };
 
         //FUNCTIONS
     public:
@@ -54,6 +65,8 @@ namespace ember::graphics {
 
     private:
         std::byte *alloc(std::size_t bytes);
+
+        void destruct_items();
     };
 }
 
