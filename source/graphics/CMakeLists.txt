@@ -119,9 +119,6 @@ add_library(
     ${SOURCE_PUBLIC}/command_buffer.hpp
     ${SOURCE_PUBLIC}/command_buffer.inl
     ${SOURCE_PRIVATE}/command_buffer.cpp
-    ${SOURCE_PUBLIC}/command_buffer_iterator.hpp
-    ${SOURCE_PUBLIC}/command_buffer_iterator.inl
-    ${SOURCE_PRIVATE}/command_buffer_iterator.cpp
     ${SOURCE_PRIVATE}/commands.hpp
     ${SOURCE_PRIVATE}/commands.cpp
     ${SOURCE_PUBLIC}/command_types.hpp

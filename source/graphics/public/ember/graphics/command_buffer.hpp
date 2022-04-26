@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ember/graphics/command_buffer_iterator.hpp"
 #include "ember/graphics/command_types.hpp"
 
 #include <cstddef>
@@ -9,6 +8,37 @@
 namespace ember::graphics {
     class command_buffer {
         //TYPES
+    public:
+        class iterator {
+            friend command_buffer;
+
+            //VARIABLES
+        private:
+            std::byte *ptr{ nullptr };
+
+            //FUNCTIONS
+        public:
+            iterator() = delete;
+
+            iterator(iterator const &other)     = delete;
+            iterator(iterator &&other) noexcept = delete;
+
+            iterator &operator=(iterator const &other) = delete;
+            iterator &operator=(iterator &&other) noexcept = delete;
+
+            inline ~iterator();
+
+            std::pair<command_type, std::byte *> operator*() const;
+
+            iterator &operator++();
+
+            inline friend bool operator==(iterator const &lhs, iterator const &rhs);
+            inline friend bool operator!=(iterator const &lhs, iterator const &rhs);
+
+        private:
+            inline iterator(std::byte *ptr);
+        };
+
     private:
         //TODO: Would like everything in a single memory block but it gets complicated moving / copying commands
         //so for now we'll allocate different arenas.
@@ -46,12 +76,12 @@ namespace ember::graphics {
          * @brief Returns an iterator to the beginning of this command buffer.
          * @return 
          */
-        inline command_buffer_iterator begin() const;
+        inline iterator begin() const;
         /**
          * @brief Returns an iterator to the end of this command buffer.
          * @return 
          */
-        inline command_buffer_iterator end() const;
+        inline iterator end() const;
 
     protected:
         /**

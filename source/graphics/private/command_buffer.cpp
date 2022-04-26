@@ -6,6 +6,16 @@ static std::size_t constexpr initial_buffer_size{ EMBER_KB(1) };
 static std::size_t constexpr command_alignment{ 0 };//Commands are tightly packed
 
 namespace ember::graphics {
+    std::pair<command_type, std::byte *> command_buffer::iterator::operator*() const {
+        command_type const type{ *reinterpret_cast<command_type const *>(ptr - sizeof(command_type)) };
+        return { type, ptr };
+    }
+
+    command_buffer::iterator &command_buffer::iterator::operator++() {
+        ptr = reinterpret_cast<std::byte *>(reinterpret_cast<command *>(ptr)->next);
+        return *this;
+    }
+
     command_buffer::command_buffer(command_buffer &&other) noexcept
         : head{ other.head }
         , arenas{ std::move(other.arenas) }

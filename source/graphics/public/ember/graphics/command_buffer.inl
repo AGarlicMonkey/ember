@@ -1,4 +1,18 @@
 namespace ember::graphics {
+    command_buffer::iterator::~iterator() = default;
+
+    bool operator==(command_buffer::iterator const &lhs, command_buffer::iterator const &rhs) {
+        return lhs.ptr == rhs.ptr;
+    }
+
+    bool operator!=(command_buffer::iterator const &lhs, command_buffer::iterator const &rhs) {
+        return !(lhs == rhs);
+    }
+
+    command_buffer::iterator::iterator(std::byte *ptr)
+        : ptr{ ptr } {
+    }
+
     command_buffer::command_buffer() = default;
 
     void command_buffer::reset() {
@@ -6,11 +20,11 @@ namespace ember::graphics {
         head = nullptr;
     }
 
-    command_buffer_iterator command_buffer::begin() const {
+    command_buffer::iterator command_buffer::begin() const {
         return { reinterpret_cast<std::byte *>(head) };
     }
 
-    command_buffer_iterator command_buffer::end() const {
+    command_buffer::iterator command_buffer::end() const {
         return { nullptr };
     }
 
