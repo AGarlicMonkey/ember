@@ -1,6 +1,7 @@
 #include "ember/maths/helpers.hpp"
 
 #include <cinttypes>
+#include <ember/core/log.hpp>
 
 namespace ember::maths {
     namespace internal {
@@ -65,89 +66,35 @@ namespace ember::maths {
     }
 
     template<size_t R, size_t C, number T>
-    constexpr mat<R, C, T>::row_val::row_val() = default;
-
-    template<size_t R, size_t C, number T>
-    constexpr mat<R, C, T>::row_val::row_val(std::initializer_list<T> const list) {
-        row.insert(row.begin(), list.begin(), list.end());
-    }
-
-    template<size_t R, size_t C, number T>
-    constexpr T &mat<R, C, T>::row_val::operator[](size_t const index) {
-        return row[index];
-    }
-
-    template<size_t R, size_t C, number T>
-    constexpr T const &mat<R, C, T>::row_val::operator[](size_t const index) const {
-        return row[index];
-    }
-
-    template<size_t R, size_t C, number T>
-    constexpr mat<R, C, T>::row_ref::row_ref() = default;
-
-    template<size_t R, size_t C, number T>
-    constexpr mat<R, C, T>::row_ref::row_ref(std::initializer_list<std::reference_wrapper<T>> const list) {
-        row.insert(row.begin(), list.begin(), list.end());
-    }
-
-    template<size_t R, size_t C, number T>
-    constexpr typename mat<R, C, T>::row_ref &mat<R, C, T>::row_ref::operator=(row_ref const &other) {
-        for(size_t i{ 0 }; i < C; ++i) {
-            row[i].get() = other[i];
-        }
-
-        return *this;
-    }
-
-    template<size_t R, size_t C, number T>
-    constexpr typename mat<R, C, T>::row_ref &mat<R, C, T>::row_ref::operator=(row_val const &other) {
-        for(size_t i{ 0 }; i < C; ++i) {
-            row[i].get() = other[i];
-        }
-
-        return *this;
-    }
-
-    template<size_t R, size_t C, number T>
-    constexpr T &mat<R, C, T>::row_ref::operator[](size_t const index) {
-        return row[index];
-    }
-
-    template<size_t R, size_t C, number T>
-    constexpr T const &mat<R, C, T>::row_ref::operator[](size_t const index) const {
-        return row[index];
-    }
-
-    template<size_t R, size_t C, number T>
     constexpr mat<R, C, T>::mat(T val) {
         for(std::size_t r{ 0 }; r < R; ++r) {
             for(std::size_t c{ 0 }; c < C; ++c) {
-                data[(c * R) + r] = r == c ? val : T{};
+                data[r][c] = r == c ? val : T{};
             }
         }
     }
 
-    template<size_t R, size_t C, number T>
-    constexpr vec<C, T> operator*(mat<R, C, T> const &m, vec<C, T> const &v) {
-        vec<C, T> result{};
+    template<size_t R1, size_t C1, number U>
+    constexpr typename mat<R1, C1, U>::col_type operator*(mat<R1, C1, U> const &m, typename mat<R1, C1, U>::row_type const &v) {
+        typename mat<R1, C1, U>::col_type result{};
 
-        for(std::size_t r{ 0 }; r < R; ++r) {
-            for(std::size_t c{ 0 }; c < C; ++c) {
-                result[r] += m[r][c] * v[c];
+        for(std::size_t r{ 0 }; r < R1; ++r) {
+            for(std::size_t c{ 0 }; c < C1; ++c) {
+                result[r] += m[c][r] * v[c];
             }
         }
 
         return result;
     }
 
-    template<size_t R1, size_t R2, size_t C, number T>
-    constexpr mat<R1, R2, T> operator*(mat<R1, C, T> const &a, mat<C, R2, T> const &b) {
-        mat<R1, R2, T> result{};
+    template<size_t R1, size_t C1, number U>
+    constexpr mat<C1, C1, U> operator*(mat<R1, C1, U> const &a, mat<C1, R1, U> const &b) {
+        mat<C1, C1, U> result{};
 
-        for(std::size_t r1{ 0 }; r1 < R1; ++r1) {
-            for(std::size_t r2{ 0 }; r2 < R2; ++r2) {
-                for(std::size_t c{ 0 }; c < C; ++c) {
-                    result[r1][r2] += a[r1][c] * b[c][r2];
+        for(std::size_t c1{ 0 }; c1 < C1; ++c1) {
+            for(std::size_t c2{ 0 }; c2 < C1; ++c2) {
+                for(std::size_t r1{ 0 }; r1 < R1; ++r1) {
+                    result[c1][c2] += a[r1][c2] * b[c1][r1];
                 }
             }
         }
@@ -155,11 +102,11 @@ namespace ember::maths {
         return result;
     }
 
-    template<size_t R, size_t C, number T>
-    constexpr bool operator==(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs) {
-        for(std::size_t r{ 0 }; r < R; ++r) {
-            for(std::size_t c{ 0 }; c < C; ++c) {
-                if constexpr(std::is_floating_point_v<T>) {
+    template<size_t R1, size_t C1, number U>
+    constexpr bool operator==(mat<R1, C1, U> const &lhs, mat<R1, C1, U> const &rhs) {
+        for(std::size_t r{ 0 }; r < R1; ++r) {
+            for(std::size_t c{ 0 }; c < C1; ++c) {
+                if constexpr(std::is_floating_point_v<U>) {
                     if(!are_floats_equal(lhs[r][c], rhs[r][c])) {
                         return false;
                     }
@@ -174,31 +121,19 @@ namespace ember::maths {
         return true;
     }
 
-    template<size_t R, size_t C, number T>
-    constexpr bool operator!=(mat<R, C, T> const &lhs, mat<R, C, T> const &rhs) {
+    template<size_t R1, size_t C1, number U>
+    constexpr bool operator!=(mat<R1, C1, U> const &lhs, mat<R1, C1, U> const &rhs) {
         return !(lhs == rhs);
     }
 
     template<size_t R, size_t C, number T>
-    constexpr typename mat<R, C, T>::row_ref mat<R, C, T>::operator[](size_t const index) {
-        row_ref row{};
-
-        for(std::size_t c{ 0 }; c < C; ++c) {
-            row.row.push_back(data[(c * R) + index]);
-        }
-
-        return row;
+    constexpr typename mat<R, C, T>::col_type &mat<R, C, T>::operator[](size_t const index) {
+        return data[index];
     }
 
     template<size_t R, size_t C, number T>
-    constexpr typename mat<R, C, T>::row_val const mat<R, C, T>::operator[](size_t const index) const {
-        row_val row{};
-
-        for(std::size_t c{ 0 }; c < C; ++c) {
-            row.row.push_back(data[(c * R) + index]);
-        }
-
-        return row;
+    constexpr typename mat<R, C, T>::col_type const &mat<R, C, T>::operator[](size_t const index) const {
+        return data[index];
     }
 
     template<size_t R, size_t C, number T>
@@ -217,6 +152,7 @@ namespace ember::maths {
     template<size_t N, std::floating_point T>
     constexpr mat<N, N, T> inverse(mat<N, N, T> const &m) {
         T const determinant{ internal::get_determinant(m, N) };
+        EMBER_CHECK_MSG(determinant != 0.0f, "Can't inverse matrix. Determinant cannot be 0");
         mat<N, N, T> const adj{ internal::get_adjoint(m) };
 
         mat<N, N, T> result;

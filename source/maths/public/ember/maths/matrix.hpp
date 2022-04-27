@@ -3,8 +3,8 @@
 #include "concepts.hpp"
 #include "vector.hpp"
 
-#include <array>
 #include <cstddef>
+#include <ember/containers/static_array.hpp>
 #include <vector>
 
 //Matrix types
@@ -13,95 +13,12 @@ namespace ember::maths {
     struct mat {
         //TYPES
     public:
-        struct row_val;
-        struct row_ref;
-
-        struct row_val {
-            std::vector<T> row;
-
-            constexpr row_val();
-            constexpr row_val(std::initializer_list<T> const list);
-
-            friend constexpr row_val operator*(row_val const &c, T scalar) {
-                row_val result{};
-                result.row.resize(C);
-
-                for(size_t i{ 0 }; i < C; ++i) {
-                    result[i] = c[i] * scalar;
-                }
-
-                return result;
-            }
-
-            friend constexpr bool operator==(row_val const &lhs, row_val const &rhs) {
-                bool result{ true };
-
-                for(size_t i{ 0 }; i < C && result; ++i) {
-                    result = lhs[i] == rhs[i];
-                }
-
-                return result;
-            }
-            friend constexpr bool operator==(row_val const &lhs, row_ref const &rhs) {
-                bool result{ true };
-
-                for(size_t i{ 0 }; i < C && result; ++i) {
-                    result = lhs[i] == rhs[i];
-                }
-
-                return result;
-            }
-
-            constexpr T &operator[](size_t const index);
-            constexpr T const &operator[](size_t const index) const;
-        };
-
-        struct row_ref {
-            std::vector<std::reference_wrapper<T>> row;
-
-            constexpr row_ref();
-            constexpr row_ref(std::initializer_list<std::reference_wrapper<T>> const list);
-
-            constexpr row_ref &operator=(row_ref const &other);
-            constexpr row_ref &operator=(row_val const &other);
-
-            friend constexpr row_val operator*(row_ref const &c, T scalar) {
-                row_val result{};
-                result.row.resize(C);
-
-                for(size_t i{ 0 }; i < C; ++i) {
-                    result[i] = c[i] * scalar;
-                }
-
-                return result;
-            }
-
-            friend constexpr bool operator==(row_ref const &lhs, row_ref const &rhs) {
-                bool result{ true };
-
-                for(size_t i{ 0 }; i < C && result; ++i) {
-                    result = lhs[i] == rhs[i];
-                }
-
-                return result;
-            }
-            friend constexpr bool operator==(row_ref const &lhs, row_val const &rhs) {
-                bool result{ true };
-
-                for(size_t i{ 0 }; i < C && result; ++i) {
-                    result = lhs[i] == rhs[i];
-                }
-
-                return result;
-            }
-
-            constexpr T &operator[](size_t const index);
-            constexpr T const &operator[](size_t const index) const;
-        };
+        using row_type = vec<R, T>;
+        using col_type = vec<C, T>;
 
         //VARIABLES
     public:
-        std::array<T, R * C> data{};
+        containers::static_array<col_type, R> data{};
 
         //FUNCTIONS
     public:
@@ -109,18 +26,18 @@ namespace ember::maths {
         constexpr mat(T val);
 
         template<size_t R1, size_t C1, number U>
-        friend constexpr vec<C1, U> operator*(mat<R1, C1, U> const &m, vec<C1, U> const &v);
+        friend constexpr typename mat<R1, C1, U>::col_type operator*(mat<R1, C1, U> const &m, typename mat<R1, C1, U>::row_type const &v);
 
-        template<size_t R1, size_t R2, size_t C1, number U>
-        friend constexpr mat<R1, R2, U> operator*(mat<R1, C1, U> const &a, mat<C1, R2, U> const &b);
+        template<size_t R1, size_t C1, number U>
+        friend constexpr mat<C1, C1, U> operator*(mat<R1, C1, U> const &a, mat<C1, R1, U> const &b);
 
         template<size_t R1, size_t C1, number U>
         friend constexpr bool operator==(mat<R1, C1, U> const &lhs, mat<R1, C1, U> const &rhs);
         template<size_t R1, size_t C1, number U>
         friend constexpr bool operator!=(mat<R1, C1, U> const &lhs, mat<R1, C1, U> const &rhs);
 
-        constexpr row_ref operator[](size_t const index);
-        constexpr row_val const operator[](size_t const index) const;
+        constexpr col_type &operator[](size_t const index);
+        constexpr col_type const &operator[](size_t const index) const;
     };
 }
 

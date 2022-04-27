@@ -22,6 +22,7 @@ target_link_libraries(
 
     INTERFACE
 		ember_core
+        ember_containers
 )
 
 if(EMBER_BUILD_TESTS)

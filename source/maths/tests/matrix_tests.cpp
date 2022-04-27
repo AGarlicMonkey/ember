@@ -13,47 +13,6 @@ TEST(matrix_tests, can_create_default_matrix) {
     }
 }
 
-TEST(matrix_tests, memory_is_column_major) {
-    //Non symetrical matrix
-    {
-        mat<2, 3, float> matrix{};
-
-        matrix[0] = { 1, 2, 3 };
-        matrix[1] = { 4, 5, 6 };
-
-        EXPECT_EQ(matrix[0][1], 2);
-        EXPECT_EQ(matrix[1][0], 4);
-
-        EXPECT_EQ(matrix[0][2], 3);
-        EXPECT_EQ(matrix[1][2], 6);
-
-        EXPECT_EQ(matrix.data[4], 3);
-        EXPECT_EQ(matrix.data[5], 6);
-    }
-
-    //Large matrix
-    {
-        mat4f matrix{};
-
-        matrix[0] = { 1, 0, 4, 2 };
-        matrix[1] = { 0, 1, 3, 2 };
-        matrix[2] = { 0, 6, 1, 2 };
-        matrix[3] = { 0, 7, 0, 1 };
-
-        EXPECT_EQ(matrix[0][2], 4);
-        EXPECT_EQ(matrix[3][1], 7);
-
-        EXPECT_EQ(matrix[0][3], 2);
-        EXPECT_EQ(matrix[1][3], 2);
-        EXPECT_EQ(matrix[2][3], 2);
-
-        EXPECT_EQ(matrix.data[12], 2);
-        EXPECT_EQ(matrix.data[13], 2);
-        EXPECT_EQ(matrix.data[14], 2);
-        EXPECT_EQ(matrix.data[15], 1);
-    }
-}
-
 TEST(matrix_tests, can_create_identity_matrix) {
     mat4f identity{ 1.0f };
 
@@ -81,10 +40,10 @@ TEST(matrix_tests, can_create_identity_matrix) {
 TEST(matrix_tests, can_multiply_matrix_by_vector) {
     {
         mat4f matrix{};
-        matrix[0] = { 1, 0, 0, 0 };
-        matrix[1] = { 0, 2, 4, 1 };
-        matrix[2] = { 0, 0, 1, 0 };
-        matrix[3] = { 9, 8, 1, 3 };
+        matrix[0] = { 1, 0, 0, 9 };
+        matrix[1] = { 0, 2, 0, 8 };
+        matrix[2] = { 0, 4, 1, 1 };
+        matrix[3] = { 0, 1, 0, 3 };
 
         vec4f const vector{ 2, 3, 4, 5 };
 
@@ -99,10 +58,10 @@ TEST(matrix_tests, can_multiply_matrix_by_vector) {
     //Simulate translating a vector
     {
         mat4f matrix{};
-        matrix[0] = { 1, 0, 0, 2 };
-        matrix[1] = { 0, 1, 0, 1 };
-        matrix[2] = { 0, 0, 1, 3 };
-        matrix[3] = { 0, 0, 0, 1 };
+        matrix[0] = { 1, 0, 0, 0 };
+        matrix[1] = { 0, 1, 0, 0 };
+        matrix[2] = { 0, 0, 1, 0 };
+        matrix[3] = { 2, 1, 3, 1 };
 
         vec4f const vector{ 2, 3, 4, 1 };
 
@@ -118,16 +77,16 @@ TEST(matrix_tests, can_multiply_matrix_by_vector) {
 TEST(matrix_tests, can_multiply_matrix_by_matrix) {
     //Test for correct row / colum sizing
     {
-        mat<2, 3, float> a{};
-        a[0] = { 0, 3, 5 };
-        a[1] = { 5, 5, 2 };
-
         mat<3, 2, float> b{};
         b[0] = { 3, 4 };
         b[1] = { 3, -2 };
         b[2] = { 4, -2 };
 
-        mat<2, 2, float> result{ a * b };
+        mat<2, 3, float> a{};
+        a[0] = { 0, 3, 5 };
+        a[1] = { 5, 5, 2 };
+
+        mat<2, 2, float> result{ b * a };
 
         EXPECT_EQ(result[0][0], 29);
         EXPECT_EQ(result[0][1], -16);
@@ -151,25 +110,25 @@ TEST(matrix_tests, can_multiply_matrix_by_matrix) {
 
         mat4f result{ a * b };
 
-        EXPECT_EQ(result[0][0], 61);
-        EXPECT_EQ(result[0][1], -42);
-        EXPECT_EQ(result[0][2], 72);
-        EXPECT_EQ(result[0][3], 41);
+        EXPECT_EQ(result[0][0], 49);
+        EXPECT_EQ(result[0][1], 53);
+        EXPECT_EQ(result[0][2], 45);
+        EXPECT_EQ(result[0][3], 104);
 
-        EXPECT_EQ(result[1][0], 48);
-        EXPECT_EQ(result[1][1], -26);
-        EXPECT_EQ(result[1][2], 82);
-        EXPECT_EQ(result[1][3], 32);
+        EXPECT_EQ(result[1][0], 41);
+        EXPECT_EQ(result[1][1], 5);
+        EXPECT_EQ(result[1][2], 29);
+        EXPECT_EQ(result[1][3], 70);
 
-        EXPECT_EQ(result[2][0], 62);
-        EXPECT_EQ(result[2][1], -8);
-        EXPECT_EQ(result[2][2], 63);
-        EXPECT_EQ(result[2][3], 76);
+        EXPECT_EQ(result[2][0], 51);
+        EXPECT_EQ(result[2][1], -1);
+        EXPECT_EQ(result[2][2], 54);
+        EXPECT_EQ(result[2][3], 111);
 
-        EXPECT_EQ(result[3][0], 67);
-        EXPECT_EQ(result[3][1], -22);
-        EXPECT_EQ(result[3][2], 61);
-        EXPECT_EQ(result[3][3], 79);
+        EXPECT_EQ(result[3][0], 21);
+        EXPECT_EQ(result[3][1], 11);
+        EXPECT_EQ(result[3][2], 30);
+        EXPECT_EQ(result[3][3], 69);
     }
 }
 
@@ -237,8 +196,6 @@ TEST(matrix_tests, can_inverse_a_matrix) {
         EXPECT_EQ(b * bInv, bIdentity);
         EXPECT_EQ(bInv * b, bIdentity);
     }
-
-    //TODO: Test for detereminant 0
 }
 
 TEST(matrix_tests, can_translate_a_matrix) {
