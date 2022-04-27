@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ember/graphics/shader.hpp"
 #include "ember/graphics/transfer_command_buffer.hpp"
 
 #include <ember/core/export.hpp>
@@ -54,12 +55,13 @@ namespace ember::graphics {
          */
         void bind_descriptor_set(descriptor_set const *const descriptor_set, std::uint32_t const set_num);
         /**
-         * @brief 
-         * @param offset 
-         * @param size 
-         * @param data 
+         * @brief Push constant data into the command buffer to be accessed by shaders.
+         * @param stage Which shader stage to upload to.
+         * @param offset The offset into the push constant range to upload to (Signified in the shader with layout(push_constant) {layout(offset = x) ... }).
+         * @param bytes The size of the push constant range to update.
+         * @param data The data to upload. Will copy bytes amount from the beginning of the pointer into the command buffer.
          */
-        void push_constant(std::size_t const offset, std::size_t const size, void const *const data);
+        void push_constant(shader::stage const stage, std::size_t const offset, std::size_t const bytes, void const *const data);
 
         /**
          * @brief Disptach a compute workload.

@@ -11,6 +11,7 @@
 #include "vulkan_graphics_pipeline_object.hpp"
 #include "vulkan_render_pass.hpp"
 #include "vulkan_semaphore.hpp"
+#include "vulkan_shader.hpp"
 #include "vulkan_swapchain.hpp"
 
 #include <ember/containers/array.hpp>
@@ -191,6 +192,8 @@ namespace ember::graphics {
     void vulkan_queue::record_commands(queue &queue, VkCommandBuffer vk_buffer, command_buffer const &command_buffer) {
         EMBER_PROFILE_FUNCTION;
 
+        VkPipelineLayout current_pipeline_layout{ VK_NULL_HANDLE };
+
         for(auto &&[type, command_memory] : command_buffer) {
             switch(type) {
 #if EMBER_GRAPHICS_ENABLE_USER_MARKERS
@@ -237,8 +240,11 @@ namespace ember::graphics {
                     break;
                 case command_type::bind_descriptor_set_command:
                     break;
-                case command_type::push_constant_command:
-                    break;
+                case command_type::push_constant_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::push_constant_command> *>(command_memory) };
+
+                    vkCmdPushConstants(vk_buffer, current_pipeline_layout, vulkan_shader::convert_stage(command->stage), command->offset, command->bytes, command->data);
+                } break;
                 case command_type::dispatch_command:
                     break;
                 case command_type::begin_render_pass_command: {
@@ -280,6 +286,7 @@ namespace ember::graphics {
 
                     auto const *pipeline{ resource_cast<vulkan_graphics_pipeline_object const>(command->pipeline_object) };
 
+                    current_pipeline_layout = pipeline->get_layout_handle();
                     vkCmdBindPipeline(vk_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->get_pipeline_handle());
                 } break;
                 case command_type::bind_vertex_buffer_command: {

@@ -23,8 +23,8 @@ namespace ember::graphics {
         //TODO
     }
 
-    void compute_command_buffer::push_constant(std::size_t const offset, std::size_t const size, void const *const data) {
-        //TODO
+    void compute_command_buffer::push_constant(shader::stage const stage, std::size_t const offset, std::size_t const bytes, void const *const data) {
+        record_command<command_type::push_constant_command>(stage, offset, bytes, data);
     }
 
     void compute_command_buffer::disptach(vec3u const group_count) {

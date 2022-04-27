@@ -4,12 +4,14 @@
 #include "ember/graphics/compute_command_buffer.hpp"
 #include "ember/graphics/graphics_command_buffer.hpp"
 #include "ember/graphics/render_pass.hpp"
+#include "ember/graphics/shader.hpp"
 #include "ember/graphics/transfer_command_buffer.hpp"
 
 #include <cinttypes>
 #include <cstddef>
 #include <ember/containers/array.hpp>
 #include <ember/maths/vector.hpp>
+#include <ember/memory/memory.hpp>
 #include <span>
 #include <string>
 
@@ -48,7 +50,24 @@ namespace ember::graphics {
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::bind_descriptor_set_command){};
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::push_constant_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::push_constant_command) {
+        shader::stage const stage;
+        std::size_t const offset;
+        std::size_t const bytes;
+        std::byte *data;
+
+        recorded_command(shader::stage const stage, std::size_t const offset, std::size_t const bytes, void const *const data)
+            : stage{ stage }
+            , offset{ offset }
+            , bytes{ bytes } {
+            //Take a copy of the data as we cannot guarentee the lifetime.
+            this->data = memory::alloc(bytes, 0);
+            std::memcpy(this->data, data, bytes);
+        }
+        ~recorded_command() {
+            memory::free(data);
+        }
+    };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::dispatch_command){};
 

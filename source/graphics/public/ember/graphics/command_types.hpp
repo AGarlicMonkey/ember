@@ -34,6 +34,7 @@ namespace ember::graphics {
         draw_indexed_command,
     };
 
+    //TODO: Consider just have a function destruct these (similar to get_size_of_command) instead of this weird inheritance thing.
     struct command {
         command *next{ nullptr };
         virtual void destruct() = 0;
