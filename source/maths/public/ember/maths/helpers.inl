@@ -40,4 +40,17 @@ namespace ember::maths {
         int_t const intDiff{ a_int >= b_int ? a_int - b_int : b_int - a_int };
         return intDiff <= max_ulps;
     }
+
+    template<typename T>
+    constexpr T as_radians(T degrees) {
+        T constexpr deg_to_rad{ 0.01745329251994329576923690768489 };
+        return degrees * deg_to_rad;
+    }
+
+    template<typename T>
+    constexpr T as_degrees(T radians){
+        T constexpr rad_to_deg{ 57.295779513082320876798154814105 };
+        return radians * rad_to_deg;
+    }
+
 }
