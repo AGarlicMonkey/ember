@@ -1,4 +1,5 @@
 #include <cmath>
+#include <ember/core/log.hpp>
 
 namespace ember::maths {
     template<number T>
@@ -290,7 +291,7 @@ namespace ember::maths {
     }
 
     template<size_t L, number T>
-    constexpr T length(vec<L, T> const &v) {
+    T length(vec<L, T> const &v) {
         return std::sqrt(length_squared(v));
     }
 
@@ -304,7 +305,7 @@ namespace ember::maths {
     }
 
     template<size_t L, number T>
-    constexpr T distance(vec<L, T> const &a, vec<L, T> const &b) {
+    T distance(vec<L, T> const &a, vec<L, T> const &b) {
         return std::sqrt(distance_squared(a, b));
     }
 
@@ -319,7 +320,7 @@ namespace ember::maths {
     }
 
     template<size_t L, number T>
-    constexpr vec<L, T> normalise(vec<L, T> const &v) {
+    vec<L, T> normalise(vec<L, T> const &v) {
         return v / length(v);
     }
 

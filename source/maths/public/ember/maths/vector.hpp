@@ -139,7 +139,7 @@ namespace ember::maths {
      * @return 
      */
     template<size_t L, number T>
-    constexpr T length(vec<L, T> const &v);
+    T length(vec<L, T> const &v);
 
     /**
      * @brief Returns the length squared of a vector.
@@ -160,7 +160,7 @@ namespace ember::maths {
      * @return 
      */
     template<size_t L, number T>
-    constexpr T distance(vec<L, T> const &a, vec<L, T> const &b);
+    T distance(vec<L, T> const &a, vec<L, T> const &b);
 
     /**
      * @brief Returns the distance squared between two vectors.
@@ -181,7 +181,7 @@ namespace ember::maths {
      * @return 
      */
     template<size_t L, number T>
-    constexpr vec<L, T> normalise(vec<L, T> const &v);
+    vec<L, T> normalise(vec<L, T> const &v);
 
     /**
      * @brief Returns the dot product between two vectors.
