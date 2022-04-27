@@ -46,15 +46,11 @@ TEST(vector_tests, can_access_members_by_index) {
     EXPECT_EQ(v2.x, v2[0]);
     EXPECT_EQ(v2.y, v2[1]);
 
-    EXPECT_EQ(v2.y, v2[2]);
-
     vec3f v3{ 0, 1, 2 };
 
     EXPECT_EQ(v3.x, v3[0]);
     EXPECT_EQ(v3.y, v3[1]);
     EXPECT_EQ(v3.z, v3[2]);
-
-    EXPECT_EQ(v3.z, v3[3]);
 
     vec4f v4{ 0, 1, 2, 3 };
 
@@ -62,8 +58,6 @@ TEST(vector_tests, can_access_members_by_index) {
     EXPECT_EQ(v4.y, v4[1]);
     EXPECT_EQ(v4.z, v4[2]);
     EXPECT_EQ(v4.w, v4[3]);
-
-    EXPECT_EQ(v4.w, v4[4]);
 }
 
 TEST(vector_tests, can_compare_two_vectors){

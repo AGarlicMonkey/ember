@@ -65,21 +65,27 @@ namespace ember::maths {
 
     template<number T>
     constexpr T &vec<2, T>::operator[](size_t const index) {
-        if(index <= 1) {
-            T *mem{ &x };
-            return mem[index];
-        } else {
-            return y;
+        EMBER_CHECK(index >= 0 && index <= 1);
+
+        switch(index) {
+            case 0:
+                return x;
+            case 1:
+            default:
+                return y;
         }
     }
 
     template<number T>
     constexpr T const &vec<2, T>::operator[](size_t const index) const {
-        if(index <= 1) {
-            T const *mem{ &x };
-            return mem[index];
-        } else {
-            return y;
+        EMBER_CHECK(index >= 0 && index <= 1);
+
+        switch(index) {
+            case 0:
+                return x;
+            case 1:
+            default:
+                return y;
         }
     }
 
@@ -151,21 +157,31 @@ namespace ember::maths {
 
     template<number T>
     constexpr T &vec<3, T>::operator[](size_t const index) {
-        if(index <= 2) {
-            T *mem{ &x };
-            return mem[index];
-        } else {
-            return z;
+        EMBER_CHECK(index >= 0 && index <= 2);
+
+        switch(index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+            default:
+                return z;
         }
     }
 
     template<number T>
     constexpr T const &vec<3, T>::operator[](size_t const index) const {
-        if(index <= 2) {
-            T const *mem{ &x };
-            return mem[index];
-        } else {
-            return z;
+        EMBER_CHECK(index >= 0 && index <= 2);
+
+        switch(index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+            default:
+                return z;
         }
     }
 
@@ -241,21 +257,35 @@ namespace ember::maths {
 
     template<number T>
     constexpr T &vec<4, T>::operator[](size_t const index) {
-        if(index <= 3) {
-            T *mem{ &x };
-            return mem[index];
-        } else {
-            return w;
+        EMBER_CHECK(index >= 0 && index <= 3);
+
+        switch(index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            case 3:
+            default:
+                return w;
         }
     }
 
     template<number T>
     constexpr T const &vec<4, T>::operator[](size_t const index) const {
-        if(index <= 3) {
-            T const *mem{ &x };
-            return mem[index];
-        } else {
-            return w;
+        EMBER_CHECK(index >= 0 && index <= 3);
+
+        switch(index) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            case 3:
+            default:
+                return w;
         }
     }
 
