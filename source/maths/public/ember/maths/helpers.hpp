@@ -12,6 +12,11 @@ namespace ember::maths {
     template<typename T>
     constexpr T as_degrees(T radians);
 
+    template<typename T>
+    mat<4, 4, T> create_perspective_matrix(T fov_y, T aspect, T z_near, T z_far);
+
+    template<typename T>
+    mat<4, 4, T> look_at(vec<3, T> const &eye, vec<3, T> const &center, vec<3, T> const &up);
 }
 
 #include "helpers.inl"
