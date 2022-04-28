@@ -226,8 +226,20 @@ namespace ember::graphics {
     #endif
                     break;
 #endif
-                case command_type::copy_buffer_to_buffer_command:
-                    break;
+                case command_type::copy_buffer_to_buffer_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::copy_buffer_to_buffer_command> *>(command_memory) };
+
+                    VkBufferCopy const copy_region{
+                        .srcOffset = command->source_offset,
+                        .dstOffset = command->destination_offset,
+                        .size      = command->bytes,
+                    };
+
+                    VkBuffer source{ resource_cast<vulkan_buffer const>(command->source)->get_handle() };
+                    VkBuffer destination{ resource_cast<vulkan_buffer const>(command->destination)->get_handle() };
+
+                    vkCmdCopyBuffer(vk_buffer, source, destination, 1, &copy_region);
+                } break;
                 case command_type::copy_buffer_to_image_command:
                     break;
                 case command_type::copy_image_to_buffer_command:

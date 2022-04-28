@@ -16,12 +16,30 @@
 #include <string>
 
 namespace ember::graphics {
+    class buffer;
+}
+
+namespace ember::graphics {
 #define EMBER_GRAPHICS_CREATE_COMMAND(type) \
     template<>                              \
     struct recorded_command<type> : public command_destructor<recorded_command<type>>
 
     //Transfer command buffer
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_buffer_to_buffer_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_buffer_to_buffer_command) {
+        buffer const *const source;
+        std::size_t const source_offset;
+        buffer const *const destination;
+        std::size_t const destination_offset;
+        std::size_t const bytes;
+
+        recorded_command(buffer const *const source, std::size_t const source_offset, buffer const *const destination, std::size_t const destination_offset, std::size_t const bytes)
+            : source{ source }
+            , source_offset{ source_offset }
+            , destination{ destination }
+            , destination_offset{ destination_offset }
+            , bytes{ bytes } {
+        }
+    };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_buffer_to_image_command){};
 
