@@ -33,11 +33,11 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
     VkDebugUtilsMessengerCallbackDataEXT const *pCallbackData,
     void *pUserData) {
     if((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT) != 0) {
-        EMBER_LOG(Vulkan, ember::log_level::trace, pCallbackData->pMessage);
+        EMBER_LOG(Vulkan, ember::log_level::trace, "{0}", pCallbackData->pMessage);
     } else if((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) != 0) {
-        EMBER_LOG(Vulkan, ember::log_level::warn, pCallbackData->pMessage);
+        EMBER_LOG(Vulkan, ember::log_level::warn, "{0}", pCallbackData->pMessage);
     } else if((messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT) != 0) {
-        EMBER_LOG(Vulkan, ember::log_level::error, pCallbackData->pMessage);
+        EMBER_LOG(Vulkan, ember::log_level::error, "{0}", pCallbackData->pMessage);
     }
 
     return VK_FALSE;
