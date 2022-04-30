@@ -35,7 +35,7 @@ target_include_directories(
 
     PUBLIC
         public
-        ${CMAKE_SOURCE_DIR}/external/tracy_profiler/client
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../external/tracy_profiler/client
 
     PRIVATE
         private   
