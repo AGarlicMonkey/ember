@@ -17,11 +17,15 @@ namespace ember::graphics {
         //TODO
     }
 
-    void transfer_command_buffer::buffer_memory_barrier(buffer const *const buffer, buffer_memory_barrier_info const barrier_info, pipeline_stage const source_tage, pipeline_stage const destination_stage) {
-        //TODO
+    void transfer_command_buffer::execution_barrier(pipeline_stage const source_stage, pipeline_stage const destination_stage) {
+        record_command<command_type::execution_barrier_command>(source_stage, destination_stage);
     }
 
-    void transfer_command_buffer::image_memory_barrier(image const *const image, image_memory_barrier_info const barrier_info, pipeline_stage const source_tage, pipeline_stage const destination_stage) {
-        //TODO
+    void transfer_command_buffer::buffer_memory_barrier(buffer const *const buffer, buffer_memory_barrier_info const barrier_info) {
+        record_command<command_type::buffer_memory_barrier_command>(buffer, barrier_info);
+    }
+
+    void transfer_command_buffer::image_memory_barrier(image const *const image, image_memory_barrier_info const barrier_info) {
+        record_command<command_type::image_memory_barrier_command>(image, barrier_info);
     }
 }

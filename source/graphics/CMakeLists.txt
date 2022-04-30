@@ -32,6 +32,8 @@ set(
     ${SOURCE_PRIVATE}/vulkan/host_memory_allocator.hpp
     ${SOURCE_PRIVATE}/vulkan/host_memory_allocator.cpp
     ${SOURCE_PRIVATE}/vulkan/log.hpp
+    ${SOURCE_PRIVATE}/vulkan/memory_barrier_simplification.hpp
+    ${SOURCE_PRIVATE}/vulkan/memory_barrier_simplification.cpp
     ${SOURCE_PRIVATE}/vulkan/types.hpp
     ${SOURCE_PRIVATE}/vulkan/verification.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_extension_functions.hpp

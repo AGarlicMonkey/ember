@@ -20,6 +20,21 @@ namespace ember::graphics {
             storage_buffer       = 1 << 5, /**< Uploaded to shaders as a storage buffer (read/write from compute). */
         };
 
+        using access_type = std::uint16_t;
+        enum class access : access_type {
+            none,
+
+            //Read
+            vertex_shader_read_uniform_buffer,
+            pixel_shader_read_uniform_buffer,
+            compute_shader_read_uniform_buffer,
+            transfer_read,
+
+            //Write
+            compute_shader_write_storage_buffer,
+            transfer_write,
+        };
+
         struct descriptor {
             std::size_t bytes{ 0 };
             usage_mode usage_flags{};

@@ -1,10 +1,13 @@
 #pragma once
 
+#include "ember/graphics/buffer.hpp"
 #include "ember/graphics/command_buffer.hpp"
+#include "ember/graphics/image.hpp"
 #include "ember/graphics/pipeline_stage.hpp"
 
 #include <ember/core/export.hpp>
 #include <ember/maths/vector.hpp>
+#include <optional>
 
 namespace ember::graphics {
     class buffer;
@@ -12,12 +15,27 @@ namespace ember::graphics {
 }
 
 namespace ember::graphics {
+    enum class queue_type {
+        none,
+        graphics,
+        compute,
+        transfer,
+    };
+
     struct buffer_memory_barrier_info {
-        //TODO
+        buffer::access previous_access;                   /**< How the buffer is being accessed before this barrier. */
+        buffer::access next_access;                       /**< How the buffer is being accessed after this barrier. */
+        queue_type source_queue{ queue_type::none };      /**< If transfering queue ownership, which queue to transfer from.*/
+        queue_type destination_queue{ queue_type::none }; /**< If transfering queue ownership, which queue to transfer to.*/
     };
 
     struct image_memory_barrier_info {
-        //TODO
+        image::access previous_access;                    /**< How the image is being accessed before this barrier. */
+        image::access next_access;                        /**< How the image is being accessed after this barrier. */
+        queue_type source_queue{ queue_type::none };      /**< If transfering queue ownership, which queue to transfer from. */
+        queue_type destination_queue{ queue_type::none }; /**< If transfering queue ownership, which queue to transfer to. */
+        std::uint32_t base_layer{ 0 };                    /**< The lower bound image array layer to include in the barrier. */
+        std::uint32_t layer_count{ 1 };                   /**< How many layers from the base layer to include in the barrier. */
     };
 }
 
@@ -73,25 +91,29 @@ namespace ember::graphics {
         void copy_image_to_buffer(image const *const source, maths::vec3i const source_offset, maths::vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer const *const destination, std::size_t const destination_offset);
 
         /**
+         * @brief Creates an execution barrier. Controlling the execution order of commands between pipeline stages.
+         * @details Makes sure that any commands executed before the barrier are completed before commands executed after
+         * the barrier.
+         * @param source_stage The pipeline stage that gets executed before the barrier.
+         * @param destination_stage The pipeline stage executed after the barrier that waits for the results of the sourceStage.
+         */
+        void execution_barrier(pipeline_stage const source_stage, pipeline_stage const destination_stage);
+        /**
          * @brief Creates a memory barrier for a buffer. Controlling the execution order of commands on the buffer.
          * @details Any commands done on the buffer before the barrier are guarenteed to happen before commands
          * executed after the barrier. This barrier can also handle command queue transition of the buffer.
          * @param buffer The buffer to create the barrier for. 
          * @param barrier_info The information about the barrier.
-         * @param source_tage The pipeline stage that gets executed before the barrier.
-         * @param destination_stage The pipeline stage executed after the barrier that waits for the results of the sourceStage.
          */
-        void buffer_memory_barrier(buffer const *const buffer, buffer_memory_barrier_info const barrier_info, pipeline_stage const source_tage, pipeline_stage const destination_stage);
+        void buffer_memory_barrier(buffer const *const buffer, buffer_memory_barrier_info const barrier_info);
         /**
          * @brief Creates a memory barrier for a image. Controlling the execution order of commands on the image. 
          * @details Any commands done on the image before the barrier are guarenteed to happen before commands
          * executed after the barrier. This barrier can also handle command queue and image layout transition.
          * @param image The image to create the barrier for.
          * @param barrier_info The information about the barrier. 
-         * @param source_tage The pipeline stage that gets executed before the barrier. 
-         * @param destination_stage The pipeline stage executed after the barrier that waits for the results of the sourceStage.
          */
-        void image_memory_barrier(image const *const image, image_memory_barrier_info const barrier_info, pipeline_stage const source_tage, pipeline_stage const destination_stage);
+        void image_memory_barrier(image const *const image, image_memory_barrier_info const barrier_info);
     };
 }
 

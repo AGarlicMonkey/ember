@@ -63,11 +63,37 @@ namespace ember::graphics {
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_image_to_buffer_command){};
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::buffer_memory_barrier_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::execution_barrier_command) {
+        pipeline_stage const source_stage;
+        pipeline_stage const destination_stage;
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::image_memory_barrier_command){};
+        recorded_command(pipeline_stage const source_stage, pipeline_stage const destination_stage)
+            : source_stage{ source_stage }
+            , destination_stage{ destination_stage } {
+        }
+    };
 
-    //Compute command buffer
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::buffer_memory_barrier_command) {
+        buffer const *const buffer;
+        buffer_memory_barrier_info const barrier_info;
+
+        recorded_command(graphics::buffer const *const buffer, buffer_memory_barrier_info const barrier_info)
+            : buffer{ buffer }
+            , barrier_info{ barrier_info } {
+        }
+    };
+
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::image_memory_barrier_command) {
+        image const *const image;
+        image_memory_barrier_info const barrier_info;
+
+        recorded_command(graphics::image const *const image, image_memory_barrier_info const barrier_info)
+            : image{ image }
+            , barrier_info{ barrier_info } {
+        }
+    };
+
+        //Compute command buffer
 #if EMBER_GRAPHICS_ENABLE_USER_MARKERS
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::push_user_marker_command) {
         std::string name;

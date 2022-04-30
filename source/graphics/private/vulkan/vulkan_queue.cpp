@@ -2,6 +2,7 @@
 
 #include "commands.hpp"
 #include "ember/graphics/command_buffer.hpp"
+#include "memory_barrier_simplification.hpp"
 #include "resource_cast.hpp"
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
@@ -185,10 +186,71 @@ namespace ember::graphics {
                 } break;
                 case command_type::copy_image_to_buffer_command:
                     break;
-                case command_type::buffer_memory_barrier_command:
-                    break;
-                case command_type::image_memory_barrier_command:
-                    break;
+                case command_type::execution_barrier_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::execution_barrier_command> *>(command_memory) };
+
+                    VkPipelineStageFlags const source_stage{ convert_stage(command->source_stage) };
+                    VkPipelineStageFlags const destination_stage{ convert_stage(command->destination_stage) };
+
+                    vkCmdPipelineBarrier(vk_buffer, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 0, nullptr);
+                } break;
+                case command_type::buffer_memory_barrier_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::buffer_memory_barrier_command> *>(command_memory) };
+
+                    buffer_access_info const previous_access_info{ get_buffer_access(command->barrier_info.previous_access) };
+                    buffer_access_info const next_access_info{ get_buffer_access(command->barrier_info.next_access) };
+
+                    std::uint32_t const source_queue_index{ get_queue_family_index(command->barrier_info.source_queue) };
+                    std::uint32_t const destination_queue_index{ get_queue_family_index(command->barrier_info.destination_queue) };
+
+                    VkBufferMemoryBarrier const barrier{
+                        .sType               = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+                        .pNext               = nullptr,
+                        .srcAccessMask       = previous_access_info.access_mask,
+                        .dstAccessMask       = next_access_info.access_mask,
+                        .srcQueueFamilyIndex = source_queue_index,
+                        .dstQueueFamilyIndex = destination_queue_index,
+                        .buffer              = resource_cast<vulkan_buffer const>(command->buffer)->get_handle(),
+                        .offset              = 0,
+                        .size                = VK_WHOLE_SIZE,
+                    };
+
+                    vkCmdPipelineBarrier(vk_buffer, previous_access_info.stage_mask, next_access_info.stage_mask, 0, 0, nullptr, 1, &barrier, 0, nullptr);
+
+                } break;
+                case command_type::image_memory_barrier_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::image_memory_barrier_command> *>(command_memory) };
+
+                    image_access_info const previous_access_info{ get_image_access(command->barrier_info.previous_access) };
+                    image_access_info const next_access_info{ get_image_access(command->barrier_info.next_access) };
+
+                    std::uint32_t const source_queue_index{ get_queue_family_index(command->barrier_info.source_queue) };
+                    std::uint32_t const destination_queue_index{ get_queue_family_index(command->barrier_info.destination_queue) };
+
+                    VkImageAspectFlags const aspect_flags{ static_cast<VkImageAspectFlags>(command->image->get_descriptor().format == image::format::D32_SFLOAT ? VK_IMAGE_ASPECT_DEPTH_BIT : VK_IMAGE_ASPECT_COLOR_BIT) };
+
+                    VkImageMemoryBarrier const barrier{
+                        .sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+                        .pNext               = nullptr,
+                        .srcAccessMask       = previous_access_info.access_mask,
+                        .dstAccessMask       = next_access_info.access_mask,
+                        .oldLayout           = previous_access_info.image_layout,
+                        .newLayout           = next_access_info.image_layout,
+                        .srcQueueFamilyIndex = source_queue_index,
+                        .dstQueueFamilyIndex = destination_queue_index,
+                        .image               = resource_cast<vulkan_image const>(command->image)->get_handle(),
+                        .subresourceRange    = {
+                               .aspectMask     = aspect_flags,
+                               .baseMipLevel   = 0,
+                               .levelCount     = 1,
+                               .baseArrayLayer = command->barrier_info.base_layer,
+                               .layerCount     = command->barrier_info.layer_count,
+                        },
+                    };
+
+                    vkCmdPipelineBarrier(vk_buffer, previous_access_info.stage_mask, next_access_info.stage_mask, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+                } break;
                 case command_type::bind_compute_pipeline_object_command:
                     break;
                 case command_type::bind_descriptor_set_command:
@@ -401,6 +463,22 @@ namespace ember::graphics {
 #if EMBER_CORE_ENABLE_PROFILING
         TracyVkDestroy(queue.profiling_context);
 #endif
+    }
+
+    std::uint32_t vulkan_queue::get_queue_family_index(queue_type const queue_type) {
+        switch(queue_type) {
+            case queue_type::none:
+                return VK_QUEUE_FAMILY_IGNORED;
+            case queue_type::graphics:
+                return family_indices.graphics;
+            case queue_type::compute:
+                return family_indices.compute;
+            case queue_type::transfer:
+                return family_indices.transfer;
+            default:
+                EMBER_CHECK(false);
+                return VK_QUEUE_FAMILY_IGNORED;
+        }
     }
 
     void vulkan_queue::reset_available_buffers(queue &queue) {

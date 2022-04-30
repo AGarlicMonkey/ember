@@ -50,6 +50,24 @@ namespace ember::graphics {
             cepth_stencil_read_only_optimal
         };
 
+        using access_type = std::uint16_t;
+        enum class access : access_type {
+            none,
+
+            //Read
+            pixel_shader_read_sampled,
+            depth_stencil_attachment_read,
+            compute_shader_read_sampled,
+            transfer_read,
+            present,
+
+            //Write
+            colour_attachment_write,
+            depth_stencil_attachment_write,
+            compute_shader_write_storage,
+            transfer_write,
+        };
+
         struct descriptor {
             type type{ type::_2d };
             usage_mode usage_flags;

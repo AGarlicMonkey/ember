@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ember/graphics/submission_types.hpp"
-#include "types.hpp"
 #include "ember/graphics/swapchain.hpp"
+#include "ember/graphics/transfer_command_buffer.hpp"
+#include "types.hpp"
 
 #include <ember/containers/array.hpp>
 #include <ember/containers/map.hpp>
@@ -81,12 +82,14 @@ namespace ember::graphics {
         void release_resources();
 
     private:
-        static void record_commands(queue &queue, VkCommandBuffer vk_buffer, command_buffer const &command_buffer);
+        void record_commands(queue &queue, VkCommandBuffer vk_buffer, command_buffer const &command_buffer);
 
         queue create_queue(std::uint32_t const family_index, std::string_view name);
         template<typename submit_info_t>
         void submit_to_queue(queue &queue, submit_info_t const &submit_info, fence const *const signal_fence);
         void destroy_queue(queue &queue);
+
+        std::uint32_t get_queue_family_index(queue_type const queue_type);
 
         void reset_available_buffers(queue &queue);
         VkCommandBuffer alloc_buffer(queue &queue);

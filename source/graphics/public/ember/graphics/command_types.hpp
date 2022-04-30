@@ -10,6 +10,7 @@ namespace ember::graphics {
         copy_buffer_to_buffer_command,
         copy_buffer_to_image_command,
         copy_image_to_buffer_command,
+        execution_barrier_command,
         buffer_memory_barrier_command,
         image_memory_barrier_command,
 
