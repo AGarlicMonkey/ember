@@ -1,4 +1,5 @@
 #include "ember/graphics/command_buffer.hpp"
+
 #include "commands.hpp"
 
 #include <ember/memory/memory.hpp>
@@ -42,8 +43,21 @@ namespace ember::graphics {
 
     std::byte *command_buffer::alloc(std::size_t bytes) {
         if(current_arena == nullptr || current_arena->pos + bytes > current_arena->size) {
-            arenas.emplace_back(memory::alloc(initial_buffer_size, command_alignment), initial_buffer_size);
-            current_arena = &arenas.back();
+            arena *next_arena{ nullptr };
+
+            for(auto &arena : arenas) {
+                if(arena.pos == 0) {
+                    next_arena = &arena;
+                    break;
+                }
+            }
+
+            if(next_arena == nullptr) {
+                arenas.emplace_back(memory::alloc(initial_buffer_size, command_alignment), initial_buffer_size);
+                next_arena = &arenas.back();
+            }
+
+            current_arena = next_arena;
         }
 
         std::byte *const memory{ current_arena->memory + current_arena->pos };
@@ -53,8 +67,11 @@ namespace ember::graphics {
     }
 
     void command_buffer::destruct_items() {
-        for(auto&&[type, memory] : *this) {
+        for(auto &&[type, memory] : *this) {
             destruct_command(type, memory);
+        }
+        for(auto &arena : arenas) {
+            arena.pos = 0;
         }
     }
 }

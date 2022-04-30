@@ -17,7 +17,8 @@ namespace ember::graphics {
 
     void command_buffer::reset() {
         destruct_items();
-        head = nullptr;
+        head          = nullptr;
+        current_arena = nullptr;
     }
 
     command_buffer::iterator command_buffer::begin() const {
