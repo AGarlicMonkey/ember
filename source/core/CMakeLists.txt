@@ -13,7 +13,6 @@ option(EMBER_CORE_ENABLE_EXCEPTIONS "Enables the exception macros in ember. Allo
 option(EMBER_CORE_ENABLE_PROFILING "Enables ember's profiler" OFF)
 
 find_package(spdlog REQUIRED CONFIG)
-find_package(tracy REQUIRED CONFIG)
 
 #Library
 add_library(
@@ -48,7 +47,6 @@ target_link_libraries(
 
     PUBLIC
 		spdlog::spdlog
-        tracy::tracy
 )
 
 #Preprocessor
