@@ -49,6 +49,7 @@ namespace ember::graphics {
         void copy_buffer_to_buffer(buffer const *const source, std::size_t const source_offset, buffer const *const destination, std::size_t const destination_offset, std::size_t const bytes);
         /**
          * @brief Copy the contents from a buffer into an image.
+         * @details The size of the copy from the buffer is determined from the destination_extent param.
          * @param source Buffer to copy from.
          * @param source_offset Offset into the source to start the copy.
          * @param destination Image to copy into.

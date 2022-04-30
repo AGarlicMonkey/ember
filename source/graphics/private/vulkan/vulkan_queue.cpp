@@ -161,8 +161,28 @@ namespace ember::graphics {
 
                     vkCmdCopyBuffer(vk_buffer, source, destination, 1, &copy_region);
                 } break;
-                case command_type::copy_buffer_to_image_command:
-                    break;
+                case command_type::copy_buffer_to_image_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::copy_buffer_to_image_command> *>(command_memory) };
+
+                    VkBufferImageCopy const copy_region{
+                        .bufferOffset      = command->source_offset,
+                        .bufferRowLength   = 0,//Tightly packed
+                        .bufferImageHeight = 0,//Tightly packed
+                        .imageSubresource  = {
+                             .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,//TODO: Handle other aspect masks
+                             .mipLevel       = 0,
+                             .baseArrayLayer = command->destination_base_layer,
+                             .layerCount     = command->destination_layer_count,
+                        },
+                        .imageOffset = { command->destination_offset.x, command->destination_offset.y, command->destination_offset.z },
+                        .imageExtent = { command->destination_extent.x, command->destination_extent.y, command->destination_extent.z },
+                    };
+
+                    VkBuffer source{ resource_cast<vulkan_buffer const>(command->source)->get_handle() };
+                    VkImage destination{ resource_cast<vulkan_image const>(command->destination)->get_handle() };
+
+                    vkCmdCopyBufferToImage(vk_buffer, source, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
+                } break;
                 case command_type::copy_image_to_buffer_command:
                     break;
                 case command_type::buffer_memory_barrier_command:

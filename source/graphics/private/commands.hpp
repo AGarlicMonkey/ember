@@ -41,7 +41,25 @@ namespace ember::graphics {
         }
     };
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_buffer_to_image_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_buffer_to_image_command) {
+        buffer const *const source;
+        std::size_t const source_offset;
+        image const *const destination;
+        std::size_t const destination_offset;
+        maths::vec3u const destination_extent;
+        std::uint32_t const destination_base_layer;
+        std::uint32_t const destination_layer_count;
+
+        recorded_command(buffer const *const source, std::size_t const source_offset, image const *const destination, std::size_t const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer, std::uint32_t const destination_layer_count)
+            : source{ source }
+            , source_offset{ source_offset }
+            , destination{ destination }
+            , destination_offset{ destination_offset }
+            , destination_extent{ destination_extent }
+            , destination_base_layer{ destination_base_layer }
+            , destination_layer_count{ destination_layer_count } {
+        }
+    };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_image_to_buffer_command){};
 
