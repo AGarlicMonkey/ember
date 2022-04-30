@@ -58,7 +58,7 @@ namespace ember::graphics {
          * @param destination_base_layer If the image is an array and/or a cube map, which index to start the copy from. Otherwise will be 0.
          * @param destination_layer_count If the image is an array and/or a cube map, how many layers to copy. Otherwise will be 1.
          */
-        void copy_buffer_to_image(buffer const *const source, std::size_t const source_offset, image const *const destination, std::size_t const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer = 0, std::uint32_t const destination_layer_count = 1);
+        void copy_buffer_to_image(buffer const *const source, std::size_t const source_offset, image const *const destination, maths::vec3u const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer = 0, std::uint32_t const destination_layer_count = 1);
 
         /**
          * @brief Copy the contents of an image into a buffer.

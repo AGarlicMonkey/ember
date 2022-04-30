@@ -9,7 +9,7 @@ namespace ember::graphics {
         record_command<command_type::copy_buffer_to_buffer_command>(source, source_offset, destination, destination_offset, bytes);
     }
 
-    void transfer_command_buffer::copy_buffer_to_image(buffer const *const source, std::size_t const source_offset, image const *const destination, std::size_t const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer, std::uint32_t const destination_layer_count) {
+    void transfer_command_buffer::copy_buffer_to_image(buffer const *const source, std::size_t const source_offset, image const *const destination, maths::vec3u const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer, std::uint32_t const destination_layer_count) {
         record_command<command_type::copy_buffer_to_image_command>(source, source_offset, destination, destination_offset, destination_extent, destination_base_layer, destination_layer_count);
     }
 

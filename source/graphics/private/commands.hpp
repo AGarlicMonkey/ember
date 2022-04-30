@@ -45,12 +45,12 @@ namespace ember::graphics {
         buffer const *const source;
         std::size_t const source_offset;
         image const *const destination;
-        std::size_t const destination_offset;
+        maths::vec3u const destination_offset;
         maths::vec3u const destination_extent;
         std::uint32_t const destination_base_layer;
         std::uint32_t const destination_layer_count;
 
-        recorded_command(buffer const *const source, std::size_t const source_offset, image const *const destination, std::size_t const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer, std::uint32_t const destination_layer_count)
+        recorded_command(buffer const *const source, std::size_t const source_offset, image const *const destination, maths::vec3u const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer, std::uint32_t const destination_layer_count)
             : source{ source }
             , source_offset{ source_offset }
             , destination{ destination }

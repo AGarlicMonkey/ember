@@ -174,7 +174,7 @@ namespace ember::graphics {
                              .baseArrayLayer = command->destination_base_layer,
                              .layerCount     = command->destination_layer_count,
                         },
-                        .imageOffset = { command->destination_offset.x, command->destination_offset.y, command->destination_offset.z },
+                        .imageOffset = { static_cast<std::int32_t>(command->destination_offset.x), static_cast<std::int32_t>(command->destination_offset.y), static_cast<std::int32_t>(command->destination_offset.z) },
                         .imageExtent = { command->destination_extent.x, command->destination_extent.y, command->destination_extent.z },
                     };
 
