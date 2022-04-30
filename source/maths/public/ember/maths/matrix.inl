@@ -169,9 +169,7 @@ namespace ember::maths {
     constexpr mat<4, 4, T> translate(mat<4, 4, T> const &m, vec<3, T> const &v) {
         mat<4, 4, T> result{ m };
 
-        for(std::size_t i{ 0 }; i < 3; ++i) {
-            result[i][3] = (m[i][0] * v[0]) + (m[i][1] * v[1]) + (m[i][2] * v[2]) + m[i][3];
-        }
+        result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
 
         return result;
     }
