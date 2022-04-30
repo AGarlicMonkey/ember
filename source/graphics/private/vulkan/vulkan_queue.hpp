@@ -84,6 +84,8 @@ namespace ember::graphics {
         static void record_commands(queue &queue, VkCommandBuffer vk_buffer, command_buffer const &command_buffer);
 
         queue create_queue(std::uint32_t const family_index, std::string_view name);
+        template<typename submit_info_t>
+        void submit_to_queue(queue &queue, submit_info_t const &submit_info, fence const *const signal_fence);
         void destroy_queue(queue &queue);
 
         void reset_available_buffers(queue &queue);

@@ -31,10 +31,6 @@ namespace {
         }
     }
 
-    template<typename... Ts>
-    struct match : Ts... { using Ts::operator()...; };
-
-    //TODO: Move to common place for other queues
     VkPipelineStageFlags convert_stage(ember::graphics::pipeline_stage const stage) {
         switch(stage) {
             case ember::graphics::pipeline_stage::top:
@@ -60,6 +56,9 @@ namespace {
                 return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
         }
     }
+
+    template<typename... Ts>
+    struct match : Ts... { using Ts::operator()...; };
 }
 
 namespace ember::graphics {
@@ -75,93 +74,15 @@ namespace ember::graphics {
     vulkan_queue::~vulkan_queue() = default;
 
     void vulkan_queue::submit(graphics_submit_info const &submit_info, fence const *const signal_fence) {
-        EMBER_PROFILE_FUNCTION;
-
-        reset_available_buffers(graphics_queue);
-
-        VkCommandBufferBeginInfo const begin_info{
-            .sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
-            .flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
-            .pInheritanceInfo = nullptr,
-        };
-
-        //Record all command buffers
-        array<VkCommandBuffer> recorded_command_buffers{};
-
-        for(auto const *command_buffer : submit_info.command_buffers) {
-            VkCommandBuffer vk_command_buffer{ alloc_buffer(graphics_queue) };
-
-            EMBER_VULKAN_VERIFY_RESULT(vkBeginCommandBuffer(vk_command_buffer, &begin_info), "Failed to begin recording.");
-
-            record_commands(graphics_queue, vk_command_buffer, *command_buffer);
-#if EMBER_CORE_ENABLE_PROFILING
-            TracyVkCollect(graphics_queue.profiling_context, vk_command_buffer);
-#endif
-
-            EMBER_VULKAN_VERIFY_RESULT(vkEndCommandBuffer(vk_command_buffer), "Failed to end recording.");
-
-            recorded_command_buffers.push_back(vk_command_buffer);
-        }
-
-        //Do the actual queue submission
-        array<VkSemaphore> wait_semaphores{};
-        array<VkPipelineStageFlags> wait_stages{};
-        std::size_t const wait_semaphore_count{ submit_info.wait_semaphores.size() };
-        wait_semaphores.resize(wait_semaphore_count);
-        wait_stages.resize(wait_semaphore_count);
-        for(std::size_t i{ 0 }; i < wait_semaphore_count; ++i) {
-            wait_semaphores[i] = resource_cast<vulkan_semaphore const>(submit_info.wait_semaphores[i].first)->get_handle();
-            wait_stages[i]     = convert_stage(submit_info.wait_semaphores[i].second);
-        }
-
-        array<VkSemaphore> signal_semaphores{};
-        std::size_t const signal_semaphore_count{ submit_info.signal_semaphores.size() };
-        signal_semaphores.resize(signal_semaphore_count);
-        for(std::size_t i{ 0 }; i < signal_semaphore_count; ++i) {
-            signal_semaphores[i] = resource_cast<vulkan_semaphore const>(submit_info.signal_semaphores[i])->get_handle();
-        }
-
-        VkSubmitInfo const graphics_submit_info{
-            .sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO,
-            .pNext                = nullptr,
-            .waitSemaphoreCount   = static_cast<std::uint32_t>(wait_semaphore_count),
-            .pWaitSemaphores      = wait_semaphores.data(),
-            .pWaitDstStageMask    = wait_stages.data(),
-            .commandBufferCount   = static_cast<std::uint32_t>(recorded_command_buffers.size()),
-            .pCommandBuffers      = recorded_command_buffers.data(),
-            .signalSemaphoreCount = static_cast<std::uint32_t>(signal_semaphore_count),
-            .pSignalSemaphores    = signal_semaphores.data(),
-        };
-
-        VkFence const fence_handle{ signal_fence != nullptr ? resource_cast<vulkan_fence const>(signal_fence)->get_handle() : VK_NULL_HANDLE };
-        EMBER_VULKAN_VERIFY_RESULT(vkQueueSubmit(graphics_queue.handle, 1, &graphics_submit_info, fence_handle), "Failed to submit user batch.");
-
-        //Insert our own fence right after this queue so we know when the buffers are free to use again.
-        VkFence buffer_fence{ VK_NULL_HANDLE };
-
-        if(!graphics_queue.pooled_fences.empty()) {
-            buffer_fence = graphics_queue.pooled_fences.back();
-            graphics_queue.pooled_fences.pop_back();
-        } else {
-            VkFenceCreateInfo const create_info{
-                .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
-                .pNext = nullptr,
-                .flags = 0u,
-            };
-            EMBER_VULKAN_VERIFY_RESULT(vkCreateFence(logical_device, &create_info, &global_host_allocation_callbacks, &buffer_fence), "Failed to create VkFence.");
-        }
-
-        EMBER_VULKAN_VERIFY_RESULT(vkQueueSubmit(graphics_queue.handle, 0, nullptr, buffer_fence), "Failed to pool fence.");
-
-        graphics_queue.pending_buffers.emplace_back(std::move(recorded_command_buffers), buffer_fence);
+        submit_to_queue(graphics_queue, submit_info, signal_fence);
     }
 
     void vulkan_queue::submit(compute_submit_info const &submit_info, fence const *const signal_fence) {
-        //TODO
+        submit_to_queue(graphics_queue, submit_info, signal_fence);
     }
 
     void vulkan_queue::submit(transfer_submit_info const &submit_info, fence const *const signal_fence) {
-        //TODO
+        submit_to_queue(graphics_queue, submit_info, signal_fence);
     }
 
     swapchain::result vulkan_queue::present(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) {
@@ -357,6 +278,89 @@ namespace ember::graphics {
 #endif
 
         return queue;
+    }
+
+    template<typename submit_info_t>
+    void vulkan_queue::submit_to_queue(queue &queue, submit_info_t const &submit_info, fence const *const signal_fence) {
+        EMBER_PROFILE_FUNCTION;
+
+        reset_available_buffers(queue);
+
+        VkCommandBufferBeginInfo const begin_info{
+            .sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+            .flags            = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT,
+            .pInheritanceInfo = nullptr,
+        };
+
+        //Record all command buffers
+        containers::array<VkCommandBuffer> recorded_command_buffers{};
+
+        for(auto const *command_buffer : submit_info.command_buffers) {
+            VkCommandBuffer vk_command_buffer{ alloc_buffer(queue) };
+
+            EMBER_VULKAN_VERIFY_RESULT(vkBeginCommandBuffer(vk_command_buffer, &begin_info), "Failed to begin recording.");
+
+            record_commands(queue, vk_command_buffer, *command_buffer);
+#if EMBER_CORE_ENABLE_PROFILING
+            TracyVkCollect(queue.profiling_context, vk_command_buffer);
+#endif
+
+            EMBER_VULKAN_VERIFY_RESULT(vkEndCommandBuffer(vk_command_buffer), "Failed to end recording.");
+
+            recorded_command_buffers.push_back(vk_command_buffer);
+        }
+
+        //Do the actual queue submission
+        containers::array<VkSemaphore> wait_semaphores{};
+        containers::array<VkPipelineStageFlags> wait_stages{};
+        std::size_t const wait_semaphore_count{ submit_info.wait_semaphores.size() };
+        wait_semaphores.resize(wait_semaphore_count);
+        wait_stages.resize(wait_semaphore_count);
+        for(std::size_t i{ 0 }; i < wait_semaphore_count; ++i) {
+            wait_semaphores[i] = resource_cast<vulkan_semaphore const>(submit_info.wait_semaphores[i].first)->get_handle();
+            wait_stages[i]     = convert_stage(submit_info.wait_semaphores[i].second);
+        }
+
+        containers::array<VkSemaphore> signal_semaphores{};
+        std::size_t const signal_semaphore_count{ submit_info.signal_semaphores.size() };
+        signal_semaphores.resize(signal_semaphore_count);
+        for(std::size_t i{ 0 }; i < signal_semaphore_count; ++i) {
+            signal_semaphores[i] = resource_cast<vulkan_semaphore const>(submit_info.signal_semaphores[i])->get_handle();
+        }
+
+        VkSubmitInfo const graphics_submit_info{
+            .sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+            .pNext                = nullptr,
+            .waitSemaphoreCount   = static_cast<std::uint32_t>(wait_semaphore_count),
+            .pWaitSemaphores      = wait_semaphores.data(),
+            .pWaitDstStageMask    = wait_stages.data(),
+            .commandBufferCount   = static_cast<std::uint32_t>(recorded_command_buffers.size()),
+            .pCommandBuffers      = recorded_command_buffers.data(),
+            .signalSemaphoreCount = static_cast<std::uint32_t>(signal_semaphore_count),
+            .pSignalSemaphores    = signal_semaphores.data(),
+        };
+
+        VkFence const fence_handle{ signal_fence != nullptr ? resource_cast<vulkan_fence const>(signal_fence)->get_handle() : VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkQueueSubmit(queue.handle, 1, &graphics_submit_info, fence_handle), "Failed to submit user batch.");
+
+        //Insert our own fence right after this queue so we know when the buffers are free to use again.
+        VkFence buffer_fence{ VK_NULL_HANDLE };
+
+        if(!queue.pooled_fences.empty()) {
+            buffer_fence = queue.pooled_fences.back();
+            queue.pooled_fences.pop_back();
+        } else {
+            VkFenceCreateInfo const create_info{
+                .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+                .pNext = nullptr,
+                .flags = 0u,
+            };
+            EMBER_VULKAN_VERIFY_RESULT(vkCreateFence(logical_device, &create_info, &global_host_allocation_callbacks, &buffer_fence), "Failed to create VkFence.");
+        }
+
+        EMBER_VULKAN_VERIFY_RESULT(vkQueueSubmit(queue.handle, 0, nullptr, buffer_fence), "Failed to pool fence.");
+
+        queue.pending_buffers.emplace_back(std::move(recorded_command_buffers), buffer_fence);
     }
 
     void vulkan_queue::destroy_queue(queue &queue) {
