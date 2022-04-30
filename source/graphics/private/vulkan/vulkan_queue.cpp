@@ -67,9 +67,9 @@ namespace ember::graphics {
         : physical_device{ physical_device }
         , logical_device{ logical_device }
         , family_indices{ family_indices } {
-        graphics_queue = create_queue(family_indices.graphics);
-        compute_queue  = create_queue(family_indices.compute);
-        transfer_queue = create_queue(family_indices.transfer);
+        graphics_queue = create_queue(family_indices.graphics, "Graphics Queue");
+        compute_queue  = create_queue(family_indices.compute, "Compute Queue");
+        transfer_queue = create_queue(family_indices.transfer, "Transfer Queue");
     }
 
     vulkan_queue::~vulkan_queue() = default;
@@ -327,7 +327,7 @@ namespace ember::graphics {
         }
     }
 
-    vulkan_queue::queue vulkan_queue::create_queue(std::uint32_t const family_index) {
+    vulkan_queue::queue vulkan_queue::create_queue(std::uint32_t const family_index, std::string_view name) {
         VkCommandPoolCreateInfo const command_pool_create_info{
             .sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
             .pNext            = nullptr,
@@ -352,7 +352,7 @@ namespace ember::graphics {
             vkAllocateCommandBuffers(logical_device, &buffer_alloc_info, &init_buff);
             queue.profiling_context = TracyVkContextCalibrated(physical_device, logical_device, queue.handle, init_buff, fp_vkGetPhysicalDeviceCalibrateableTimeDomainsEXT, fp_vkGetCalibratedTimestampsEXT);
             vkFreeCommandBuffers(logical_device, queue.command_pool, 1, &init_buff);
-            //TODO: Name the contexts
+            TracyVkContextName(queue.profiling_context, name.data(), name.size());
         }
 #endif
 
