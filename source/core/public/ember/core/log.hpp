@@ -122,11 +122,11 @@ EMBER_LOG_CATEGORY(EmberAssertion)
         }
 
     #define EMBER_VERIFY(expression) EMBER_CHECK(expression)
-    #define EMBER_VERIFY_MSG(expression, msg) EMBER_CHECK_MSG(expression, msg)
+    #define EMBER_VERIFY_MSG(expression, msg, ...) EMBER_CHECK_MSG(expression, msg)
 #else
     #define EMBER_CHECK(expression)
-    #define EMBER_CHECK_MSG(expression, msg)
+    #define EMBER_CHECK_MSG(expression, msg, ...)
 
     #define EMBER_VERIFY(expression) expression
-    #define EMBER_VERIFY_MSG(expression, msg) expression
+    #define EMBER_VERIFY_MSG(expression, msg, ...) expression
 #endif
