@@ -1,4 +1,5 @@
 #include "ember/graphics/command_buffer.hpp"
+#include "commands.hpp"
 
 #include <ember/memory/memory.hpp>
 
@@ -52,10 +53,8 @@ namespace ember::graphics {
     }
 
     void command_buffer::destruct_items() {
-        command *current{ head };
-        while(current != nullptr) {
-            current->destruct();
-            current = current->next;
+        for(auto&&[type, memory] : *this) {
+            destruct_command(type, memory);
         }
     }
 }

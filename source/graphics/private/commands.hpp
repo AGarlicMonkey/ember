@@ -22,7 +22,7 @@ namespace ember::graphics {
 namespace ember::graphics {
 #define EMBER_GRAPHICS_CREATE_COMMAND(type) \
     template<>                              \
-    struct recorded_command<type> : public command_destructor<recorded_command<type>>
+    struct recorded_command<type> : public command
 
     //Transfer command buffer
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_buffer_to_buffer_command) {
@@ -197,4 +197,5 @@ namespace ember::graphics {
 
 namespace ember::graphics {
     std::size_t get_size_of_command(command_type const type);
+    void destruct_command(command_type const type, std::byte *const command_memory);
 }
