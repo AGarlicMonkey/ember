@@ -142,7 +142,7 @@ namespace ember::graphics {
             .imageColorSpace       = surface_format.colorSpace,
             .imageExtent           = swapchain_extent,
             .imageArrayLayers      = 1,
-            .imageUsage            = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+            .imageUsage            = vulkan_image::convert_usage(descriptor.usage_flags),
             .imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE,
             .queueFamilyIndexCount = 0,
             .pQueueFamilyIndices   = nullptr,

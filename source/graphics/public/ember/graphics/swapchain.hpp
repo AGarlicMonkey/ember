@@ -26,8 +26,9 @@ namespace ember::graphics {
         };
 
         struct descriptor {
-            maths::vec2u extent{};          /**< Size of the swapchain's backing images. */
-            std::uint32_t image_count{ 3 }; /**< How many images this swapchain will hold. */
+            maths::vec2u extent{};                                                 /**< Size of the swapchain's backing images. */
+            std::uint32_t image_count{ 3 };                                        /**< How many images this swapchain will hold. */
+            image::usage_mode usage_flags{ image::usage_mode::colour_attachment }; /** Usage flags for the swapchain's internal images. */
         };
 
         //FUNCTIONS
