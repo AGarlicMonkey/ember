@@ -80,8 +80,8 @@ namespace ember::platform {
         RECT window_rect{
             .left   = 0,
             .top    = 0,
-            .right  = descriptor.size.x,
-            .bottom = descriptor.size.y,
+            .right  = static_cast<std::int32_t>(descriptor.size.x),
+            .bottom = static_cast<std::int32_t>(descriptor.size.y),
         };
         //HWND window_parent{ nullptr };
         LONG window_pos_xy{ 0 };
