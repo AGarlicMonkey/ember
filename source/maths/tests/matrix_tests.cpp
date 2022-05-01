@@ -212,21 +212,21 @@ TEST(matrix_tests, can_translate_a_matrix) {
     EXPECT_EQ(translation[0][0], 1);
     EXPECT_EQ(translation[0][1], 0);
     EXPECT_EQ(translation[0][2], 0);
-    EXPECT_EQ(translation[0][3], v.x);
+    EXPECT_EQ(translation[0][3], 0);
 
     EXPECT_EQ(translation[1][0], 0);
     EXPECT_EQ(translation[1][1], 1);
     EXPECT_EQ(translation[1][2], 0);
-    EXPECT_EQ(translation[1][3], v.y);
+    EXPECT_EQ(translation[1][3], 0);
 
     EXPECT_EQ(translation[2][0], 0);
     EXPECT_EQ(translation[2][1], 0);
     EXPECT_EQ(translation[2][2], 1);
-    EXPECT_EQ(translation[2][3], v.z);
+    EXPECT_EQ(translation[2][3], 0);
 
-    EXPECT_EQ(translation[3][0], 0);
-    EXPECT_EQ(translation[3][1], 0);
-    EXPECT_EQ(translation[3][2], 0);
+    EXPECT_EQ(translation[3][0], v.x);
+    EXPECT_EQ(translation[3][1], v.y);
+    EXPECT_EQ(translation[3][2], v.z);
     EXPECT_EQ(translation[3][3], 1);
 }
 
