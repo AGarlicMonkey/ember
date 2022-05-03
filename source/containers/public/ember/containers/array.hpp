@@ -211,6 +211,12 @@ namespace ember::containers {
         iterator erase(iterator from, iterator to);
 
         /**
+         * @brief Erases a specific value from the array.
+         * @param value 
+         */
+        void erase(T const &value);
+
+        /**
          * @brief Increases the capacity of the array to meet new_capacity. If the 
          * current capacity is already larger than new_capatacity then this function
          * does nothing.

@@ -395,6 +395,11 @@ namespace ember::containers {
     }
 
     template<typename T>
+    void array<T>::erase(T const &value) {
+        erase(std::remove(begin(), end(), value));
+    }
+
+    template<typename T>
     void array<T>::reserve(std::size_t new_capacity) {
         if(cap < new_capacity) {
             cap = new_capacity;

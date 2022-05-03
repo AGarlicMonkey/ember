@@ -161,7 +161,7 @@ TEST(array_tests, can_erase_items) {
             other.call = false;
         }
         helper_type &operator=(helper_type const &other) noexcept = default;
-        helper_type &operator                                     =(helper_type &&other) noexcept {
+        helper_type &operator=(helper_type &&other) noexcept {
             count      = other.count;
             other.call = false;
             return *this;
@@ -217,6 +217,17 @@ TEST(array_tests, can_erase_items) {
     EXPECT_EQ(int_arr[4], 8);
     EXPECT_EQ(int_arr.back(), 8);
     EXPECT_EQ(*last_elem, 8);
+
+    int_arr.erase(5);
+    EXPECT_EQ(int_arr[0], 1);
+    EXPECT_EQ(int_arr[1], 6);
+    EXPECT_EQ(int_arr[2], 7);
+    EXPECT_EQ(int_arr[3], 8);
+
+    int_arr.erase(8);
+    EXPECT_EQ(int_arr[0], 1);
+    EXPECT_EQ(int_arr[1], 6);
+    EXPECT_EQ(int_arr[2], 7);
 
     int_arr.erase(int_arr.begin(), int_arr.end());
     EXPECT_EQ(int_arr.size(), 0);
