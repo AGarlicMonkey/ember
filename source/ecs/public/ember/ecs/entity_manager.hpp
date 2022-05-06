@@ -1,6 +1,7 @@
 #pragma once
 
-#include "ember/ecs/entity.hpp"
+#include "ember/ecs/types.hpp"
+#include "ember/ecs/component_manager.hpp"
 
 #include <ember/containers/array.hpp>
 #include <ember/core/export.hpp>
@@ -15,6 +16,7 @@ namespace ember::ecs {
         inline static entity next_entity{ 0 };
 
         containers::array<entity> entities{};
+        component_manager components{};
 
         //FUNCTIONS
     public:
@@ -50,6 +52,17 @@ namespace ember::ecs {
          * @return 
          */
         bool is_valid(entity entity);
+
+        /**
+         * @brief Adds a component to a given entity.
+         * @tparam component_t 
+         * @tparam construct_args_t 
+         * @param entity 
+         * @param construct_args 
+         * @return The newly created component.
+         */
+        template<typename component_t, typename... construct_args_t>
+        component_t &add_component(entity entity, construct_args_t &&...construct_args);
     };
 }
 

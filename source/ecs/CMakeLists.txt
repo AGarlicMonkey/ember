@@ -7,10 +7,14 @@ set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 add_library(
     ${TARGET_NAME}
 
-    ${SOURCE_PUBLIC}/entity.hpp
+    ${SOURCE_PUBLIC}/types.hpp
     ${SOURCE_PUBLIC}/entity_manager.hpp
     ${SOURCE_PUBLIC}/entity_manager.inl
     ${SOURCE_PRIVATE}/entity_manager.cpp
+    ${SOURCE_PUBLIC}/archetype.hpp
+    ${SOURCE_PUBLIC}/component_manager.hpp
+    ${SOURCE_PUBLIC}/component_manager.inl
+    ${SOURCE_PRIVATE}/component_manager.cpp
 )
 
 #Include
@@ -31,6 +35,7 @@ target_link_libraries(
     PUBLIC
 		ember_core
         ember_containers
+        ember_memory
 )
 
 #Preprocessor

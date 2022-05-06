@@ -1,4 +1,3 @@
-#include <ember/ecs/entity.hpp>
 #include <ember/ecs/entity_manager.hpp>
 #include <gtest/gtest.h>
 
