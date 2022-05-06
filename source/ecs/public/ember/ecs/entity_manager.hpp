@@ -35,6 +35,7 @@ namespace ember::ecs {
          * @return 
          */
         inline entity create();
+
         /**
          * @brief Destroys an entity. Removing all of it's components from this manager.
          * @param entity 
@@ -63,6 +64,15 @@ namespace ember::ecs {
          */
         template<typename component_t, typename... construct_args_t>
         component_t &add_component(entity entity, construct_args_t &&...construct_args);
+
+        /**
+         * @brief Checks if an entity has a component.
+         * @tparam component_t Type of component to check for.
+         * @param entity 
+         * @return True if the component exists for the entity.
+         */
+        template<typename component_t>
+        bool has_component(entity entity);
     };
 }
 

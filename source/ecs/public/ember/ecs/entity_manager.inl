@@ -30,4 +30,10 @@ namespace ember::ecs {
         EMBER_CHECK(is_valid(entity));
         return components.add_component<component_t>(entity, std::forward<construct_args_t>(construct_args)...);
     }
+
+    template<typename component_t>
+    bool entity_manager::has_component(entity entity) {
+        EMBER_CHECK(is_valid(entity));
+        return components.has_component<component_t>(entity);
+    }
 }

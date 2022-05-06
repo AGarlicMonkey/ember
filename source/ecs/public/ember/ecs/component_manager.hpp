@@ -21,6 +21,9 @@ namespace ember::ecs {
         template<typename component_t, typename... construct_args_t>
         component_t &add_component(entity entity, construct_args_t &&...construct_args);
 
+        template<typename component_t>
+        bool has_component(entity entity);
+
     private:
         /* archetype &get_archetype(archetype_id_t const &id); */
     };

@@ -42,4 +42,16 @@ namespace ember::ecs {
 
         return *ret_comp;
     }
+
+    template<typename component_t>
+    bool component_manager::has_component(entity entity) {
+        component_id_t const component_id{ id_generator::get<component_t>() };
+
+        if(!entity_to_archetype.contains(entity)) {
+            return false;
+        }
+
+        archetype const &archetype{ archetypes[entity_to_archetype.at(entity)] };
+        return std::find(archetype.id.begin(), archetype.id.end(), component_id) != archetype.id.end();
+    }
 }
