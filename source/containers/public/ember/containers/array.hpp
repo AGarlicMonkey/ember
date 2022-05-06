@@ -16,6 +16,8 @@ namespace ember::containers::internal {
         using pointer_type   = typename array_type::const_pointer_type;
         using reference_type = typename array_type::const_reference_type;
 
+        using difference_type = std::ptrdiff_t;
+
         //VARIABLES
     private:
         array_type const *array{ nullptr };
@@ -41,9 +43,12 @@ namespace ember::containers::internal {
         const_array_iterator &operator--();
 
         template<typename array_type_1>
-        friend const_array_iterator<array_type_1> operator+(const_array_iterator<array_type_1> const &lhs, std::size_t const num);
+        friend const_array_iterator<array_type_1> operator+(const_array_iterator<array_type_1> const &lhs, typename const_array_iterator<array_type_1>::difference_type const offset);
+
         template<typename array_type_1>
-        friend const_array_iterator<array_type_1> operator-(const_array_iterator<array_type_1> const &lhs, std::size_t const num);
+        friend const_array_iterator<array_type_1> operator-(const_array_iterator<array_type_1> const &lhs, typename const_array_iterator<array_type_1>::difference_type const offset);
+        template<typename array_type_1>
+        friend typename const_array_iterator<array_type_1>::difference_type operator-(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs);
 
         template<typename array_type_1>
         friend bool operator==(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) noexcept;
@@ -76,6 +81,8 @@ namespace ember::containers::internal {
         using pointer_type   = typename array_type::pointer_type;
         using reference_type = typename array_type::reference_type;
 
+        using difference_type = std::ptrdiff_t;
+
         //VARIABLES
     private:
         array_type *array{ nullptr };
@@ -101,9 +108,12 @@ namespace ember::containers::internal {
         array_iterator &operator--();
 
         template<typename array_type_1>
-        friend array_iterator<array_type_1> operator+(array_iterator<array_type_1> const &lhs, std::size_t const num);
+        friend array_iterator<array_type_1> operator+(array_iterator<array_type_1> const &lhs, typename array_iterator<array_type_1>::difference_type const offset);
+
         template<typename array_type_1>
-        friend array_iterator<array_type_1> operator-(array_iterator<array_type_1> const &lhs, std::size_t const num);
+        friend array_iterator<array_type_1> operator-(array_iterator<array_type_1> const &lhs, typename array_iterator<array_type_1>::difference_type const offset);
+        template<typename array_type_1>
+        friend typename array_iterator<array_type_1>::difference_type operator-(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs);
 
         template<typename array_type_1>
         friend bool operator==(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) noexcept;
@@ -308,6 +318,11 @@ namespace ember::containers {
         reference_type operator[](std::size_t pos);
         const_reference_type operator[](std::size_t pos) const;
 
+        template<typename array_type_1, typename array_type_2>
+        friend bool operator==(array<array_type_1> const &lhs, array<array_type_2> const &rhs);
+        template<typename array_type_1, typename array_type_2>
+        friend bool operator!=(array<array_type_1> const &lhs, array<array_type_2> const &rhs);
+
     private:
         void allocate_array(std::size_t const capacity);
         void reallocate_array(std::size_t const new_capacity, reallocate_type const type);
@@ -315,6 +330,18 @@ namespace ember::containers {
         void destruct_items();
 
         void double_size();
+    };
+}
+
+namespace std {
+    //Specialised iterator traits for certain std algorithms.
+    template<typename T>
+    struct iterator_traits<ember::containers::internal::const_array_iterator<ember::containers::array<T>>> {
+        using iterator_category = typename ember::containers::internal::const_array_iterator<ember::containers::array<T>>::iterator_category;
+
+        using value_type = typename ember::containers::internal::const_array_iterator<ember::containers::array<T>>::value_type;
+
+        using difference_type = typename ember::containers::internal::const_array_iterator<ember::containers::array<T>>::difference_type;
     };
 }
 

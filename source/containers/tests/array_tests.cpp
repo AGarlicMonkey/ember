@@ -488,6 +488,15 @@ TEST(array_tests, can_clear) {
     EXPECT_EQ(count, 3);
 }
 
+TEST(array_tests, can_check_equality) {
+    array<std::int32_t> arr_1{ 5, 4, 1, 0, 77, 98 };
+    array<std::int32_t> arr_2{ 5, 4, 1, 0, 77, 98 };
+    array<std::int32_t> arr_4{ 5, 4, 1 };
+
+    EXPECT_EQ(arr_1, arr_2);
+    EXPECT_NE(arr_1, arr_4);
+}
+
 // TEST(array_tests, can_shrink_to_fit) {
 //     EXPECT_TRUE(false);
 // }

@@ -55,15 +55,21 @@ namespace ember::containers {
         }
 
         template<typename array_type_1>
-        const_array_iterator<array_type_1> operator+(const_array_iterator<array_type_1> const &lhs, std::size_t const num) {
-            EMBER_CHECK(lhs.ptr + num <= lhs.last());
-            return const_array_iterator<array_type_1>{ lhs.array, lhs.ptr + num };
+        const_array_iterator<array_type_1> operator+(const_array_iterator<array_type_1> const &lhs, typename const_array_iterator<array_type_1>::difference_type const offset) {
+            EMBER_CHECK(lhs.ptr + offset <= lhs.last());
+            return const_array_iterator<array_type_1>{ lhs.array, lhs.ptr + offset };
         }
 
         template<typename array_type_1>
-        const_array_iterator<array_type_1> operator-(const_array_iterator<array_type_1> const &lhs, std::size_t const num) {
-            EMBER_CHECK(lhs.ptr - num >= lhs.first());
-            return const_array_iterator<array_type_1>{ lhs.array, lhs.ptr - num };
+        const_array_iterator<array_type_1> operator-(const_array_iterator<array_type_1> const &lhs, typename const_array_iterator<array_type_1>::difference_type const offset) {
+            EMBER_CHECK(lhs.ptr - offset >= lhs.first());
+            return const_array_iterator<array_type_1>{ lhs.array, lhs.ptr - offset };
+        }
+
+        template<typename array_type_1>
+        typename const_array_iterator<array_type_1>::difference_type operator-(const_array_iterator<array_type_1> const &lhs, const_array_iterator<array_type_1> const &rhs) {
+            EMBER_CHECK(lhs.array == rhs.array);
+            return lhs.ptr - rhs.ptr;
         }
 
         template<typename array_type_1>
@@ -157,15 +163,21 @@ namespace ember::containers {
         }
 
         template<typename array_type_1>
-        array_iterator<array_type_1> operator+(array_iterator<array_type_1> const &lhs, std::size_t const num) {
-            EMBER_CHECK(lhs.ptr + num <= lhs.last());
-            return array_iterator<array_type_1>{ lhs.array, lhs.ptr + num };
+        array_iterator<array_type_1> operator+(array_iterator<array_type_1> const &lhs, typename array_iterator<array_type_1>::difference_type const offset) {
+            EMBER_CHECK(lhs.ptr + offset <= lhs.last());
+            return array_iterator<array_type_1>{ lhs.array, lhs.ptr + offset };
         }
 
         template<typename array_type_1>
-        array_iterator<array_type_1> operator-(array_iterator<array_type_1> const &lhs, std::size_t const num) {
-            EMBER_CHECK(lhs.ptr - num >= lhs.first());
-            return array_iterator<array_type_1>{ lhs.array, lhs.ptr - num };
+        array_iterator<array_type_1> operator-(array_iterator<array_type_1> const &lhs, typename array_iterator<array_type_1>::difference_type const offset) {
+            EMBER_CHECK(lhs.ptr - offset >= lhs.first());
+            return array_iterator<array_type_1>{ lhs.array, lhs.ptr - offset };
+        }
+
+        template<typename array_type_1>
+        typename array_iterator<array_type_1>::difference_type operator-(array_iterator<array_type_1> const &lhs, array_iterator<array_type_1> const &rhs) {
+            EMBER_CHECK(lhs.array == rhs.array);
+            return lhs.ptr - rhs.ptr;
         }
 
         template<typename array_type_1>
@@ -516,6 +528,20 @@ namespace ember::containers {
     array<T>::const_reference_type array<T>::operator[](std::size_t pos) const {
         EMBER_CHECK(pos < elems);
         return first[pos];
+    }
+
+    template<typename array_type_1, typename array_type_2>
+    bool operator==(array<array_type_1> const &lhs, array<array_type_2> const &rhs) {
+        if(lhs.size() != rhs.size()) {
+            return false;
+        }
+
+        return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+    }
+
+    template<typename array_type_1, typename array_type_2>
+    bool operator!=(array<array_type_1> const &lhs, array<array_type_2> const &rhs) {
+        return !(lhs == rhs);
     }
 
     template<typename T>
