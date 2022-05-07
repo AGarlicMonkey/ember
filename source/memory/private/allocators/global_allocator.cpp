@@ -51,8 +51,9 @@ namespace {
 
         auto const iptr{ reinterpret_cast<std::uintptr_t>(ptr) };
 
-        std::size_t const remaining_bytes{ iptr & required_alignment };
+        std::size_t const remaining_bytes{ iptr % required_alignment };
         std::size_t const bytes_to_offset{ remaining_bytes != 0 ? required_alignment - remaining_bytes : 0 };
+        EMBER_CHECK(((iptr + bytes_to_offset) % required_alignment) == 0);
 
         return bytes_to_offset;
     }
@@ -76,7 +77,7 @@ namespace ember::memory {
     std::byte *global_allocator::alloc(std::size_t const bytes, std::size_t const alignment) {
         std::scoped_lock lock{ allocator_mutex };
 
-        std::size_t const total_allocation_size{ bytes + alignment };//Allow enough room for the worst case aliognment
+        std::size_t const total_allocation_size{ bytes + alignment };//Allow enough room for the worst case alignment
         std::byte *memory{ nullptr };
 
         DETAILED_LOG("New allocation: {0} bytes, {1} alignment. Searching for {2} bytes.", bytes, alignment, total_allocation_size);
@@ -84,7 +85,7 @@ namespace ember::memory {
         for(std::size_t arena_index{ 0 }; arena_index < memory_arenas.size(); ++arena_index) {
             arena &arena{ memory_arenas[arena_index] };
 
-            if(arena.size < bytes) {
+            if(arena.size < total_allocation_size) {
                 continue;
             }
 
@@ -102,7 +103,7 @@ namespace ember::memory {
 
                     DETAILED_LOG("\tFound block of {0} bytes.", header->size);
 
-                    //If we have space left over then insert it as a new block
+                    //If we have space left over then insert it as a new block. We check against the sizeof(block_header) as we'd need to put a new header into the remaining space.
                     if(size_t const remaining_space{ header->size - total_allocation_size }; remaining_space > sizeof(block_header)) {
                         header->size = total_allocation_size;
 
@@ -131,6 +132,7 @@ namespace ember::memory {
                     if(alignment_offset > 0) {
                         apply_padding_to_header(header, alignment_offset);
                         block_memory = arena.memory + (header->offset + sizeof(block_header));
+                        EMBER_CHECK(get_remaining_alignment(block_memory, alignment) == 0);
                     }
 
                     memory = block_memory;
@@ -196,9 +198,7 @@ namespace ember::memory {
     }
 
     void global_allocator::apply_padding_to_header(block_header *&header, std::uint8_t const padding) {
-        if(header->padding == 0) {
-            return;
-        }
+        EMBER_CHECK_MSG(header->padding == 0, "A header's padding must be reset before it can be realigned");
 
         DETAILED_LOG("\tHeader padded by {0} bytes.", padding);
 

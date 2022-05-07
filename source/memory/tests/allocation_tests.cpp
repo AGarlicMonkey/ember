@@ -7,8 +7,8 @@ using namespace ember;
 
 namespace {
     bool is_aligned(void const *const ptr, std::size_t alignment) {
-        auto iptr = reinterpret_cast<std::uintptr_t>(ptr);
-        return !(iptr % alignment);
+        auto const iptr{ reinterpret_cast<std::uintptr_t>(ptr) };
+        return (iptr % alignment) == 0;
     }
 }
 
@@ -23,6 +23,31 @@ TEST(allocation_tests, can_allocate_memory) {
     *mem_2 = 2.0f;
 
     EXPECT_NE(mem_1, mem_2);
+}
+
+TEST(allocation_tests, can_allocate_with_0_alignment) {
+    bool *mem{ reinterpret_cast<bool *>(memory::alloc(sizeof(bool), 0)) };
+
+    EXPECT_NE(mem, nullptr);
+
+    bool *mem_1{ reinterpret_cast<bool *>(memory::alloc(sizeof(bool), 0)) };
+    bool *mem_2{ reinterpret_cast<bool *>(memory::alloc(sizeof(bool), 0)) };
+    bool *mem_3{ reinterpret_cast<bool *>(memory::alloc(sizeof(bool), 0)) };
+
+    EXPECT_NE(mem_1, nullptr);
+    EXPECT_NE(mem_2, nullptr);
+    EXPECT_NE(mem_3, nullptr);
+
+    *mem = false;
+    *mem_1 = false;
+    *mem_2 = false;
+    *mem_3 = false;
+
+    *mem = true;
+
+    EXPECT_NE(*mem_1, true);
+    EXPECT_NE(*mem_2, true);
+    EXPECT_NE(*mem_3, true);
 }
 
 TEST(allocation_tests, pointers_have_correct_alignment) {
