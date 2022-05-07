@@ -36,6 +36,8 @@ namespace ember::containers::internal {
 
         ~const_array_iterator();
 
+        pointer_type get() const;
+
         pointer_type operator->() const;
         reference_type operator*() const;
 
@@ -100,6 +102,8 @@ namespace ember::containers::internal {
         array_iterator &operator=(array_iterator &&other) noexcept;
 
         ~array_iterator();
+
+        pointer_type get();
 
         pointer_type operator->();
         reference_type operator*();
@@ -342,6 +346,15 @@ namespace std {
         using value_type = typename ember::containers::internal::const_array_iterator<ember::containers::array<T>>::value_type;
 
         using difference_type = typename ember::containers::internal::const_array_iterator<ember::containers::array<T>>::difference_type;
+    };
+
+    template<typename T>
+    struct iterator_traits<ember::containers::internal::array_iterator<ember::containers::array<T>>> {
+        using iterator_category = typename ember::containers::internal::array_iterator<ember::containers::array<T>>::iterator_category;
+
+        using value_type = typename ember::containers::internal::array_iterator<ember::containers::array<T>>::value_type;
+
+        using difference_type = typename ember::containers::internal::array_iterator<ember::containers::array<T>>::difference_type;
     };
 }
 

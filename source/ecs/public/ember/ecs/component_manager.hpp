@@ -24,6 +24,9 @@ namespace ember::ecs {
         template<typename component_t>
         bool has_component(entity entity);
 
+        template<typename component_t>
+        component_t &get_component(entity entity);
+
     private:
         /* archetype &get_archetype(archetype_id_t const &id); */
     };

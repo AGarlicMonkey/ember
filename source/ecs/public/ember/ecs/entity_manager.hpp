@@ -73,6 +73,15 @@ namespace ember::ecs {
          */
         template<typename component_t>
         bool has_component(entity entity);
+
+        /**
+         * @brief Gets a specified from an entity. Will assert if that component does not exist.
+         * @tparam component_t 
+         * @param entity 
+         * @return 
+         */
+        template<typename component_t>
+        component_t &get_component(entity entity);
     };
 }
 

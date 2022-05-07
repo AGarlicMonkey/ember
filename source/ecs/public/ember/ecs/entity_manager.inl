@@ -36,4 +36,10 @@ namespace ember::ecs {
         EMBER_CHECK(is_valid(entity));
         return components.has_component<component_t>(entity);
     }
+
+    template<typename component_t>
+    component_t &entity_manager::get_component(entity entity) {
+        EMBER_CHECK(is_valid(entity));
+        return components.get_component<component_t>(entity);
+    }
 }

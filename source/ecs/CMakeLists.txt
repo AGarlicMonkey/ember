@@ -12,6 +12,8 @@ add_library(
     ${SOURCE_PUBLIC}/entity_manager.inl
     ${SOURCE_PRIVATE}/entity_manager.cpp
     ${SOURCE_PUBLIC}/archetype.hpp
+    ${SOURCE_PUBLIC}/archetype.inl
+    ${SOURCE_PRIVATE}/archetype.cpp
     ${SOURCE_PUBLIC}/component_manager.hpp
     ${SOURCE_PUBLIC}/component_manager.inl
     ${SOURCE_PRIVATE}/component_manager.cpp

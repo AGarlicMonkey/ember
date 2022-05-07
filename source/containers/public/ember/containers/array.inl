@@ -29,6 +29,11 @@ namespace ember::containers {
         const_array_iterator<array_type>::~const_array_iterator() = default;
 
         template<typename array_type>
+        typename const_array_iterator<array_type>::pointer_type const_array_iterator<array_type>::get() const {
+            return ptr;
+        }
+
+        template<typename array_type>
         const_array_iterator<array_type>::pointer_type const_array_iterator<array_type>::operator->() const {
             EMBER_CHECK(ptr < last());
             return ptr;
@@ -135,6 +140,11 @@ namespace ember::containers {
 
         template<typename array_type>
         array_iterator<array_type>::~array_iterator() = default;
+
+        template<typename array_type>
+        typename array_iterator<array_type>::pointer_type array_iterator<array_type>::get() {
+            return ptr;
+        }
 
         template<typename array_type>
         array_iterator<array_type>::pointer_type array_iterator<array_type>::operator->() {

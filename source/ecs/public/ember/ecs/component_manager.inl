@@ -14,30 +14,35 @@ namespace ember::ecs {
 
         //If we cannot find an old archetype then it is our first time seeing this entity
         if(old_archetype != nullptr) {
-            if(std::find(old_archetype->id.begin(), old_archetype->id.end(), component_id) != old_archetype->id.end()) {// array::contains? Could just deref the iterator here
+            if(old_archetype->allows_component(component_id)) {
                 //Already have it
+                //TODO...
             }
 
             //TODO...
         } else {
             archetype_id_t const archetype_id{ component_id };
+            archetype *found_archetype{ nullptr };
 
-            if(auto iter{ std::find_if(archetypes.begin(), archetypes.end(), [&archetype_id](archetype const &archetype) { return archetype.id == archetype_id; }) }; iter != archetypes.end()) {
-                //Archetype exists add it to it.
-                //TODO...
+            if(auto iter{ std::find_if(archetypes.begin(), archetypes.end(), [&archetype_id](archetype const &archetype) { return archetype.get_id() == archetype_id; }) }; iter != archetypes.end()) {
+                entity_to_archetype[entity] = std::distance(archetypes.begin(), iter);
+
+                found_archetype = iter.get();
             } else {
-                //Create new archetype
-                archetype archetype{ archetype_id };
-                archetype.entities.push_back(entity);
-                archetype.component_data.resize(sizeof(component_t));
-                archetype.component_data_size.push_back(sizeof(component_t));
+                containers::array<std::size_t> component_sizes{ sizeof(component_id_t) };
 
-                ret_comp = new(archetype.component_data.data()) component_t{ std::forward<construct_args_t>(construct_args)... };
-                EMBER_CHECK(ret_comp != nullptr);
-
-                archetypes.emplace_back(archetype_id);
+                archetypes.emplace_back(std::move(archetype_id), std::move(component_sizes));
                 entity_to_archetype[entity] = archetypes.size() - 1;
+
+                found_archetype = &archetypes.back();
             }
+
+            EMBER_CHECK(found_archetype != nullptr);
+
+            found_archetype->add_entity(entity);
+            ret_comp = &found_archetype->alloc_component<component_t>(entity, std::forward<construct_args_t>(construct_args)...);
+            
+            EMBER_CHECK(ret_comp != nullptr);
         }
 
         return *ret_comp;
@@ -52,6 +57,12 @@ namespace ember::ecs {
         }
 
         archetype const &archetype{ archetypes[entity_to_archetype.at(entity)] };
-        return std::find(archetype.id.begin(), archetype.id.end(), component_id) != archetype.id.end();
+        return archetype.allows_component(component_id);
+    }
+
+    template<typename component_t>
+    component_t &component_manager::get_component(entity entity) {
+        EMBER_CHECK(has_component<component_t>(entity));
+        return archetypes[entity_to_archetype.at(entity)].get_component<component_t>(entity);
     }
 }
