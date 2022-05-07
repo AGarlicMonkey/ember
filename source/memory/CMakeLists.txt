@@ -5,6 +5,7 @@ set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 
 #CMake
 option(EMBER_MEMORY_DETAILED_LOGGING "Allows allocators to log every operation. Leaving this on can produce extremely large log files and should only be used to track hard to find bugs." OFF)
+option(EMBER_MEMORY_DISABLE_GLOBAL_ALLOCATOR "Disables the global allocator using std::malloc and std::free instead. This can be used to find bugs where objects access memory that is not theirs." OFF)
 
 #Library
 add_library(
@@ -51,6 +52,7 @@ target_compile_definitions(
         EMBER
 
         EMBER_MEMORY_DETAILED_LOGGING=$<BOOL:${EMBER_MEMORY_DETAILED_LOGGING}>
+        EMBER_MEMORY_DISABLE_GLOBAL_ALLOCATOR=$<BOOL:${EMBER_MEMORY_DISABLE_GLOBAL_ALLOCATOR}>
 )
 
 if(EMBER_BUILD_TESTS)

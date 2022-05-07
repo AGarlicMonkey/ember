@@ -48,12 +48,6 @@ namespace ember::memory {
      */
     template<typename object_t>
     void destruct(object_t *&object);
-
-    /**
-     * @brief Returns the current size in bytes on the global memory pool.
-     * @return 
-     */
-    EMBER_API std::size_t get_global_pool_size();
 }
 
 #include "memory.inl"

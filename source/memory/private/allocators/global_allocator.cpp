@@ -189,6 +189,7 @@ namespace ember::memory {
 
         block_header *header{ get_header_from_memory(memory) };
 
+        VALIDATE_HEADER(header);
         DETAILED_LOG("Freeing {0} bytes. Header had {1} padding.", header->size, header->padding);
 
         reset_header_padding(header);
