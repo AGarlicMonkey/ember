@@ -567,7 +567,7 @@ namespace ember::containers {
     void array<T>::reallocate_array(std::size_t const new_capacity, reallocate_type const type) {
         if(memory != nullptr) {
             if(type == reallocate_type::preserve_current_items) {
-                std::byte *new_memory = memory::alloc(sizeof(value_type) * new_capacity, alignof(value_type));
+                std::byte *new_memory{ memory::alloc(sizeof(value_type) * new_capacity, alignof(value_type)) };
                 EMBER_THROW_IF_FAILED(memory != nullptr, exception{ "Failed to reallocate array." });
                 auto *new_first{ reinterpret_cast<pointer_type>(new_memory) };
 

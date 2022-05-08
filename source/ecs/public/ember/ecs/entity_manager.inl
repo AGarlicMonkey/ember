@@ -42,4 +42,10 @@ namespace ember::ecs {
         EMBER_CHECK(is_valid(entity));
         return components.get_component<component_t>(entity);
     }
+
+    template<typename component_t>
+    void entity_manager::remove_component(entity entity) {
+        EMBER_CHECK(is_valid(entity));
+        components.remove_component<component_t>(entity);
+    }
 }

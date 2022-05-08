@@ -82,6 +82,14 @@ namespace ember::ecs {
          */
         template<typename component_t>
         component_t &get_component(entity entity);
+
+        /**
+         * @brief Removes a component from an entity.
+         * @tparam component_t 
+         * @param entity 
+         */
+        template<typename component_t>
+        void remove_component(entity entity);
     };
 }
 

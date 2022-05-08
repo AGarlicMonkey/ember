@@ -15,7 +15,7 @@ struct int_component {
     std::int32_t value{ 0 };
 };
 
-struct complex_component{
+struct complex_component {
     std::int32_t a{ 0 };
     std::int32_t b{ 0 };
     std::int32_t c{ 0 };
@@ -55,7 +55,7 @@ TEST(component_tests, can_check_for_a_component) {
     EXPECT_FALSE(manager.has_component<bool_component>(entity_3));
 }
 
-TEST(component_tests, can_get_a_component){
+TEST(component_tests, can_get_a_component) {
     entity_manager manager{};
 
     entity entity_1{ manager.create() };
@@ -74,7 +74,19 @@ TEST(component_tests, can_get_a_component){
     EXPECT_EQ(manager.get_component<int_component>(entity_4).value, 200);
 }
 
-//Remove comp
+TEST(component_tests, can_remove_a_component) {
+    entity_manager manager{};
+
+    entity entity_1{ manager.create() };
+
+    manager.add_component<bool_component>(entity_1);
+
+    ASSERT_TRUE(manager.has_component<bool_component>(entity_1));
+
+    manager.remove_component<bool_component>(entity_1);
+
+    EXPECT_FALSE(manager.has_component<bool_component>(entity_1));
+}
 
 //Multiple
 
