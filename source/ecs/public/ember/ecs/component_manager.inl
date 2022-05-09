@@ -14,7 +14,7 @@ namespace ember::ecs {
         component_id_t const component_id{ id_generator::get<component_t>() };
 
         if(!component_helper_map.contains(component_id)) {
-            component_helper_map[component_id] = memory::make_unique<archetype::component_helpers_impl<component_t>>();
+            component_helper_map[component_id] = memory::make_unique<internal::component_helpers_impl<component_t>>();
         }
 
         archetype *new_archetype{ nullptr };
@@ -33,7 +33,7 @@ namespace ember::ecs {
                 std::sort(archetype_id.begin(), archetype_id.end());
 
                 auto archetype_iter{ find_or_add_archetype(archetype_id) };
-                old_archetype = &archetypes[entity_to_archetype.at(entity)];//NOTE: Need to get the archetype again as the array could've resized.
+                old_archetype = &archetypes[entity_to_archetype.at(entity)];//Need to get the archetype again as the array could've resized.
                 archetype_iter->transfer_entity(entity, *old_archetype);
 
                 entity_to_archetype[entity] = std::distance(archetypes.begin(), archetype_iter);
@@ -95,7 +95,7 @@ namespace ember::ecs {
             }
 
             auto new_archetype{ find_or_add_archetype(archetype_id) };
-            old_archetype = &archetypes[entity_to_archetype.at(entity)];//NOTE: Need to get the pointer again incase the array resized.
+            old_archetype = &archetypes[entity_to_archetype.at(entity)];//Need to get the pointer again incase the array resized.
 
             new_archetype->transfer_entity(entity, *old_archetype);
             entity_to_archetype.at(entity) = std::distance(archetypes.begin(), new_archetype);

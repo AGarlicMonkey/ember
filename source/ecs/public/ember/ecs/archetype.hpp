@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ember/ecs/component_helper.hpp"
 #include "ember/ecs/types.hpp"
 
 #include <ember/containers/array.hpp>
@@ -14,26 +15,6 @@ namespace ember::ecs {
      */
     class EMBER_API archetype {
         //TYPES
-    public:
-        class component_helpers {
-        public:
-            virtual void move(std::byte *source, std::byte *destination) const = 0;
-            virtual void destruct(std::byte *memory) const                     = 0;
-
-            virtual std::size_t get_size() const  = 0;
-            virtual component_id_t get_id() const = 0;
-        };
-
-        template<typename component_t>
-        class component_helpers_impl : public component_helpers {
-        public:
-            void move(std::byte *source, std::byte *destination) const override;
-            void destruct(std::byte *memory) const override;
-
-            std::size_t get_size() const override;
-            component_id_t get_id() const override;
-        };
-
     private:
         /**
          * @brief Memory arena for the components in this archetype.
@@ -51,20 +32,20 @@ namespace ember::ecs {
     private:
         archetype_id_t id{};
 
-        containers::map<entity, std::size_t> entities{};                                              /**< All entities belonging to this archetype. */
-        containers::map<component_id_t, memory::unique_ptr<component_helpers>> *component_helper_map; /**< Maps a component id to it's helper type*/
-        component_arena component_data{};                                                             /**< Memory pool for the archetype's components. */
+        containers::map<entity, std::size_t> entities{};                                                        /**< All entities belonging to this archetype. */
+        containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map; /**< Maps a component id to it's helper type*/
+        component_arena component_data{};                                                                       /**< Memory pool for the archetype's components. */
 
         //FUNCTIONS
     public:
         archetype() = delete;
-        inline archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<component_helpers>> *component_helper_map);
+        inline archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map);
 
         archetype(archetype const &other) = delete;
         inline archetype(archetype &&other) noexcept;
 
         archetype &operator=(archetype const &other) = delete;
-        inline archetype &operator=(archetype &&other) noexcept;
+        inline archetype &operator                   =(archetype &&other) noexcept;
 
         ~archetype();
 

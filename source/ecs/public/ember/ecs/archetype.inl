@@ -2,30 +2,7 @@
 #include <numeric>
 
 namespace ember::ecs {
-    template<typename component_t>
-    void archetype::component_helpers_impl<component_t>::move(std::byte *source, std::byte *destination) const {
-        auto *component_source{ reinterpret_cast<component_t *>(source) };
-        new(destination) component_t{ std::move(*component_source) };
-        component_source->~component_t();
-    }
-
-    template<typename component_t>
-    void archetype::component_helpers_impl<component_t>::destruct(std::byte *memory) const {
-        auto *component{ reinterpret_cast<component_t *>(memory) };
-        component->~component_t();
-    }
-
-    template<typename component_t>
-    std::size_t archetype::component_helpers_impl<component_t>::get_size() const {
-        return sizeof(component_t);
-    }
-
-    template<typename component_t>
-    component_id_t archetype::component_helpers_impl<component_t>::get_id() const {
-        return id_generator::get<component_t>();
-    }
-
-    archetype::archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<component_helpers>> *component_helper_map)
+    archetype::archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map)
         : id{ std::move(id) }
         , component_helper_map{ component_helper_map } {
         component_data.stride = 0;

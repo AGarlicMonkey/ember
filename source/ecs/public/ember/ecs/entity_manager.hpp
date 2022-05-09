@@ -8,7 +8,7 @@
 
 namespace ember::ecs {
     /**
-     * @brief Manages entities and their components.
+     * @brief Manages all entities and their components.
      */
     class EMBER_API entity_manager {
         //VARIABLES

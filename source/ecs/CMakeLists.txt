@@ -17,6 +17,8 @@ add_library(
     ${SOURCE_PUBLIC}/component_manager.hpp
     ${SOURCE_PUBLIC}/component_manager.inl
     ${SOURCE_PRIVATE}/component_manager.cpp
+    ${SOURCE_PUBLIC}/component_helper.hpp
+    ${SOURCE_PUBLIC}/component_helper.inl
 )
 
 #Include

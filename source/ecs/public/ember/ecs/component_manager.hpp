@@ -9,14 +9,14 @@
 
 namespace ember::ecs {
     /**
-     * @brief Manages all currently known entity archetypes.
+     * @brief Manages components accross all currently known entity archetypes.
      */
     class EMBER_API component_manager {
         //VARIABLES
     private:
         containers::array<archetype> archetypes{};
         containers::map<entity, std::size_t> entity_to_archetype{};//Maps an entity to an index to the archetypes array;
-        containers::map<component_id_t, memory::unique_ptr<archetype::component_helpers>> component_helper_map{};
+        containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> component_helper_map{};
 
         //FUNCTIONS
     public:
