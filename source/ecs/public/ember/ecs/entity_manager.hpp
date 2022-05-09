@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ember/ecs/types.hpp"
 #include "ember/ecs/component_manager.hpp"
+#include "ember/ecs/types.hpp"
 
 #include <ember/containers/array.hpp>
 #include <ember/core/export.hpp>

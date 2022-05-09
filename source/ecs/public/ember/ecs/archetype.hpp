@@ -10,7 +10,7 @@
 
 namespace ember::ecs {
     /**
-     * @brief Contains data for an entity archetype.
+     * @brief Contains data for all entities belonging to a specific archetype.
      * @details An entity archetype is defined by it's unique combination of components.
      */
     class EMBER_API archetype {
@@ -45,7 +45,7 @@ namespace ember::ecs {
         inline archetype(archetype &&other) noexcept;
 
         archetype &operator=(archetype const &other) = delete;
-        inline archetype &operator                   =(archetype &&other) noexcept;
+        inline archetype &operator=(archetype &&other) noexcept;
 
         ~archetype();
 

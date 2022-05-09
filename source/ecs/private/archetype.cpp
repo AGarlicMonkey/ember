@@ -30,7 +30,7 @@ namespace ember::ecs {
                     auto &component{ component_helper_map->at(component_id) };
 
                     component->destruct(memory);
-                    
+
                     memory += component->get_size();
                 }
             }
@@ -68,16 +68,17 @@ namespace ember::ecs {
             component_helper_map->at(component_id)->destruct(component_memory);
         }
 
-        std::size_t const to_remove_index{ component_data.allocations - 1 };
+        std::size_t const to_move_index{ component_data.allocations - 1 };
         ecs::entity to_move_entity{};
         for(auto &&[tracked_entity, entity_index] : entities) {
-            if(entity_index == to_remove_index) {
+            if(entity_index == to_move_index) {
                 to_move_entity = tracked_entity;
                 break;
             }
         }
         EMBER_CHECK(to_move_entity != null_entity);
 
+        //If we removed from the middle of the array then move the components at the end to the new location
         if(to_move_entity != entity) {
             for(auto &component_id : id) {
                 std::byte *old_component_memory{ get_component_memory(to_move_entity, component_id) };

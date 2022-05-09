@@ -30,11 +30,11 @@ namespace ember::ecs {
                 new_archetype = old_archetype;
                 new_archetype->destruct_component<component_t>(entity);
             } else {
-                archetype_id_t archetype_id{ old_archetype->get_id() };
-                archetype_id.push_back(component_id);
-                std::sort(archetype_id.begin(), archetype_id.end());
+                archetype_id_t new_archetype_id{ old_archetype->get_id() };
+                new_archetype_id.push_back(component_id);
+                std::sort(new_archetype_id.begin(), new_archetype_id.end());
 
-                auto archetype_iter{ find_or_add_archetype(archetype_id) };
+                auto archetype_iter{ find_or_add_archetype(new_archetype_id) };
                 old_archetype = &archetypes[entity_to_archetype.at(entity)];//Need to get the archetype again as the array could've resized.
                 archetype_iter->transfer_entity(entity, *old_archetype);
 
@@ -85,18 +85,18 @@ namespace ember::ecs {
 
             archetype *old_archetype{ &archetypes[entity_to_archetype.at(entity)] };
 
-            archetype_id_t archetype_id{ old_archetype->get_id() };
-            archetype_id.erase(component_id);
-            std::sort(archetype_id.begin(), archetype_id.end());//Sorted IDs stop issues with similar archetypes but different orders
+            archetype_id_t new_archetype_id{ old_archetype->get_id() };
+            new_archetype_id.erase(component_id);
+            std::sort(new_archetype_id.begin(), new_archetype_id.end());//Sorted IDs stop issues with similar archetypes but different orders
 
-            //If this was the entity's last component then we can just return here
-            if(archetype_id.empty()) {
+            //If this was the entity's last component then we do not need to add it in another archetype.
+            if(new_archetype_id.empty()) {
                 old_archetype->remove_entity(entity);
                 entity_to_archetype.erase(entity);
                 return;
             }
 
-            auto new_archetype{ find_or_add_archetype(archetype_id) };
+            auto new_archetype{ find_or_add_archetype(new_archetype_id) };
             old_archetype = &archetypes[entity_to_archetype.at(entity)];//Need to get the pointer again incase the array resized.
 
             new_archetype->transfer_entity(entity, *old_archetype);
