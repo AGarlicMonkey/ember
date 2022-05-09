@@ -1,3 +1,5 @@
+#include "ember/ecs/function_traits.hpp"
+
 namespace ember::ecs {
     component_manager::component_manager() = default;
 
@@ -100,5 +102,32 @@ namespace ember::ecs {
             new_archetype->transfer_entity(entity, *old_archetype);
             entity_to_archetype.at(entity) = std::distance(archetypes.begin(), new_archetype);
         }
+    }
+
+    template<typename function_t>
+    void component_manager::for_each(function_t function) {
+        archetype_id_t const match_id{ generate_archetype_id_from_function<function_t>(std::make_index_sequence<internal::function_traits<function_t>::arity>{}) };
+
+        for(auto &archetype : archetypes) {
+            auto const &archetype_id{ archetype.get_id() };
+            bool const is_match{ std::includes(archetype_id.begin(), archetype_id.end(), match_id.begin(), match_id.end()) };
+
+            if(is_match) {
+                archetype.invoke_on_components(function);
+            }
+        }
+    }
+
+    template<typename function_t, std::size_t... parameter_indices_t>
+    archetype_id_t component_manager::generate_archetype_id_from_function(std::index_sequence<parameter_indices_t...>) {
+        //Use the provided index sequence to expand out each type of the function's params
+        return generate_archetype_id_from_types<std::tuple_element_t<parameter_indices_t, typename internal::function_traits<function_t>::decayed_parameter_types_tuple>...>();
+    }
+
+    template<typename... components_t>
+    archetype_id_t component_manager::generate_archetype_id_from_types() {
+        archetype_id_t id{ id_generator::get<components_t>()... };
+        std::sort(id.begin(), id.end());
+        return id;
     }
 }

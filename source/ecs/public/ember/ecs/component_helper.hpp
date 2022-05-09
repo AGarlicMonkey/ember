@@ -15,11 +15,11 @@ namespace ember::ecs::internal {
     template<typename component_t>
     class component_helpers_impl : public component_helpers {
     public:
-        void move(std::byte *source, std::byte *destination) const override;
-        void destruct(std::byte *memory) const override;
+        void move(std::byte *source, std::byte *destination) const final;
+        void destruct(std::byte *memory) const final;
 
-        std::size_t get_size() const override;
-        component_id_t get_id() const override;
+        std::size_t get_size() const final;
+        component_id_t get_id() const final;
     };
 }
 

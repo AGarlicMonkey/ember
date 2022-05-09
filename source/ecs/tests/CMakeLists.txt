@@ -9,3 +9,8 @@ add_test(NAME entity_test COMMAND entity_test)
 add_executable(component_test component_tests.cpp)
 target_link_libraries(component_test PRIVATE GTest::gtest_main ember_ecs)
 add_test(NAME component_test COMMAND component_test)
+
+#System
+add_executable(system_test system_tests.cpp)
+target_link_libraries(system_test PRIVATE GTest::gtest_main ember_ecs)
+add_test(NAME system_test COMMAND system_test)

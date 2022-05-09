@@ -42,9 +42,18 @@ namespace ember::ecs {
         template<typename component_t>
         void remove(entity const entity);
 
+        template<typename function_t>
+        void for_each(function_t function);
+
     private:
         containers::array<archetype>::iterator find_archetype(archetype_id_t const &id);
         containers::array<archetype>::iterator find_or_add_archetype(archetype_id_t const &id);
+
+        template<typename function_t, std::size_t... parameter_indices_t>
+        archetype_id_t generate_archetype_id_from_function(std::index_sequence<parameter_indices_t...>);
+
+        template<typename... components_t>
+        archetype_id_t generate_archetype_id_from_types();
     };
 }
 

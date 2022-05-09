@@ -66,6 +66,9 @@ namespace ember::ecs {
         template<typename component_t>
         component_t &get_component(entity const entity);
 
+        template<typename function_t>
+        void invoke_on_components(function_t function);
+
     private:
         void increase_arena_size();
 
@@ -76,6 +79,15 @@ namespace ember::ecs {
         template<typename component_t>
         std::byte *get_component_memory(entity const entity) const;
         std::byte *get_component_memory(entity const entity, component_id_t const component_id) const;
+
+        template<typename component_t>
+        component_t & get_component_within_block(std::byte *const block);
+
+        template<typename function_t, std::size_t... parameter_indices_t>
+        void invoke(function_t function, std::index_sequence<parameter_indices_t...>);
+
+        template<typename function_t, typename... components_t>
+        void invoke(function_t function);
     };
 }
 

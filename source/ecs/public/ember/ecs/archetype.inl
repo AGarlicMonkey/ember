@@ -1,3 +1,5 @@
+#include "ember/ecs/function_traits.hpp"
+
 #include <ember/core/log.hpp>
 #include <numeric>
 
@@ -54,6 +56,12 @@ namespace ember::ecs {
         return *reinterpret_cast<component_t *>(component_memory);
     }
 
+    template<typename function_t>
+    void archetype::invoke_on_components(function_t function) {
+        //Generate an invoke call where index sequence contains indices to each function param
+        invoke<function_t>(function, std::make_index_sequence<internal::function_traits<function_t>::arity>{});
+    }
+
     template<typename component_t>
     std::size_t archetype::get_component_offset() const {
         return get_component_offset(id_generator::get<component_t>());
@@ -62,5 +70,25 @@ namespace ember::ecs {
     template<typename component_t>
     std::byte *archetype::get_component_memory(entity const entity) const {
         return get_component_memory(entity, id_generator::get<component_t>());
+    }
+
+    template<typename component_t>
+    component_t &archetype::get_component_within_block(std::byte *const block) {
+        return *reinterpret_cast<component_t *>(block + get_component_offset<component_t>());
+    }
+
+    template<typename function_t, std::size_t... parameter_indices_t>
+    void archetype::invoke(function_t function, std::index_sequence<parameter_indices_t...>) {
+        //Generate an invoke call where the inidices are used to expand out each type of the function's params
+        return invoke<function_t, std::tuple_element_t<parameter_indices_t, typename internal::function_traits<function_t>::decayed_parameter_types_tuple>...>(function);
+    }
+
+    template<typename function_t, typename... components_t>
+    void archetype::invoke(function_t function) {
+        for(std::size_t i{ 0 }; i < component_data.allocations; ++i) {
+            std::byte *const archetype_block{ component_data.memory + (i * component_data.stride) };
+            //TODO: This will likely need to be optimised in the future. get_component_offset loops through the archetype's id on every call.
+            function(get_component_within_block<components_t>(archetype_block)...);
+        }
     }
 }

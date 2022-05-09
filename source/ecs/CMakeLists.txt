@@ -8,6 +8,7 @@ add_library(
     ${TARGET_NAME}
 
     ${SOURCE_PUBLIC}/types.hpp
+    ${SOURCE_PUBLIC}/function_traits.hpp
     ${SOURCE_PUBLIC}/entity_manager.hpp
     ${SOURCE_PUBLIC}/entity_manager.inl
     ${SOURCE_PRIVATE}/entity_manager.cpp

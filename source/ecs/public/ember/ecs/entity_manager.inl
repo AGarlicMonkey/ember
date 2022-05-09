@@ -48,4 +48,9 @@ namespace ember::ecs {
         EMBER_CHECK(is_valid(entity));
         components.remove<component_t>(entity);
     }
+
+    template<typename function_t>
+    void entity_manager::for_each(function_t function) {
+        components.for_each(function);
+    }
 }

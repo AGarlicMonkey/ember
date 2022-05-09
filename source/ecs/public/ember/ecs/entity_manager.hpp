@@ -90,6 +90,14 @@ namespace ember::ecs {
          */
         template<typename component_t>
         void remove_component(entity const entity);
+
+        /**
+         * @brief Calls the function for every entity that has a component that matches it's arguments.
+         * @tparam function_t 
+         * @param function 
+         */
+        template<typename function_t>
+        void for_each(function_t function);
     };
 }
 
