@@ -81,21 +81,23 @@ namespace ember::ecs {
         if(has<component_t>(entity)) {
             component_id_t const component_id{ id_generator::get<component_t>() };
 
-            archetype &old_archetype{ archetypes[entity_to_archetype.at(entity)] };
+            archetype *old_archetype{ &archetypes[entity_to_archetype.at(entity)] };
 
-            archetype_id_t archetype_id{ old_archetype.get_id() };
+            archetype_id_t archetype_id{ old_archetype->get_id() };
             archetype_id.erase(component_id);
             std::sort(archetype_id.begin(), archetype_id.end());//Sorted IDs stop issues with similar archetypes but different orders
 
             //If this was the entity's last component then we can just return here
             if(archetype_id.empty()) {
-                old_archetype.remove_entity(entity);
+                old_archetype->remove_entity(entity);
                 entity_to_archetype.erase(entity);
                 return;
             }
 
-            auto new_archetype{ find_archetype(archetype_id) };
-            new_archetype->transfer_entity(entity, old_archetype);
+            auto new_archetype{ find_or_add_archetype(archetype_id) };
+            old_archetype = &archetypes[entity_to_archetype.at(entity)];//NOTE: Need to get the pointer again incase the array resized.
+
+            new_archetype->transfer_entity(entity, *old_archetype);
             entity_to_archetype.at(entity) = std::distance(archetypes.begin(), new_archetype);
         }
     }
