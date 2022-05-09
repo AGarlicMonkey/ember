@@ -26,26 +26,26 @@ namespace ember::ecs {
     }
 
     template<typename component_t, typename... construct_args_t>
-    component_t &entity_manager::add_component(entity entity, construct_args_t &&...construct_args) {
+    component_t &entity_manager::add_component(entity const entity, construct_args_t &&...construct_args) {
         EMBER_CHECK(is_valid(entity));
-        return components.add_component<component_t>(entity, std::forward<construct_args_t>(construct_args)...);
+        return components.add<component_t>(entity, std::forward<construct_args_t>(construct_args)...);
     }
 
     template<typename component_t>
-    bool entity_manager::has_component(entity entity) {
+    bool entity_manager::has_component(entity const entity) {
         EMBER_CHECK(is_valid(entity));
-        return components.has_component<component_t>(entity);
+        return components.has<component_t>(entity);
     }
 
     template<typename component_t>
-    component_t &entity_manager::get_component(entity entity) {
+    component_t &entity_manager::get_component(entity const entity) {
         EMBER_CHECK(is_valid(entity));
-        return components.get_component<component_t>(entity);
+        return components.get<component_t>(entity);
     }
 
     template<typename component_t>
-    void entity_manager::remove_component(entity entity) {
+    void entity_manager::remove_component(entity const entity) {
         EMBER_CHECK(is_valid(entity));
-        components.remove_component<component_t>(entity);
+        components.remove<component_t>(entity);
     }
 }

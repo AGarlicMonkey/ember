@@ -88,8 +88,28 @@ TEST(component_tests, can_remove_a_component) {
     EXPECT_FALSE(manager.has_component<bool_component>(entity_1));
 }
 
-//Multiple
+TEST(component_tests, can_add_multiple_components){
+    entity_manager manager{};
+
+    entity entity_1{ manager.create() };
+    entity entity_2{ manager.create() };
+
+    manager.add_component<bool_component>(entity_1, true);
+    manager.add_component<float_component>(entity_1);
+    manager.add_component<complex_component>(entity_1);
+
+    manager.add_component<float_component>(entity_2);
+    manager.add_component<complex_component>(entity_2);
+
+    EXPECT_TRUE(manager.has_component<bool_component>(entity_1));
+    EXPECT_TRUE(manager.has_component<float_component>(entity_1));
+    EXPECT_TRUE(manager.has_component<complex_component>(entity_1));
+
+    EXPECT_EQ(manager.get_component<bool_component>(entity_1).value, true);
+    EXPECT_EQ(manager.add_component<bool_component>(entity_1, false).value, false);
+
+    EXPECT_TRUE(manager.has_component<float_component>(entity_2));
+    EXPECT_TRUE(manager.has_component<complex_component>(entity_2));
+}
 
 //Add multiple then remove some
-
-//Remove entity

@@ -153,7 +153,19 @@ namespace ember::containers {
         }
 
         template<typename array_type>
+        array_iterator<array_type>::pointer_type array_iterator<array_type>::operator->() const {
+            EMBER_CHECK(ptr < last());
+            return ptr;
+        }
+
+        template<typename array_type>
         array_iterator<array_type>::reference_type array_iterator<array_type>::operator*() {
+            EMBER_CHECK(ptr < last());
+            return *ptr;
+        }
+
+        template<typename array_type>
+        array_iterator<array_type>::reference_type array_iterator<array_type>::operator*() const {
             EMBER_CHECK(ptr < last());
             return *ptr;
         }

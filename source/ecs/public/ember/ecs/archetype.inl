@@ -39,16 +39,16 @@ namespace ember::ecs {
         return id;
     }
 
-    bool archetype::contains_entity(entity entity) const {
+    bool archetype::contains_entity(entity const entity) const {
         return entities.contains(entity);
     }
 
-    bool archetype::allows_component(component_id_t component_id) const {
+    bool archetype::allows_component(component_id_t const component_id) const {
         return std::find(id.begin(), id.end(), component_id) != id.end();
     }
 
     template<typename component_t, typename... construct_args_t>
-    component_t &archetype::alloc_component(entity entity, construct_args_t &&...construct_args) {
+    component_t &archetype::alloc_component(entity const entity, construct_args_t &&...construct_args) {
         EMBER_CHECK(contains_entity(entity));
         EMBER_CHECK(allows_component(id_generator::get<component_t>()));
 
@@ -58,7 +58,18 @@ namespace ember::ecs {
     }
 
     template<typename component_t>
-    component_t &archetype::get_component(entity entity) {
+    void archetype::destruct_component(entity const entity) {
+        component_id_t const component_id{ id_generator::get<component_t>() };
+
+        EMBER_CHECK(contains_entity(entity));
+        EMBER_CHECK(allows_component(component_id));
+
+        std::byte *component_memory{ get_component_memory(entity, component_id) };
+        component_helper_map->at(component_id)->destruct(component_memory);
+    }
+
+    template<typename component_t>
+    component_t &archetype::get_component(entity const entity) {
         EMBER_CHECK(contains_entity(entity));
         EMBER_CHECK(allows_component(id_generator::get<component_t>()));
 
@@ -72,7 +83,7 @@ namespace ember::ecs {
     }
 
     template<typename component_t>
-    std::byte *archetype::get_component_memory(entity entity) const {
+    std::byte *archetype::get_component_memory(entity const entity) const {
         return get_component_memory(entity, id_generator::get<component_t>());
     }
 }

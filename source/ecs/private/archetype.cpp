@@ -37,7 +37,7 @@ namespace ember::ecs {
         }
     }
 
-    void archetype::add_entity(entity entity) {
+    void archetype::add_entity(entity const entity) {
         if((component_data.allocations * component_data.stride) + component_data.stride > component_data.bytes) {
             increase_arena_size();
         }
@@ -46,20 +46,22 @@ namespace ember::ecs {
         entities[entity] = component_data.allocations - 1;
     }
 
-    void archetype::transfer_entity(entity entity, archetype &previous_archetype) {
+    void archetype::transfer_entity(entity const entity, archetype &previous_archetype) {
         add_entity(entity);
 
         for(auto &component_id : id) {
-            std::byte *old_component_memory{ previous_archetype.get_component_memory(entity, component_id) };
-            std::byte *new_component_memory{ get_component_memory(entity, component_id) };
+            if(previous_archetype.allows_component(component_id)) {
+                std::byte *old_component_memory{ previous_archetype.get_component_memory(entity, component_id) };
+                std::byte *new_component_memory{ get_component_memory(entity, component_id) };
 
-            component_helper_map->at(component_id)->move(old_component_memory, new_component_memory);
+                component_helper_map->at(component_id)->move(old_component_memory, new_component_memory);
+            }
         }
 
         previous_archetype.remove_entity(entity);
     }
 
-    void archetype::remove_entity(entity entity) {
+    void archetype::remove_entity(entity const entity) {
         for(auto &component_id : id) {
             std::byte *component_memory{ get_component_memory(entity, component_id) };
             component_helper_map->at(component_id)->destruct(component_memory);
@@ -67,15 +69,15 @@ namespace ember::ecs {
 
         std::size_t const to_remove_index{ component_data.allocations - 1 };
         ecs::entity to_move_entity{};
-        for(auto&&[tracked_entity, entity_index] : entities){
-            if(entity_index == to_remove_index){
+        for(auto &&[tracked_entity, entity_index] : entities) {
+            if(entity_index == to_remove_index) {
                 to_move_entity = tracked_entity;
                 break;
             }
         }
         EMBER_CHECK(to_move_entity != null_entity);
 
-        if(to_move_entity != entity){
+        if(to_move_entity != entity) {
             for(auto &component_id : id) {
                 std::byte *old_component_memory{ get_component_memory(to_move_entity, component_id) };
                 std::byte *new_component_memory{ get_component_memory(entity, component_id) };
@@ -116,7 +118,7 @@ namespace ember::ecs {
         }
     }
 
-    std::size_t archetype::get_component_offset(component_id_t component_id) const {
+    std::size_t archetype::get_component_offset(component_id_t const component_id) const {
         EMBER_CHECK(allows_component(component_id));
 
         std::size_t offset{ 0 };
@@ -132,7 +134,9 @@ namespace ember::ecs {
         return 0;
     }
 
-    std::byte *archetype::get_component_memory(entity entity, component_id_t component_id) const {
+    std::byte *archetype::get_component_memory(entity const entity, component_id_t const component_id) const {
+        EMBER_CHECK(contains_entity(entity));
+
         std::size_t const entity_index{ entities.at(entity) };
         return component_data.memory + (component_data.stride * entity_index) + get_component_offset(component_id);
     }

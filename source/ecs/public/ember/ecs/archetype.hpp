@@ -70,29 +70,31 @@ namespace ember::ecs {
 
         inline archetype_id_t const &get_id() const;
 
-        void add_entity(entity entity);
-        void transfer_entity(entity entity, archetype &previous_archetype);
-        void remove_entity(entity entity);
+        void add_entity(entity const entity);
+        void transfer_entity(entity const entity, archetype &previous_archetype);
+        void remove_entity(entity const entity);
 
-        inline bool contains_entity(entity entity) const;
-        inline bool allows_component(component_id_t component_id) const;
+        inline bool contains_entity(entity const entity) const;
+        inline bool allows_component(component_id_t const component_id) const;
 
         template<typename component_t, typename... construct_args_t>
-        component_t &alloc_component(entity entity, construct_args_t &&...construct_args);
+        component_t &alloc_component(entity const entity, construct_args_t &&...construct_args);
+        template<typename component_t>
+        void destruct_component(entity const entity);
 
         template<typename component_t>
-        component_t &get_component(entity entity);
+        component_t &get_component(entity const entity);
 
     private:
         void increase_arena_size();
 
         template<typename component_t>
         std::size_t get_component_offset() const;
-        std::size_t get_component_offset(component_id_t component_id) const;
+        std::size_t get_component_offset(component_id_t const component_id) const;
 
         template<typename component_t>
-        std::byte *get_component_memory(entity entity) const;
-        std::byte *get_component_memory(entity entity, component_id_t component_id) const;
+        std::byte *get_component_memory(entity const entity) const;
+        std::byte *get_component_memory(entity const entity, component_id_t const component_id) const;
     };
 }
 

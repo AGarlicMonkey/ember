@@ -31,19 +31,20 @@ namespace ember::ecs {
         inline ~component_manager();
 
         template<typename component_t, typename... construct_args_t>
-        component_t &add_component(entity entity, construct_args_t &&...construct_args);
+        component_t &add(entity const entity, construct_args_t &&...construct_args);
 
         template<typename component_t>
-        bool has_component(entity entity);
+        bool has(entity const entity);
 
         template<typename component_t>
-        component_t &get_component(entity entity);
+        component_t &get(entity const entity);
 
         template<typename component_t>
-        void remove_component(entity entity);
+        void remove(entity const entity);
 
     private:
         containers::array<archetype>::iterator find_archetype(archetype_id_t const &id);
+        containers::array<archetype>::iterator find_or_add_archetype(archetype_id_t const &id);
     };
 }
 

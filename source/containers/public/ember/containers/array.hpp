@@ -73,7 +73,7 @@ namespace ember::containers::internal {
     };
 
     template<typename array_type>
-    class array_iterator : public const_array_iterator<array_type> {
+    class array_iterator {
         //TYPES
     public:
         using iterator_concept  = std::contiguous_iterator_tag;
@@ -84,6 +84,9 @@ namespace ember::containers::internal {
         using reference_type = typename array_type::reference_type;
 
         using difference_type = std::ptrdiff_t;
+
+    private:
+        using base_type = const_array_iterator<array_type>;
 
         //VARIABLES
     private:
@@ -106,7 +109,9 @@ namespace ember::containers::internal {
         pointer_type get();
 
         pointer_type operator->();
+        pointer_type operator->() const;
         reference_type operator*();
+        reference_type operator*() const;
 
         array_iterator &operator++();
         array_iterator &operator--();

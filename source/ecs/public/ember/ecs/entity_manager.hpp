@@ -52,7 +52,7 @@ namespace ember::ecs {
          * @param entity 
          * @return 
          */
-        bool is_valid(entity entity);
+        bool is_valid(entity const entity);
 
         /**
          * @brief Adds a component to a given entity.
@@ -63,7 +63,7 @@ namespace ember::ecs {
          * @return The newly created component.
          */
         template<typename component_t, typename... construct_args_t>
-        component_t &add_component(entity entity, construct_args_t &&...construct_args);
+        component_t &add_component(entity const entity, construct_args_t &&...construct_args);
 
         /**
          * @brief Checks if an entity has a component.
@@ -72,7 +72,7 @@ namespace ember::ecs {
          * @return True if the component exists for the entity.
          */
         template<typename component_t>
-        bool has_component(entity entity);
+        bool has_component(entity const entity);
 
         /**
          * @brief Gets a specified from an entity. Will assert if that component does not exist.
@@ -81,7 +81,7 @@ namespace ember::ecs {
          * @return 
          */
         template<typename component_t>
-        component_t &get_component(entity entity);
+        component_t &get_component(entity const entity);
 
         /**
          * @brief Removes a component from an entity.
@@ -89,7 +89,7 @@ namespace ember::ecs {
          * @param entity 
          */
         template<typename component_t>
-        void remove_component(entity entity);
+        void remove_component(entity const entity);
     };
 }
 
