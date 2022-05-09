@@ -30,7 +30,8 @@ namespace ember::ecs {
                     auto &component{ component_helper_map->at(component_id) };
 
                     component->destruct(memory);
-                    component->get_size();
+                    
+                    memory += component->get_size();
                 }
             }
             memory::free(component_data.memory);
