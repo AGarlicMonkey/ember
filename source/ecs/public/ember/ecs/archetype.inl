@@ -58,8 +58,14 @@ namespace ember::ecs {
 
     template<typename function_t>
     void archetype::invoke_on_components(function_t function) {
-        //Generate an invoke call where index sequence contains indices to each function param
-        invoke<function_t>(function, std::make_index_sequence<internal::function_traits<function_t>::arity>{});
+        //Generate an invoke call where index sequence contains indices to each function params
+        invoke(function, std::make_index_sequence<internal::function_traits<function_t>::arity>{});
+    }
+
+    template<typename function_t, typename object_t>
+    void archetype::invoke_on_components(function_t function, object_t *object) {
+        //Generate an invoke call where index sequence contains indices to each function params
+        invoke_member(function, object, std::make_index_sequence<internal::function_traits<function_t>::arity>{});
     }
 
     template<typename component_t>
@@ -74,6 +80,7 @@ namespace ember::ecs {
 
     template<typename component_t>
     component_t &archetype::get_component_within_block(std::byte *const block) {
+        //TODO: This will likely need to be optimised in the future. get_component_offset loops through the archetype's id on every call.
         return *reinterpret_cast<component_t *>(block + get_component_offset<component_t>());
     }
 
@@ -87,8 +94,21 @@ namespace ember::ecs {
     void archetype::invoke(function_t function) {
         for(std::size_t i{ 0 }; i < component_data.allocations; ++i) {
             std::byte *const archetype_block{ component_data.memory + (i * component_data.stride) };
-            //TODO: This will likely need to be optimised in the future. get_component_offset loops through the archetype's id on every call.
             function(get_component_within_block<components_t>(archetype_block)...);
+        }
+    }
+
+    template<typename function_t, typename object_t, std::size_t... parameter_indices_t>
+    void archetype::invoke_member(function_t function, object_t *object, std::index_sequence<parameter_indices_t...>) {
+        //Generate an invoke call where the inidices are used to expand out each type of the function's params
+        return invoke_member<function_t, object_t, std::tuple_element_t<parameter_indices_t, typename internal::function_traits<function_t>::decayed_parameter_types_tuple>...>(function, object);
+    }
+
+    template<typename function_t, typename object_t, typename... components_t>
+    void archetype::invoke_member(function_t function, object_t *object) {
+        for(std::size_t i{ 0 }; i < component_data.allocations; ++i) {
+            std::byte *const archetype_block{ component_data.memory + (i * component_data.stride) };
+            (object->*function)(get_component_within_block<components_t>(archetype_block)...);
         }
     }
 }

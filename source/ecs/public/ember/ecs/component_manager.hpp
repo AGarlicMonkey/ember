@@ -45,6 +45,9 @@ namespace ember::ecs {
         template<typename function_t>
         void for_each(function_t function);
 
+        template<typename function_t, typename object_t>
+        void for_each(function_t function, object_t *object);
+
     private:
         containers::array<archetype>::iterator find_archetype(archetype_id_t const &id);
         containers::array<archetype>::iterator find_or_add_archetype(archetype_id_t const &id);

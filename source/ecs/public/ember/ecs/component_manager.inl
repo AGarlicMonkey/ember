@@ -118,6 +118,20 @@ namespace ember::ecs {
         }
     }
 
+    template<typename function_t, typename object_t>
+    void component_manager::for_each(function_t function, object_t *object) {
+        archetype_id_t const match_id{ generate_archetype_id_from_function<function_t>(std::make_index_sequence<internal::function_traits<function_t>::arity>{}) };
+
+        for(auto &archetype : archetypes) {
+            auto const &archetype_id{ archetype.get_id() };
+            bool const is_match{ std::includes(archetype_id.begin(), archetype_id.end(), match_id.begin(), match_id.end()) };
+
+            if(is_match) {
+                archetype.invoke_on_components(function, object);
+            }
+        }
+    }
+
     template<typename function_t, std::size_t... parameter_indices_t>
     archetype_id_t component_manager::generate_archetype_id_from_function(std::index_sequence<parameter_indices_t...>) {
         //Use the provided index sequence to expand out each type of the function's params

@@ -53,4 +53,9 @@ namespace ember::ecs {
     void entity_manager::for_each(function_t function) {
         components.for_each(function);
     }
+
+    template<typename function_t, typename object_t>
+    void entity_manager::for_each(function_t function, object_t *object) {
+        components.for_each(function, object);
+    }
 }

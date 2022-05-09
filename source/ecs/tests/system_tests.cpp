@@ -105,15 +105,97 @@ TEST(system_tests, can_use_lambda_function) {
     EXPECT_EQ(multiple_count, 2);
 }
 
-/*
-TEST(system_tests, can_use_free_function) {
+void bool_setter(bool_component &bool_comp) {
+    bool_comp.value = true;
 }
-*/
 
-/*
-TEST(system_tests, can_use_member_function) {
+TEST(system_tests, can_use_free_function) {
+    entity_manager manager{};
+
+    entity entity_1{ manager.create() };
+    entity entity_2{ manager.create() };
+    entity entity_3{ manager.create() };
+    entity entity_4{ manager.create() };
+    entity entity_5{ manager.create() };
+    entity entity_6{ manager.create() };
+
+    manager.add_component<bool_component>(entity_1);
+
+    manager.add_component<bool_component>(entity_2);
+    manager.add_component<complex_component>(entity_2);
+
+    manager.add_component<bool_component>(entity_3);
+    manager.add_component<float_component>(entity_3);
+    manager.add_component<int_component>(entity_3);
+
+    manager.add_component<bool_component>(entity_4);
+    manager.add_component<bool_component>(entity_5);
+    manager.add_component<bool_component>(entity_6);
+
+    ASSERT_EQ(manager.get_component<bool_component>(entity_1).value, false);
+    ASSERT_EQ(manager.get_component<bool_component>(entity_2).value, false);
+    ASSERT_EQ(manager.get_component<bool_component>(entity_3).value, false);
+    ASSERT_EQ(manager.get_component<bool_component>(entity_4).value, false);
+    ASSERT_EQ(manager.get_component<bool_component>(entity_5).value, false);
+    ASSERT_EQ(manager.get_component<bool_component>(entity_6).value, false);
+
+    manager.for_each(bool_setter);
+
+    EXPECT_EQ(manager.get_component<bool_component>(entity_1).value, true);
+    EXPECT_EQ(manager.get_component<bool_component>(entity_2).value, true);
+    EXPECT_EQ(manager.get_component<bool_component>(entity_3).value, true);
+    EXPECT_EQ(manager.get_component<bool_component>(entity_4).value, true);
+    EXPECT_EQ(manager.get_component<bool_component>(entity_5).value, true);
+    EXPECT_EQ(manager.get_component<bool_component>(entity_6).value, true);
 }
-*/
+
+TEST(system_tests, can_use_member_function) {
+    struct member_function_helper {
+        std::int32_t count{ 0 };
+        void int_setter(int_component &int_comp) {
+            int_comp.value = 100;
+            ++count;
+        }
+    };
+
+    entity_manager manager{};
+    member_function_helper helper{};
+
+    entity entity_1{ manager.create() };
+    entity entity_2{ manager.create() };
+    entity entity_3{ manager.create() };
+    entity entity_4{ manager.create() };
+    entity entity_5{ manager.create() };
+    entity entity_6{ manager.create() };
+
+    manager.add_component<int_component>(entity_1);
+
+    manager.add_component<bool_component>(entity_2);
+    manager.add_component<complex_component>(entity_2);
+
+    manager.add_component<bool_component>(entity_3);
+    manager.add_component<float_component>(entity_3);
+    manager.add_component<int_component>(entity_3);
+
+    manager.add_component<int_component>(entity_4);
+    manager.add_component<int_component>(entity_5);
+    manager.add_component<int_component>(entity_6);
+
+    ASSERT_EQ(manager.get_component<int_component>(entity_1).value, 0);
+    ASSERT_EQ(manager.get_component<int_component>(entity_3).value, 0);
+    ASSERT_EQ(manager.get_component<int_component>(entity_4).value, 0);
+    ASSERT_EQ(manager.get_component<int_component>(entity_5).value, 0);
+    ASSERT_EQ(manager.get_component<int_component>(entity_6).value, 0);
+
+    manager.for_each(&member_function_helper::int_setter, &helper);
+
+    EXPECT_EQ(manager.get_component<int_component>(entity_1).value, 100);
+    EXPECT_EQ(manager.get_component<int_component>(entity_3).value, 100);
+    EXPECT_EQ(manager.get_component<int_component>(entity_4).value, 100);
+    EXPECT_EQ(manager.get_component<int_component>(entity_5).value, 100);
+    EXPECT_EQ(manager.get_component<int_component>(entity_6).value, 100);
+    EXPECT_EQ(helper.count, 5);
+}
 
 /*
 TEST(system_tests, can_get_entity) {
