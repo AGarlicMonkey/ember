@@ -106,6 +106,18 @@ namespace ember::platform {
             window_handle = nullptr;
         }
 
+        maths::vec2u get_size() const override {
+            EMBER_CHECK(is_open());
+
+            RECT window_rect{};
+            GetClientRect(window_handle, &window_rect);
+
+            auto const width{ static_cast<std::uint32_t>(window_rect.right) - static_cast<std::uint32_t>(window_rect.left) };
+            auto const height{ static_cast<std::uint32_t>(window_rect.bottom) - static_cast<std::uint32_t>(window_rect.top) };
+
+            return { width, height };
+        }
+
         void *get_native_window() const override {
             return window_handle;
         }

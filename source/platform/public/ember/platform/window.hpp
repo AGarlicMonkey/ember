@@ -78,7 +78,13 @@ namespace ember::platform {
         virtual std::optional<event> get_event() = 0;
 
         virtual bool is_open() const = 0;
-        virtual void close() = 0;
+        virtual void close()         = 0;
+
+        /**
+         * @brief Returns the size of the window's client region.
+         * @return 
+         */
+        virtual maths::vec2u get_size() const = 0;
 
         /**
          * @brief Returns the platform's native window handle.
