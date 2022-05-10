@@ -292,10 +292,36 @@ namespace ember::graphics {
                 case command_type::end_render_pass_command:
                     vkCmdEndRenderPass(vk_buffer);
                     break;
-                case command_type::set_viewport_command:
-                    break;
-                case command_type::set_scissor_command:
-                    break;
+                case command_type::set_viewport_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::set_viewport_command> *>(command_memory) };
+
+                    VkViewport const viewport{
+                        .x        = static_cast<float>(command->position.x),
+                        .y        = static_cast<float>(command->position.y),
+                        .width    = static_cast<float>(command->size.x),
+                        .height   = static_cast<float>(command->size.y),
+                        .minDepth = 0.0f,
+                        .maxDepth = 1.0f,
+                    };
+
+                    vkCmdSetViewport(vk_buffer, 0, 1, &viewport);
+                } break;
+                case command_type::set_scissor_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::set_scissor_command> *>(command_memory) };
+
+                    VkRect2D const scissor{
+                        .offset = {
+                            .x = command->position.x,
+                            .y = command->position.y,
+                        },
+                        .extent = {
+                            .width  = command->size.x,
+                            .height = command->size.y,
+                        },
+                    };
+
+                    vkCmdSetScissor(vk_buffer, 0, 1, &scissor);
+                } break;
                 case command_type::bind_graphics_pipeline_object_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::bind_graphics_pipeline_object_command> *>(command_memory) };
 

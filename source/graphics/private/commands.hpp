@@ -150,9 +150,25 @@ namespace ember::graphics {
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::end_render_pass_command){};
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::set_viewport_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::set_viewport_command) {
+        maths::vec2i const position;
+        maths::vec2u const size;
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::set_scissor_command){};
+        recorded_command(maths::vec2i const position, maths::vec2u const size)
+            : position{ position }
+            , size{ size } {
+        }
+    };
+
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::set_scissor_command) {
+        maths::vec2i const position;
+        maths::vec2u const size;
+
+        recorded_command(maths::vec2i const position, maths::vec2u const size)
+            : position{ position }
+            , size{ size } {
+        }
+    };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::bind_graphics_pipeline_object_command) {
         graphics_pipeline_object const *const pipeline_object;

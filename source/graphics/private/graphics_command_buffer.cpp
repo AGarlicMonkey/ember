@@ -15,11 +15,11 @@ namespace ember::graphics {
     }
 
     void graphics_command_buffer::set_viewport(vec2i const position, vec2u const size) {
-        //TODO
+        record_command<command_type::set_viewport_command>(position, size);
     }
 
     void graphics_command_buffer::set_scissor(vec2i const position, vec2u const size) {
-        //TODO
+        record_command<command_type::set_scissor_command>(position, size);
     }
 
     void graphics_command_buffer::bind_pipeline_object(graphics_pipeline_object const *const pipeline_object) {
