@@ -23,39 +23,28 @@ namespace ember::ecs {
     archetype::archetype(archetype &&other) noexcept
         : id{ std::move(other.id) }
         , entities{ std::move(other.entities) }
-        , component_data{ std::move(other.component_data) }
         , component_helper_map{ other.component_helper_map }
         , component_offsets{ std::move(other.component_offsets) } {
+        destruct_memory_arena();
+        component_data = std::move(other.component_data);
         other.component_data.memory = nullptr;
     }
 
     archetype &archetype::operator=(archetype &&other) noexcept {
         id                   = std::move(other.id);
         entities             = std::move(other.entities);
-        component_data       = std::move(other.component_data);
         component_helper_map = other.component_helper_map;
         component_offsets    = std::move(other.component_offsets);
 
+        destruct_memory_arena();
+        component_data              = std::move(other.component_data);
         other.component_data.memory = nullptr;
 
         return *this;
     }
 
     archetype::~archetype() {
-        if(component_data.memory != nullptr) {
-            std::byte *memory{ component_data.memory };
-            for(std::size_t i{ 0 }; i < component_data.allocations; ++i) {
-                for(auto &component_id : id) {
-                    auto &component{ component_helper_map->at(component_id) };
-
-                    component->destruct(memory);
-
-                    memory += component->get_size();
-                }
-            }
-            memory::free(component_data.memory);
-            component_data.memory = nullptr;
-        }
+        destruct_memory_arena();
     }
 
     void archetype::add_entity(entity const entity) {
@@ -148,5 +137,22 @@ namespace ember::ecs {
 
         std::size_t const entity_index{ entities.at(entity) };
         return component_data.memory + (component_data.stride * entity_index) + get_component_offset(component_id);
+    }
+
+    void archetype::destruct_memory_arena() {
+        if(component_data.memory != nullptr) {
+            std::byte *memory{ component_data.memory };
+            for(std::size_t i{ 0 }; i < component_data.allocations; ++i) {
+                for(auto &component_id : id) {
+                    auto &component{ component_helper_map->at(component_id) };
+
+                    component->destruct(memory);
+
+                    memory += component->get_size();
+                }
+            }
+            memory::free(component_data.memory);
+            component_data.memory = nullptr;
+        }
     }
 }

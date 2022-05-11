@@ -97,6 +97,8 @@ namespace ember::ecs {
         void invoke_member(function_t function, object_t *object, std::index_sequence<parameter_indices_t...>);
         template<typename function_t, typename object_t, typename... components_t>
         void invoke_member(function_t function, object_t *object);
+
+        void destruct_memory_arena();
     };
 }
 
