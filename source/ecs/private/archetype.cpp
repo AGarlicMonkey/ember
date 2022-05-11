@@ -3,19 +3,38 @@
 #include <ember/memory/memory.hpp>
 
 namespace ember::ecs {
+    archetype::archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map)
+        : id{ std::move(id) }
+        , component_helper_map{ component_helper_map } {
+        component_data.stride = 0;
+        for(auto component_id : this->id) {
+            component_data.stride += component_helper_map->at(component_id)->get_size();
+        }
+        EMBER_CHECK(component_data.stride != 0);
+
+        std::size_t offset{ 0 };
+        for(auto component_id : this->id) {
+            component_offsets[component_id] = offset;
+            offset += component_helper_map->at(component_id)->get_size();
+        }
+        EMBER_CHECK(component_offsets.size() != 0);
+    }
+
     archetype::archetype(archetype &&other) noexcept
         : id{ std::move(other.id) }
         , entities{ std::move(other.entities) }
+        , component_data{ std::move(other.component_data) }
         , component_helper_map{ other.component_helper_map }
-        , component_data{ std::move(other.component_data) } {
+        , component_offsets{ std::move(other.component_offsets) } {
         other.component_data.memory = nullptr;
     }
 
     archetype &archetype::operator=(archetype &&other) noexcept {
         id                   = std::move(other.id);
         entities             = std::move(other.entities);
-        component_helper_map = other.component_helper_map;
         component_data       = std::move(other.component_data);
+        component_helper_map = other.component_helper_map;
+        component_offsets    = std::move(other.component_offsets);
 
         other.component_data.memory = nullptr;
 
@@ -118,22 +137,6 @@ namespace ember::ecs {
 
             memory::free(old_memory);
         }
-    }
-
-    std::size_t archetype::get_component_offset(component_id_t const component_id) const {
-        EMBER_CHECK(allows_component(component_id));
-
-        std::size_t offset{ 0 };
-        for(auto c_id : id) {
-            if(c_id == component_id) {
-                return offset;
-            } else {
-                offset += component_helper_map->at(c_id)->get_size();
-            }
-        }
-
-        EMBER_CHECK_MSG(false, "Could not find component.");
-        return 0;
     }
 
     std::byte *archetype::get_component_memory(entity const entity, component_id_t const component_id) const {

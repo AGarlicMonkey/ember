@@ -32,14 +32,16 @@ namespace ember::ecs {
     private:
         archetype_id_t id{};
 
-        containers::map<entity, std::size_t> entities{};                                                        /**< All entities belonging to this archetype. */
+        containers::map<entity, std::size_t> entities{}; /**< All entities belonging to this archetype. */
+        component_arena component_data{};                /**< Memory pool for the archetype's components. */
+
         containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map; /**< Maps a component id to it's helper type*/
-        component_arena component_data{};                                                                       /**< Memory pool for the archetype's components. */
+        containers::map<component_id_t, std::size_t> component_offsets{};                                       /**< Map of component offsets into the memory buffer.*/
 
         //FUNCTIONS
     public:
         archetype() = delete;
-        inline archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map);
+        archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map);
 
         archetype(archetype const &other) = delete;
         inline archetype(archetype &&other) noexcept;
@@ -77,14 +79,14 @@ namespace ember::ecs {
 
         template<typename component_t>
         std::size_t get_component_offset() const;
-        std::size_t get_component_offset(component_id_t const component_id) const;
+        inline std::size_t get_component_offset(component_id_t const component_id) const;
 
         template<typename component_t>
         std::byte *get_component_memory(entity const entity) const;
         std::byte *get_component_memory(entity const entity, component_id_t const component_id) const;
 
         template<typename component_t>
-        component_t & get_component_within_block(std::byte *const block);
+        component_t &get_component_within_block(std::byte *const block);
 
         template<typename function_t, std::size_t... parameter_indices_t>
         void invoke(function_t function, std::index_sequence<parameter_indices_t...>);

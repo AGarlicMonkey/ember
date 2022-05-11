@@ -4,16 +4,6 @@
 #include <numeric>
 
 namespace ember::ecs {
-    archetype::archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map)
-        : id{ std::move(id) }
-        , component_helper_map{ component_helper_map } {
-        component_data.stride = 0;
-        for(auto component_id : this->id) {
-            component_data.stride += component_helper_map->at(component_id)->get_size();
-        }
-        EMBER_CHECK(component_data.stride != 0);
-    }
-
     archetype_id_t const &archetype::get_id() const {
         return id;
     }
@@ -71,6 +61,11 @@ namespace ember::ecs {
     template<typename component_t>
     std::size_t archetype::get_component_offset() const {
         return get_component_offset(id_generator::get<component_t>());
+    }
+
+    std::size_t archetype::get_component_offset(component_id_t const component_id) const {
+        EMBER_CHECK(allows_component(component_id));
+        return component_offsets.at(component_id);
     }
 
     template<typename component_t>
