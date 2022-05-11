@@ -41,6 +41,7 @@ namespace ember::ecs {
 
         template<typename component_t>
         void remove(entity const entity);
+        void remove(entity const entity);
 
         template<typename function_t>
         void for_each(function_t function);

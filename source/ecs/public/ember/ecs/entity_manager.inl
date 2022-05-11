@@ -16,15 +16,6 @@ namespace ember::ecs {
         return entity;
     }
 
-    void entity_manager::destroy(entity &entity) {
-        entities.erase(entity);
-        entity = null_entity;
-    }
-
-    void entity_manager::destroy_all() {
-        entities.clear();
-    }
-
     template<typename component_t, typename... construct_args_t>
     component_t &entity_manager::add_component(entity const entity, construct_args_t &&...construct_args) {
         EMBER_THROW_IF_FAILED(is_valid(entity), exception{ "Cannot add component on an invalid entity." });

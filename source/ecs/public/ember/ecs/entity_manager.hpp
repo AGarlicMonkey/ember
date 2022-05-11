@@ -40,11 +40,11 @@ namespace ember::ecs {
          * @brief Destroys an entity. Removing all of it's components from this manager.
          * @param entity 
          */
-        inline void destroy(entity &entity);
+        void destroy(entity &entity);
         /**
          * @brief Destroys all entities contained within this manager.
          */
-        inline void destroy_all();
+        void destroy_all();
 
         /**
          * @brief Checks if an entity is valid within the context of this manager. Entities created from

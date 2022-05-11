@@ -197,15 +197,109 @@ TEST(system_tests, can_use_member_function) {
     EXPECT_EQ(helper.count, 5);
 }
 
-/*
-TEST(system_tests, can_get_entity) {
-}
-*/
-
-/*
 TEST(system_tests, entities_components_are_removed) {
     //Remove individual components
     //Remove whole entities
+
+    entity_manager manager{};
+
+    entity entity_1{ manager.create() };
+    entity entity_2{ manager.create() };
+    entity entity_3{ manager.create() };
+
+    manager.add_component<int_component>(entity_1);
+    manager.add_component<bool_component>(entity_1);
+    manager.add_component<complex_component>(entity_1);
+
+    manager.add_component<int_component>(entity_2);
+    manager.add_component<bool_component>(entity_2);
+    manager.add_component<complex_component>(entity_2);
+
+    manager.add_component<int_component>(entity_3);
+    manager.add_component<bool_component>(entity_3);
+    manager.add_component<complex_component>(entity_3);
+
+    std::int32_t int_comp_count{ 0 };
+    std::int32_t bool_comp_count{ 0 };
+    std::int32_t complex_comp_count{ 0 };
+
+    manager.for_each([&](int_component const &comp) {
+        ++int_comp_count;
+    });
+    manager.for_each([&](bool_component const &comp) {
+        ++bool_comp_count;
+    });
+    manager.for_each([&](complex_component const &comp) {
+        ++complex_comp_count;
+    });
+
+    ASSERT_EQ(int_comp_count, 3);
+    ASSERT_EQ(bool_comp_count, 3);
+    ASSERT_EQ(complex_comp_count, 3);
+
+    int_comp_count     = 0;
+    bool_comp_count    = 0;
+    complex_comp_count = 0;
+
+    manager.remove_component<int_component>(entity_2);
+
+    manager.for_each([&](int_component const &comp) {
+        ++int_comp_count;
+    });
+    manager.for_each([&](bool_component const &comp) {
+        ++bool_comp_count;
+    });
+    manager.for_each([&](complex_component const &comp) {
+        ++complex_comp_count;
+    });
+
+    EXPECT_EQ(int_comp_count, 2);
+    EXPECT_EQ(bool_comp_count, 3);
+    EXPECT_EQ(complex_comp_count, 3);
+
+    int_comp_count     = 0;
+    bool_comp_count    = 0;
+    complex_comp_count = 0;
+
+    manager.destroy(entity_1);
+
+    manager.for_each([&](int_component const &comp) {
+        ++int_comp_count;
+    });
+    manager.for_each([&](bool_component const &comp) {
+        ++bool_comp_count;
+    });
+    manager.for_each([&](complex_component const &comp) {
+        ++complex_comp_count;
+    });
+
+    EXPECT_EQ(int_comp_count, 1);
+    EXPECT_EQ(bool_comp_count, 2);
+    EXPECT_EQ(complex_comp_count, 2);
+
+    int_comp_count     = 0;
+    bool_comp_count    = 0;
+    complex_comp_count = 0;
+
+    manager.destroy_all();
+
+    manager.for_each([&](int_component const &comp) {
+        ++int_comp_count;
+    });
+    manager.for_each([&](bool_component const &comp) {
+        ++bool_comp_count;
+    });
+    manager.for_each([&](complex_component const &comp) {
+        ++complex_comp_count;
+    });
+
+    EXPECT_EQ(int_comp_count, 0);
+    EXPECT_EQ(bool_comp_count, 0);
+    EXPECT_EQ(complex_comp_count, 0);
+}
+
+/*
+TEST(system_tests, can_get_entity) {
 }
 */
 
