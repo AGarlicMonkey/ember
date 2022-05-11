@@ -27,25 +27,25 @@ namespace ember::ecs {
 
     template<typename component_t, typename... construct_args_t>
     component_t &entity_manager::add_component(entity const entity, construct_args_t &&...construct_args) {
-        EMBER_CHECK(is_valid(entity));
+        EMBER_THROW_IF_FAILED(is_valid(entity), exception{ "Cannot add component on an invalid entity." });
         return components.add<component_t>(entity, std::forward<construct_args_t>(construct_args)...);
     }
 
     template<typename component_t>
     bool entity_manager::has_component(entity const entity) {
-        EMBER_CHECK(is_valid(entity));
+        EMBER_THROW_IF_FAILED(is_valid(entity), exception{ "Cannot check a component on an invalid entity." });
         return components.has<component_t>(entity);
     }
 
     template<typename component_t>
     component_t &entity_manager::get_component(entity const entity) {
-        EMBER_CHECK(is_valid(entity));
+        EMBER_THROW_IF_FAILED(is_valid(entity), exception{ "Cannot get component on an invalid entity." });
         return components.get<component_t>(entity);
     }
 
     template<typename component_t>
     void entity_manager::remove_component(entity const entity) {
-        EMBER_CHECK(is_valid(entity));
+        EMBER_THROW_IF_FAILED(is_valid(entity), exception{ "Cannot remove component on an invalid entity." });
         components.remove<component_t>(entity);
     }
 

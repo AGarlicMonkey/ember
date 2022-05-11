@@ -54,6 +54,7 @@ namespace ember::ecs {
                 }
             }
             memory::free(component_data.memory);
+            component_data.memory = nullptr;
         }
     }
 
@@ -79,6 +80,9 @@ namespace ember::ecs {
         }
 
         previous_archetype.remove_entity(entity);
+
+        EMBER_CHECK(contains_entity(entity));
+        EMBER_CHECK(!previous_archetype.contains_entity(entity));
     }
 
     void archetype::remove_entity(entity const entity) {
