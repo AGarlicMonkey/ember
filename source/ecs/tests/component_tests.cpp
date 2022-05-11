@@ -75,20 +75,29 @@ TEST(component_tests, can_get_a_component) {
 }
 
 TEST(component_tests, can_remove_a_component) {
+    struct destruct_component {
+        std::int32_t *count{ nullptr };
+        ~destruct_component() {
+            *count += 1;
+        }
+    };
+
     entity_manager manager{};
 
     entity entity_1{ manager.create() };
+    std::int32_t counter{ 0 };
 
-    manager.add_component<bool_component>(entity_1);
+    manager.add_component<destruct_component>(entity_1, &counter);
 
-    ASSERT_TRUE(manager.has_component<bool_component>(entity_1));
+    ASSERT_TRUE(manager.has_component<destruct_component>(entity_1));
 
-    manager.remove_component<bool_component>(entity_1);
+    manager.remove_component<destruct_component>(entity_1);
 
-    EXPECT_FALSE(manager.has_component<bool_component>(entity_1));
+    EXPECT_FALSE(manager.has_component<destruct_component>(entity_1));
+    EXPECT_EQ(counter, 1);
 }
 
-TEST(component_tests, can_add_multiple_components){
+TEST(component_tests, can_add_multiple_components) {
     entity_manager manager{};
 
     entity entity_1{ manager.create() };
