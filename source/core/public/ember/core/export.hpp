@@ -1,3 +1,5 @@
+#pragma once
+
 #if EMBER_EXPORT
     #ifdef _MSC_VER
         #ifdef EMBER
