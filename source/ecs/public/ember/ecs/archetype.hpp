@@ -44,10 +44,10 @@ namespace ember::ecs {
         archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map);
 
         archetype(archetype const &other) = delete;
-        inline archetype(archetype &&other) noexcept;
+        archetype(archetype &&other) noexcept;
 
         archetype &operator=(archetype const &other) = delete;
-        inline archetype &operator=(archetype &&other) noexcept;
+        archetype &operator=(archetype &&other) noexcept;
 
         ~archetype();
 
