@@ -476,7 +476,9 @@ namespace ember::graphics {
     void vulkan_queue::destroy_queue(queue &queue) {
         vkQueueWaitIdle(queue.handle);
 
-        vkFreeCommandBuffers(logical_device, queue.command_pool, queue.pooled_buffers.size(), queue.pooled_buffers.data());
+        if(queue.pooled_buffers.size() > 0){
+            vkFreeCommandBuffers(logical_device, queue.command_pool, queue.pooled_buffers.size(), queue.pooled_buffers.data());
+        }
         for(auto *fence : queue.pooled_fences) {
             vkDestroyFence(logical_device, fence, &global_host_allocation_callbacks);
         }
