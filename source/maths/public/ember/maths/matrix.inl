@@ -205,7 +205,38 @@ namespace ember::maths {
     }
 
     template<number T>
-    constexpr mat<4, 4, T> scale(mat<4, 4, T> const &m, vec<3, T> const &v) {
+    constexpr mat<4, 4, T> rotate(vec<3, T> const &angles) {
+        float const c1{ std::cos(-angles.x) };
+        float const c2{ std::cos(-angles.y) };
+        float const c3{ std::cos(-angles.z) };
+        
+        float const s1{ std::sin(-angles.x) };
+        float const s2{ std::sin(-angles.y) };
+        float const s3{ std::sin(-angles.z) };
+
+        mat<4, 4, T> result{};
+
+        result[0][0] = c2 * c3;
+        result[0][1] = -c1 * s3 + s1 * s2 * c3;
+        result[0][2] = s1 * s3 + c1 * s2 * c3;
+        result[0][3] = 0;
+        result[1][0] = c2 * s3;
+        result[1][1] = c1 * c3 + s1 * s2 * s3;
+        result[1][2] = -s1 * c3 + c1 * s2 * s3;
+        result[1][3] = 0;
+        result[2][0] = -s2;
+        result[2][1] = s1 * c2;
+        result[2][2] = c1 * c2;
+        result[2][3] = 0;
+        result[3][0] = 0;
+        result[3][1] = 0;
+        result[3][2] = 0;
+        result[3][3] = 1;
+
+        return result;
+    }
+
+    template<number T>
     constexpr mat<4, 4, T> scale(vec<3, T> const &v) {
         mat<4, 4, T> result{};
 

@@ -95,6 +95,16 @@ namespace ember::maths {
     constexpr mat<4, 4, T> rotate(float angle, vec<3, T> axis);
 
     /**
+     * @brief Converts euler angles into a rotation matrix
+     * @tparam T 
+     * @param m 
+     * @param angles Angle of each component in radians.
+     * @return 
+     */
+    template<number T>
+    constexpr mat<4, 4, T> rotate(vec<3, T> const &angles);
+
+    /**
      * @brief Scales matrix m by vector v.
      * @tparam T The type of the matrix and vector.
      * @param m 

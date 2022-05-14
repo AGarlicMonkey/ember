@@ -314,6 +314,92 @@ TEST(matrix_tests, can_rotate_a_matrix_angle_axis) {
     }
 }
 
+TEST(matrix_tests, can_rotate_a_matrix_euler_angle) {
+    float const angle{ 45.0f * 0.0174533f };
+
+    vec3f const x{ angle, 0, 0 };
+    vec3f const y{ 0, angle, 0 };
+    vec3f const z{ 0, 0, angle };
+
+    float const c{ std::cos(angle) };
+    float const s{ std::sin(angle) };
+
+    //X
+    {
+        mat4f const rotationX{ rotate(x) };
+
+        EXPECT_FLOAT_EQ(rotationX[0][0], 1);
+        EXPECT_FLOAT_EQ(rotationX[0][1], 0);
+        EXPECT_FLOAT_EQ(rotationX[0][2], 0);
+        EXPECT_FLOAT_EQ(rotationX[0][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationX[1][0], 0);
+        EXPECT_FLOAT_EQ(rotationX[1][1], c);
+        EXPECT_FLOAT_EQ(rotationX[1][2], s);
+        EXPECT_FLOAT_EQ(rotationX[1][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationX[2][0], 0);
+        EXPECT_FLOAT_EQ(rotationX[2][1], -s);
+        EXPECT_FLOAT_EQ(rotationX[2][2], c);
+        EXPECT_FLOAT_EQ(rotationX[2][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationX[3][0], 0);
+        EXPECT_FLOAT_EQ(rotationX[3][1], 0);
+        EXPECT_FLOAT_EQ(rotationX[3][2], 0);
+        EXPECT_FLOAT_EQ(rotationX[3][3], 1);
+    }
+
+    //Y
+    {
+        mat4f const rotationY{ rotate(y) };
+
+        EXPECT_FLOAT_EQ(rotationY[0][0], c);
+        EXPECT_FLOAT_EQ(rotationY[0][1], 0);
+        EXPECT_FLOAT_EQ(rotationY[0][2], -s);
+        EXPECT_FLOAT_EQ(rotationY[0][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationY[1][0], 0);
+        EXPECT_FLOAT_EQ(rotationY[1][1], 1);
+        EXPECT_FLOAT_EQ(rotationY[1][2], 0);
+        EXPECT_FLOAT_EQ(rotationY[1][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationY[2][0], s);
+        EXPECT_FLOAT_EQ(rotationY[2][1], 0);
+        EXPECT_FLOAT_EQ(rotationY[2][2], c);
+        EXPECT_FLOAT_EQ(rotationY[2][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationY[3][0], 0);
+        EXPECT_FLOAT_EQ(rotationY[3][1], 0);
+        EXPECT_FLOAT_EQ(rotationY[3][2], 0);
+        EXPECT_FLOAT_EQ(rotationY[3][3], 1);
+    }
+
+    //Z
+    {
+        mat4f const rotationZ{ rotate(z) };
+
+        EXPECT_FLOAT_EQ(rotationZ[0][0], c);
+        EXPECT_FLOAT_EQ(rotationZ[0][1], s);
+        EXPECT_FLOAT_EQ(rotationZ[0][2], 0);
+        EXPECT_FLOAT_EQ(rotationZ[0][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationZ[1][0], -s);
+        EXPECT_FLOAT_EQ(rotationZ[1][1], c);
+        EXPECT_FLOAT_EQ(rotationZ[1][2], 0);
+        EXPECT_FLOAT_EQ(rotationZ[1][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationZ[2][0], 0);
+        EXPECT_FLOAT_EQ(rotationZ[2][1], 0);
+        EXPECT_FLOAT_EQ(rotationZ[2][2], 1);
+        EXPECT_FLOAT_EQ(rotationZ[2][3], 0);
+
+        EXPECT_FLOAT_EQ(rotationZ[3][0], 0);
+        EXPECT_FLOAT_EQ(rotationZ[3][1], 0);
+        EXPECT_FLOAT_EQ(rotationZ[3][2], 0);
+        EXPECT_FLOAT_EQ(rotationZ[3][3], 1);
+    }
+}
+
 TEST(matrix_tests, can_scale_a_matrix) {
     vec3f const v{ 8, 4, 3 };
 
