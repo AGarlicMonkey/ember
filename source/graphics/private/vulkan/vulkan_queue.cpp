@@ -410,7 +410,9 @@ namespace ember::graphics {
 
             record_commands(queue, vk_command_buffer, *command_buffer);
 #if EMBER_CORE_ENABLE_PROFILING
-            TracyVkCollect(queue.profiling_context, vk_command_buffer);
+            if(queue.profiling_context != nullptr) {
+                TracyVkCollect(queue.profiling_context, vk_command_buffer);
+            }
 #endif
 
             EMBER_VULKAN_VERIFY_RESULT(vkEndCommandBuffer(vk_command_buffer), "Failed to end recording.");
@@ -487,7 +489,9 @@ namespace ember::graphics {
         vkDestroyCommandPool(logical_device, queue.command_pool, &global_host_allocation_callbacks);
 
 #if EMBER_CORE_ENABLE_PROFILING
-        TracyVkDestroy(queue.profiling_context);
+        if(queue.profiling_context != nullptr) {
+            TracyVkDestroy(queue.profiling_context);
+        }
 #endif
     }
 
