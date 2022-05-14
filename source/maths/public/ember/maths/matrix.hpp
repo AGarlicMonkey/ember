@@ -81,10 +81,10 @@ namespace ember::maths {
      * @return 
      */
     template<number T>
-    constexpr mat<4, 4, T> translate(mat<4, 4, T> const &m, vec<3, T> const &v);
+    constexpr mat<4, 4, T> translate(vec<3, T> const &v);
 
     /**
-     * @brief Rotates matrix m with angle along v.
+     * @brief Rotates matrix m with by angle along axis.
      * @tparam T The type of the matrix and vector.
      * @param m 
      * @param angle The angle in radians to rotate by.
@@ -92,7 +92,7 @@ namespace ember::maths {
      * @return 
      */
     template<number T>
-    constexpr mat<4, 4, T> rotate(mat<4, 4, T> const &m, float angle, vec<3, T> axis);
+    constexpr mat<4, 4, T> rotate(float angle, vec<3, T> axis);
 
     /**
      * @brief Scales matrix m by vector v.
@@ -102,7 +102,7 @@ namespace ember::maths {
      * @return 
      */
     template<number T>
-    constexpr mat<4, 4, T> scale(mat<4, 4, T> const &m, vec<3, T> const &v);
+    constexpr mat<4, 4, T> scale(vec<3, T> const &v);
 }
 
 #include "matrix.inl"

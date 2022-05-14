@@ -199,10 +199,9 @@ TEST(matrix_tests, can_inverse_a_matrix) {
 }
 
 TEST(matrix_tests, can_translate_a_matrix) {
-    mat4f const m{ 1 };
     vec3f const v{ 3, 7, 8 };
 
-    mat4f const translation{ translate(m, v) };
+    mat4f const translation{ translate(v) };
     mat4f result;
     result[0] = { 1, 0, 0, v.x };
     result[1] = { 0, 1, 0, v.y };
@@ -230,8 +229,7 @@ TEST(matrix_tests, can_translate_a_matrix) {
     EXPECT_EQ(translation[3][3], 1);
 }
 
-TEST(matrix_tests, can_rotate_a_matrix) {
-    mat4f const m{ 1 };
+TEST(matrix_tests, can_rotate_a_matrix_angle_axis) {
     vec3f const x{ 1, 0, 0 };
     vec3f const y{ 0, 1, 0 };
     vec3f const z{ 0, 0, 1 };
@@ -242,7 +240,7 @@ TEST(matrix_tests, can_rotate_a_matrix) {
 
     //X
     {
-        mat4f const rotationX{ rotate(m, angle, x) };
+        mat4f const rotationX{ rotate(angle, x) };
 
         EXPECT_FLOAT_EQ(rotationX[0][0], 1);
         EXPECT_FLOAT_EQ(rotationX[0][1], 0);
@@ -267,7 +265,7 @@ TEST(matrix_tests, can_rotate_a_matrix) {
 
     //Y
     {
-        mat4f const rotationY{ rotate(m, angle, y) };
+        mat4f const rotationY{ rotate(angle, y) };
 
         EXPECT_FLOAT_EQ(rotationY[0][0], c);
         EXPECT_FLOAT_EQ(rotationY[0][1], 0);
@@ -292,7 +290,7 @@ TEST(matrix_tests, can_rotate_a_matrix) {
 
     //Z
     {
-        mat4f const rotationZ{ rotate(m, angle, z) };
+        mat4f const rotationZ{ rotate(angle, z) };
 
         EXPECT_FLOAT_EQ(rotationZ[0][0], c);
         EXPECT_FLOAT_EQ(rotationZ[0][1], -s);
@@ -317,10 +315,9 @@ TEST(matrix_tests, can_rotate_a_matrix) {
 }
 
 TEST(matrix_tests, can_scale_a_matrix) {
-    mat4f const m{ 1 };
     vec3f const v{ 8, 4, 3 };
 
-    mat4f const scaling{ scale(m, v) };
+    mat4f const scaling{ scale(v) };
 
     EXPECT_EQ(scaling[0][0], 8);
     EXPECT_EQ(scaling[0][1], 0);

@@ -166,16 +166,16 @@ namespace ember::maths {
     }
 
     template<number T>
-    constexpr mat<4, 4, T> translate(mat<4, 4, T> const &m, vec<3, T> const &v) {
-        mat<4, 4, T> result{ m };
+    constexpr mat<4, 4, T> translate(vec<3, T> const &v) {
+        mat<4, 4, T> result{ 1.0f };
 
-        result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
+        result[3] = { v.x, v.y, v.z, 1.0f };
 
         return result;
     }
 
     template<number T>
-    constexpr mat<4, 4, T> rotate(mat<4, 4, T> const &m, float angle, vec<3, T> axis) {
+    constexpr mat<4, 4, T> rotate(float angle, vec<3, T> axis) {
         float const c{ std::cos(angle) };
         float const s{ std::sin(angle) };
 
@@ -199,19 +199,20 @@ namespace ember::maths {
         res_z[1][0] = s * axis.z;
         res_z[1][1] = axis.z != 0 ? c * axis.z : 1;
 
-        mat<4, 4, T> const accum{ m * (res_x * res_y * res_z) };
+        mat<4, 4, T> const accum{ res_x * res_y * res_z };
 
         return accum;
     }
 
     template<number T>
     constexpr mat<4, 4, T> scale(mat<4, 4, T> const &m, vec<3, T> const &v) {
+    constexpr mat<4, 4, T> scale(vec<3, T> const &v) {
         mat<4, 4, T> result{};
 
-        result[0] = m[0] * v[0];
-        result[1] = m[1] * v[1];
-        result[2] = m[2] * v[2];
-        result[3] = m[3];
+        result[0] = { v.x, 0, 0, 0 };
+        result[1] = { 0, v.y, 0, 0 };
+        result[2] = { 0, 0, v.z, 0 };
+        result[3] = { 0, 0, 0, 1 };
 
         return result;
     }
