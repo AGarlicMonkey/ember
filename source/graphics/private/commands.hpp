@@ -202,9 +202,17 @@ namespace ember::graphics {
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::draw_indexed_command) {
         std::size_t const index_count;
+        std::uint32_t const instance_count;
+        std::size_t const first_index;
+        std::size_t const vertex_offset;
+        std::uint32_t const first_instance;
 
-        recorded_command(std::size_t const index_count)
-            : index_count{ index_count } {
+        recorded_command(std::size_t const index_count, std::uint32_t const instance_count, std::size_t const first_index, std::size_t const vertex_offset, std::uint32_t const first_instance)
+            : index_count{ index_count }
+            , instance_count{ instance_count }
+            , first_index{ first_index }
+            , vertex_offset{ vertex_offset }
+            , first_instance{ first_instance } {
         }
     };
 

@@ -100,9 +100,13 @@ namespace ember::graphics {
 
         /**
          * @brief Executes a draw call with the currently bound vertex and index buffers.
-         * @param index_count How many indices from the index buffer to draw.
+         * @param index_count How many indices from the bound index buffer to draw.
+         * @param instance_count How many instances to draw from this one draw call.
+         * @param first_index First index in the index buffer to use.
+         * @param vertex_offset Added to the vertex index before indexing into the vertex buffer.
+         * @param first_instance The ID of the first instance of this draw call.
          */
-        void draw_indexed(std::size_t const index_count);
+        void draw_indexed(std::size_t const index_count, std::uint32_t const instance_count, std::size_t const first_index, std::size_t const vertex_offset, std::uint32_t const first_instance);
 
         /**
          * @brief Executes a draw indirect call with the currently bound vertex and index buffers.

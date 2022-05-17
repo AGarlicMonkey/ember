@@ -41,9 +41,8 @@ namespace ember::graphics {
     struct draw_indexed_indirect_info {
         std::uint32_t index_count{};
         std::uint32_t instance_count{};
-        maths::vec2u _padding{};
-        /*std::uint32_t first_index;
-        std::int32_t vertex_offset;*/
+        std::uint32_t first_index{};
+        std::int32_t vertex_offset{};
         std::uint32_t first_instance{};
     };
 

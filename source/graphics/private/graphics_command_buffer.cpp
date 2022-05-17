@@ -34,8 +34,8 @@ namespace ember::graphics {
         record_command<command_type::bind_index_buffer_command>(index_buffer, offset, index_type);
     }
 
-    void graphics_command_buffer::draw_indexed(std::size_t const index_count) {
-        record_command<command_type::draw_indexed_command>(index_count);
+    void graphics_command_buffer::draw_indexed(std::size_t const index_count, std::uint32_t const instance_count, std::size_t const first_index, std::size_t const vertex_offset, std::uint32_t const first_instance) {
+        record_command<command_type::draw_indexed_command>(index_count, instance_count, first_index, vertex_offset, first_instance);
     }
 
     void graphics_command_buffer::draw_indexed_indirect(buffer const *const indirect_buffer, std::size_t const offset, std::size_t const draw_count) {

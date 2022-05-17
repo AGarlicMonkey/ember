@@ -347,7 +347,7 @@ namespace ember::graphics {
                 case command_type::draw_indexed_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::draw_indexed_command> *>(command_memory) };
 
-                    vkCmdDrawIndexed(vk_cmd_buffer, command->index_count, 1, 0, 0, 0);
+                    vkCmdDrawIndexed(vk_cmd_buffer, command->index_count, command->instance_count, command->first_index, command->vertex_offset, command->first_instance);
                 } break;
                 case command_type::draw_indexed_indirect_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::draw_indexed_indirect_command> *>(command_memory) };
