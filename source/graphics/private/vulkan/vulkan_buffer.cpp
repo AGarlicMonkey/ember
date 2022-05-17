@@ -37,6 +37,9 @@ namespace ember::graphics {
         if((usage_mode & storage_buffer) != 0) {
             flags |= VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
         }
+        if((usage_mode & indirect_buffer) != 0) {
+            flags |= VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT;
+        }
         return flags;
     }
 }

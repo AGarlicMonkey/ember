@@ -208,6 +208,18 @@ namespace ember::graphics {
         }
     };
 
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::draw_indexed_indirect_command) {
+        buffer const *const indirect_buffer;
+        std::size_t const offset;
+        std::size_t const draw_count;
+
+        recorded_command(buffer const *const indirect_buffer, std::size_t const offset, std::size_t const draw_count)
+            : indirect_buffer{ indirect_buffer }
+            , offset{ offset }
+            , draw_count{ draw_count } {
+        }
+    };
+
 #undef EMBER_GRAPHICS_CREATE_COMMAND
 }
 

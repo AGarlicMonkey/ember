@@ -18,6 +18,7 @@ namespace ember::graphics {
             index_buffer         = 1 << 3, /**< To be used as an index buffer. */
             uniform_buffer       = 1 << 4, /**< Uploaded to shaders as a uniform buffer (read only shader data). */
             storage_buffer       = 1 << 5, /**< Uploaded to shaders as a storage buffer (read/write from compute). */
+            indirect_buffer      = 1 << 6, /**< Can be used to store indirect commands for compute or draw distpatches. */
         };
 
         using access_type = std::uint16_t;

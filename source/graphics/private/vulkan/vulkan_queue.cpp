@@ -111,7 +111,7 @@ namespace ember::graphics {
         destroy_queue(transfer_queue);
     }
 
-    void vulkan_queue::record_commands(queue &queue, VkCommandBuffer vk_buffer, command_buffer const &command_buffer) {
+    void vulkan_queue::record_commands(queue &queue, VkCommandBuffer vk_cmd_buffer, command_buffer const &command_buffer) {
         EMBER_PROFILE_FUNCTION;
 
         VkPipelineLayout current_pipeline_layout{ VK_NULL_HANDLE };
@@ -129,19 +129,19 @@ namespace ember::graphics {
                         .color      = { command->colour.r, command->colour.g, command->colour.b, command->colour.a },
                     };
 
-                    fp_vkCmdBeginDebugUtilsLabelEXT(vk_buffer, &label);
+                    fp_vkCmdBeginDebugUtilsLabelEXT(vk_cmd_buffer, &label);
     #endif
     #if EMBER_CORE_ENABLE_PROFILING
                     //TODO: Colour zones
                     if(!queue.source_datas.contains(command->name)) {
                         queue.source_datas[command->name] = tracy::SourceLocationData{ command->name.c_str(), __FUNCTION__, __FILE__, (uint32_t)__LINE__, 0 };
                     }
-                    queue.scoped_events.emplace(queue.profiling_context, &queue.source_datas.at(command->name), vk_buffer, true);
+                    queue.scoped_events.emplace(queue.profiling_context, &queue.source_datas.at(command->name), vk_cmd_buffer, true);
     #endif
                 } break;
                 case command_type::pop_user_marker_command:
     #if EMBER_GRAPHICS_DEBUG_UTILITIES
-                    fp_vkCmdEndDebugUtilsLabelEXT(vk_buffer);
+                    fp_vkCmdEndDebugUtilsLabelEXT(vk_cmd_buffer);
     #endif
     #if EMBER_CORE_ENABLE_PROFILING
                     queue.scoped_events.pop();
@@ -160,7 +160,7 @@ namespace ember::graphics {
                     VkBuffer source{ resource_cast<vulkan_buffer const>(command->source)->get_handle() };
                     VkBuffer destination{ resource_cast<vulkan_buffer const>(command->destination)->get_handle() };
 
-                    vkCmdCopyBuffer(vk_buffer, source, destination, 1, &copy_region);
+                    vkCmdCopyBuffer(vk_cmd_buffer, source, destination, 1, &copy_region);
                 } break;
                 case command_type::copy_buffer_to_image_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::copy_buffer_to_image_command> *>(command_memory) };
@@ -182,7 +182,7 @@ namespace ember::graphics {
                     VkBuffer source{ resource_cast<vulkan_buffer const>(command->source)->get_handle() };
                     VkImage destination{ resource_cast<vulkan_image const>(command->destination)->get_handle() };
 
-                    vkCmdCopyBufferToImage(vk_buffer, source, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
+                    vkCmdCopyBufferToImage(vk_cmd_buffer, source, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
                 } break;
                 case command_type::copy_image_to_buffer_command:
                     break;
@@ -192,7 +192,7 @@ namespace ember::graphics {
                     VkPipelineStageFlags const source_stage{ convert_stage(command->source_stage) };
                     VkPipelineStageFlags const destination_stage{ convert_stage(command->destination_stage) };
 
-                    vkCmdPipelineBarrier(vk_buffer, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 0, nullptr);
+                    vkCmdPipelineBarrier(vk_cmd_buffer, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 0, nullptr);
                 } break;
                 case command_type::buffer_memory_barrier_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::buffer_memory_barrier_command> *>(command_memory) };
@@ -215,7 +215,7 @@ namespace ember::graphics {
                         .size                = VK_WHOLE_SIZE,
                     };
 
-                    vkCmdPipelineBarrier(vk_buffer, previous_access_info.stage_mask, next_access_info.stage_mask, 0, 0, nullptr, 1, &barrier, 0, nullptr);
+                    vkCmdPipelineBarrier(vk_cmd_buffer, previous_access_info.stage_mask, next_access_info.stage_mask, 0, 0, nullptr, 1, &barrier, 0, nullptr);
 
                 } break;
                 case command_type::image_memory_barrier_command: {
@@ -248,7 +248,7 @@ namespace ember::graphics {
                         },
                     };
 
-                    vkCmdPipelineBarrier(vk_buffer, previous_access_info.stage_mask, next_access_info.stage_mask, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+                    vkCmdPipelineBarrier(vk_cmd_buffer, previous_access_info.stage_mask, next_access_info.stage_mask, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
                 } break;
                 case command_type::bind_compute_pipeline_object_command:
@@ -258,7 +258,7 @@ namespace ember::graphics {
                 case command_type::push_constant_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::push_constant_command> *>(command_memory) };
 
-                    vkCmdPushConstants(vk_buffer, current_pipeline_layout, vulkan_shader::convert_stage(command->stage), command->offset, command->bytes, command->data);
+                    vkCmdPushConstants(vk_cmd_buffer, current_pipeline_layout, vulkan_shader::convert_stage(command->stage), command->offset, command->bytes, command->data);
                 } break;
                 case command_type::dispatch_command:
                     break;
@@ -287,10 +287,10 @@ namespace ember::graphics {
                         .pClearValues    = clear_values.data(),
                     };
 
-                    vkCmdBeginRenderPass(vk_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+                    vkCmdBeginRenderPass(vk_cmd_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
                 } break;
                 case command_type::end_render_pass_command:
-                    vkCmdEndRenderPass(vk_buffer);
+                    vkCmdEndRenderPass(vk_cmd_buffer);
                     break;
                 case command_type::set_viewport_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::set_viewport_command> *>(command_memory) };
@@ -304,7 +304,7 @@ namespace ember::graphics {
                         .maxDepth = 1.0f,
                     };
 
-                    vkCmdSetViewport(vk_buffer, 0, 1, &viewport);
+                    vkCmdSetViewport(vk_cmd_buffer, 0, 1, &viewport);
                 } break;
                 case command_type::set_scissor_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::set_scissor_command> *>(command_memory) };
@@ -320,7 +320,7 @@ namespace ember::graphics {
                         },
                     };
 
-                    vkCmdSetScissor(vk_buffer, 0, 1, &scissor);
+                    vkCmdSetScissor(vk_cmd_buffer, 0, 1, &scissor);
                 } break;
                 case command_type::bind_graphics_pipeline_object_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::bind_graphics_pipeline_object_command> *>(command_memory) };
@@ -328,26 +328,33 @@ namespace ember::graphics {
                     auto const *pipeline{ resource_cast<vulkan_graphics_pipeline_object const>(command->pipeline_object) };
 
                     current_pipeline_layout = pipeline->get_layout_handle();
-                    vkCmdBindPipeline(vk_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->get_pipeline_handle());
+                    vkCmdBindPipeline(vk_cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->get_pipeline_handle());
                 } break;
                 case command_type::bind_vertex_buffer_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::bind_vertex_buffer_command> *>(command_memory) };
 
                     VkBuffer const buffer_handle{ resource_cast<vulkan_buffer const>(command->vertex_buffer)->get_handle() };
 
-                    vkCmdBindVertexBuffers(vk_buffer, 0, 1, &buffer_handle, &command->offset);
+                    vkCmdBindVertexBuffers(vk_cmd_buffer, 0, 1, &buffer_handle, &command->offset);
                 } break;
                 case command_type::bind_index_buffer_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::bind_index_buffer_command> *>(command_memory) };
 
                     VkBuffer const buffer_handle{ resource_cast<vulkan_buffer const>(command->index_buffer)->get_handle() };
 
-                    vkCmdBindIndexBuffer(vk_buffer, buffer_handle, command->offset, get_index_type(command->index_type));
+                    vkCmdBindIndexBuffer(vk_cmd_buffer, buffer_handle, command->offset, get_index_type(command->index_type));
                 } break;
                 case command_type::draw_indexed_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::draw_indexed_command> *>(command_memory) };
 
-                    vkCmdDrawIndexed(vk_buffer, command->index_count, 1, 0, 0, 0);
+                    vkCmdDrawIndexed(vk_cmd_buffer, command->index_count, 1, 0, 0, 0);
+                } break;
+                case command_type::draw_indexed_indirect_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::draw_indexed_indirect_command> *>(command_memory) };
+
+                    VkBuffer const buffer_handle{ resource_cast<vulkan_buffer const>(command->indirect_buffer)->get_handle() };
+
+                    vkCmdDrawIndexedIndirect(vk_cmd_buffer, buffer_handle, command->offset, command->draw_count, sizeof(draw_indexed_indirect_info));
                 } break;
                 default:
                     EMBER_CHECK(false);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cinttypes>
+#include <ember/maths/vector.hpp>
 
 #define EMBER_GRAPHICS_ENABLE_USER_MARKERS EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
 
@@ -33,6 +34,17 @@ namespace ember::graphics {
         bind_vertex_buffer_command,
         bind_index_buffer_command,
         draw_indexed_command,
+        draw_indexed_indirect_command,
+    };
+
+    //NOTE: The size of the buffer directly matches that of the vulkan indirect draw command
+    struct draw_indexed_indirect_info {
+        std::uint32_t index_count{};
+        std::uint32_t instance_count{};
+        maths::vec2u _padding{};
+        /*std::uint32_t first_index;
+        std::int32_t vertex_offset;*/
+        std::uint32_t first_instance{};
     };
 
     struct command {

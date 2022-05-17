@@ -35,8 +35,9 @@ namespace ember::graphics {
             case command_type::bind_vertex_buffer_command:              return sizeof(recorded_command<command_type::bind_vertex_buffer_command>);
             case command_type::bind_index_buffer_command:               return sizeof(recorded_command<command_type::bind_index_buffer_command>);
             case command_type::draw_indexed_command:                    return sizeof(recorded_command<command_type::draw_indexed_command>);
+            case command_type::draw_indexed_indirect_command:           return sizeof(recorded_command<command_type::draw_indexed_indirect_command>);
             default: EMBER_CHECK(false); return 0;
-            // clang-format on
+                // clang-format on
         }
     }
 
@@ -65,6 +66,7 @@ namespace ember::graphics {
             case command_type::bind_vertex_buffer_command:              do_destruct<command_type::bind_vertex_buffer_command>(command_memory); break;
             case command_type::bind_index_buffer_command:               do_destruct<command_type::bind_index_buffer_command>(command_memory); break;
             case command_type::draw_indexed_command:                    do_destruct<command_type::draw_indexed_command>(command_memory); break;
+            case command_type::draw_indexed_indirect_command:           do_destruct<command_type::draw_indexed_indirect_command>(command_memory); break;
             default: EMBER_CHECK(false);
             // clang-format on
         }
