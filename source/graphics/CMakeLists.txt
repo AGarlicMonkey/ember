@@ -134,7 +134,9 @@ add_library(
     ${SOURCE_PUBLIC}/graphics_pipeline_object.hpp
     ${SOURCE_PUBLIC}/compute_pipeline_object.hpp
     
+    ${SOURCE_PUBLIC}/descriptor.hpp
     ${SOURCE_PUBLIC}/descriptor_set_layout.hpp
+    ${SOURCE_PUBLIC}/descriptor_pool.hpp
     ${SOURCE_PUBLIC}/descriptor_set.hpp
 
     ${SOURCE_PUBLIC}/render_pass.hpp

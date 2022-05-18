@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ember/graphics/descriptor.hpp"
 #include "ember/graphics/shader.hpp"
 
 #include <cinttypes>
@@ -7,14 +8,6 @@
 #include <ember/containers/array.hpp>
 
 namespace ember::graphics {
-    enum class descriptor_type {
-        uniform_buffer,
-        storage_buffer,
-        sampled_image,
-        storage_image,
-        sampler,
-    };
-
     /**
      * @brief Describes a single binding within a descriptor set
      */

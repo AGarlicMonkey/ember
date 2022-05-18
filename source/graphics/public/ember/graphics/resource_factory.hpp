@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ember/graphics/buffer.hpp"
+#include "ember/graphics/descriptor_pool.hpp"
 #include "ember/graphics/descriptor_set_layout.hpp"
 #include "ember/graphics/fence.hpp"
 #include "ember/graphics/framebuffer.hpp"
@@ -59,6 +60,13 @@ namespace ember::graphics {
          * @return 
          */
         virtual memory::unique_ptr<descriptor_set_layout> create_descriptor_set_layout(descriptor_set_layout::descriptor descriptor, std::string_view name) const = 0;
+        /**
+         * @brief
+         * @param descriptor 
+         * @param name 
+         * @return 
+         */
+        virtual memory::unique_ptr<descriptor_pool> create_descriptor_pool(descriptor_pool::descriptor descriptor, std::string_view name) const = 0;
 
         /**
          * @brief
