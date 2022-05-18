@@ -129,6 +129,7 @@ add_library(
     ${SOURCE_PUBLIC}/buffer.hpp
     ${SOURCE_PUBLIC}/image.hpp
     ${SOURCE_PUBLIC}/image_view.hpp
+    ${SOURCE_PUBLIC}/sampler.hpp
     ${SOURCE_PUBLIC}/shader.hpp
 
     ${SOURCE_PUBLIC}/graphics_pipeline_object.hpp

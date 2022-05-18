@@ -9,6 +9,7 @@
 #include "ember/graphics/image.hpp"
 #include "ember/graphics/image_view.hpp"
 #include "ember/graphics/render_pass.hpp"
+#include "ember/graphics/sampler.hpp"
 #include "ember/graphics/semaphore.hpp"
 
 #include <ember/memory/unique_ptr.hpp>
@@ -44,6 +45,13 @@ namespace ember::graphics {
          * @return 
          */
         virtual memory::unique_ptr<image_view> create_image_view(image_view::descriptor descriptor, image const &image, std::string_view name) const = 0;
+        /**
+         * @brief
+         * @param descriptor 
+         * @param name 
+         * @return 
+         */
+        virtual memory::unique_ptr<sampler> create_sampler(sampler::descriptor descriptor, std::string_view name) cosnt = 0;
 
         /**
          * @brief
