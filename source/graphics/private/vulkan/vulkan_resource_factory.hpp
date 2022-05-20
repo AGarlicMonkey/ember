@@ -15,7 +15,7 @@ namespace ember::graphics {
         //VARIABLES
     private:
         VkDevice device{ VK_NULL_HANDLE };
-        VkPhysicalDevice physical_device{ VK_NULL_HANDLE };
+        VkPhysicalDeviceProperties physical_device_poperties{};
         queue_family_indices family_indices{};
         device_memory_allocator *memory_allocator{ nullptr };
 

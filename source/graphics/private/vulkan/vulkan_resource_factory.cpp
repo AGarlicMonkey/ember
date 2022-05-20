@@ -58,9 +58,9 @@ namespace {
 namespace ember::graphics {
     vulkan_resource_factory::vulkan_resource_factory(VkDevice device, VkPhysicalDevice physical_device, queue_family_indices family_indices, device_memory_allocator *memory_allocator)
         : device{ device }
-        , physical_device{ physical_device }
         , family_indices{ family_indices }
         , memory_allocator{ memory_allocator } {
+        vkGetPhysicalDeviceProperties(physical_device, &physical_device_poperties);
     }
 
     unique_ptr<buffer> vulkan_resource_factory::create_buffer(buffer::descriptor descriptor, std::string_view name) const {
@@ -165,9 +165,6 @@ namespace ember::graphics {
     }
 
     unique_ptr<sampler> vulkan_resource_factory::create_sampler(sampler::descriptor descriptor, std::string_view name) const {
-        VkPhysicalDeviceProperties device_poperties{};
-        vkGetPhysicalDeviceProperties(physical_device, &device_poperties);
-
         VkSamplerCreateInfo const create_info{
             .sType                   = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
             .pNext                   = nullptr,
@@ -180,7 +177,7 @@ namespace ember::graphics {
             .addressModeW            = vulkan_sampler::convert_address_mode(descriptor.address_mode_w),
             .mipLodBias              = 0.0f,
             .anisotropyEnable        = descriptor.enable_anisotropy ? VK_TRUE : VK_FALSE,
-            .maxAnisotropy           = device_poperties.limits.maxSamplerAnisotropy,
+            .maxAnisotropy           = physical_device_poperties.limits.maxSamplerAnisotropy,
             .compareEnable           = VK_FALSE,
             .compareOp               = VK_COMPARE_OP_ALWAYS,
             .minLod                  = 0.0f,
