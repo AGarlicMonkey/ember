@@ -7,6 +7,7 @@
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
 #include "vulkan_descriptor_set_layout.hpp"
+#include "vulkan_device.hpp"
 #include "vulkan_extension_functions.hpp"
 #include "vulkan_fence.hpp"
 #include "vulkan_framebuffer.hpp"
@@ -14,6 +15,7 @@
 #include "vulkan_image.hpp"
 #include "vulkan_image_view.hpp"
 #include "vulkan_render_pass.hpp"
+#include "vulkan_sampler.hpp"
 #include "vulkan_semaphore.hpp"
 #include "vulkan_shader.hpp"
 
@@ -54,8 +56,9 @@ namespace {
 #endif
 
 namespace ember::graphics {
-    vulkan_resource_factory::vulkan_resource_factory(VkDevice device, queue_family_indices family_indices, device_memory_allocator *memory_allocator)
+    vulkan_resource_factory::vulkan_resource_factory(VkDevice device, VkPhysicalDevice physical_device, queue_family_indices family_indices, device_memory_allocator *memory_allocator)
         : device{ device }
+        , physical_device{ physical_device }
         , family_indices{ family_indices }
         , memory_allocator{ memory_allocator } {
     }
@@ -159,6 +162,37 @@ namespace ember::graphics {
         EMBER_VULKAN_VERIFY_RESULT(vkCreateImageView(device, &create_info, &global_host_allocation_callbacks, &image_view_handle), "Failed to create VkImageView");
 
         return make_unique<vulkan_image_view>(descriptor, device, image_view_handle);
+    }
+
+    unique_ptr<sampler> vulkan_resource_factory::create_sampler(sampler::descriptor descriptor, std::string_view name) const {
+        VkPhysicalDeviceProperties device_poperties{};
+        vkGetPhysicalDeviceProperties(physical_device, &device_poperties);
+
+        VkSamplerCreateInfo const create_info{
+            .sType                   = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+            .pNext                   = nullptr,
+            .flags                   = 0,
+            .magFilter               = vulkan_sampler::convert_filter(descriptor.mag_filter),
+            .minFilter               = vulkan_sampler::convert_filter(descriptor.min_filter),
+            .mipmapMode              = vulkan_sampler::convert_mipmap_mode(descriptor.mip_filter),
+            .addressModeU            = vulkan_sampler::convert_address_mode(descriptor.address_mode_u),
+            .addressModeV            = vulkan_sampler::convert_address_mode(descriptor.address_mode_v),
+            .addressModeW            = vulkan_sampler::convert_address_mode(descriptor.address_mode_w),
+            .mipLodBias              = 0.0f,
+            .anisotropyEnable        = descriptor.enable_anisotropy ? VK_TRUE : VK_FALSE,
+            .maxAnisotropy           = device_poperties.limits.maxSamplerAnisotropy,
+            .compareEnable           = VK_FALSE,
+            .compareOp               = VK_COMPARE_OP_ALWAYS,
+            .minLod                  = 0.0f,
+            .maxLod                  = VK_LOD_CLAMP_NONE,
+            .borderColor             = VK_BORDER_COLOR_INT_OPAQUE_BLACK,
+            .unnormalizedCoordinates = VK_FALSE,
+        };
+
+        VkSampler sampler_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateSampler(device, &create_info, &global_host_allocation_callbacks, &sampler_handle), "Failed to create VkSampler.");
+
+        return make_unique<vulkan_sampler>(descriptor, device, sampler_handle);
     }
 
     unique_ptr<graphics_pipeline_object> vulkan_resource_factory::create_graphics_pipeline_object(graphics_pipeline_object::descriptor descriptor, std::string_view name) const {

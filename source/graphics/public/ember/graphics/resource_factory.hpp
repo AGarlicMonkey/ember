@@ -51,7 +51,7 @@ namespace ember::graphics {
          * @param name 
          * @return 
          */
-        virtual memory::unique_ptr<sampler> create_sampler(sampler::descriptor descriptor, std::string_view name) cosnt = 0;
+        virtual memory::unique_ptr<sampler> create_sampler(sampler::descriptor descriptor, std::string_view name) const = 0;
 
         /**
          * @brief

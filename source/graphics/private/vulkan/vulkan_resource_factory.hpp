@@ -7,17 +7,22 @@
 #include <vulkan/vulkan.h>
 
 namespace ember::graphics {
+    class vulkan_device;
+}
+
+namespace ember::graphics {
     class vulkan_resource_factory : public resource_factory {
         //VARIABLES
     private:
         VkDevice device{ VK_NULL_HANDLE };
+        VkPhysicalDevice physical_device{ VK_NULL_HANDLE };
         queue_family_indices family_indices{};
         device_memory_allocator *memory_allocator{ nullptr };
 
         //FUNCTIONS
     public:
         vulkan_resource_factory() = delete;
-        vulkan_resource_factory(VkDevice device, queue_family_indices family_indices, device_memory_allocator *memory_allocator);
+        vulkan_resource_factory(VkDevice device, VkPhysicalDevice physical_device, queue_family_indices family_indices, device_memory_allocator *memory_allocator);
 
         vulkan_resource_factory(vulkan_resource_factory const &other) = delete;
         inline vulkan_resource_factory(vulkan_resource_factory &&other) noexcept;
@@ -30,6 +35,7 @@ namespace ember::graphics {
         memory::unique_ptr<buffer> create_buffer(buffer::descriptor descriptor, std::string_view name) const override;
         memory::unique_ptr<image> create_image(image::descriptor descriptor, std::string_view name) const override;
         memory::unique_ptr<image_view> create_image_view(image_view::descriptor descriptor, image const &image, std::string_view name) const override;
+        memory::unique_ptr<sampler> create_sampler(sampler::descriptor descriptor, std::string_view name) const override;
 
         memory::unique_ptr<graphics_pipeline_object> create_graphics_pipeline_object(graphics_pipeline_object::descriptor descriptor, std::string_view name) const override;
 

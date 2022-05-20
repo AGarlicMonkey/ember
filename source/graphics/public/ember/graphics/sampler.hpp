@@ -8,9 +8,8 @@ namespace ember::graphics {
         //TYPES
     public:
         enum class filter {
-            nearest,   /**< Will not interpolate between texels. */
-            bilinear,  /**< Linearly interpolate between an image's texels but not mips */
-            trilinear, /**< Linearly interpolate between an image's texels and mips. */
+            nearest, /**< Choose the nearest texel to the sample location. */
+            linear,  /**< Linearly interpolate between the texels near the sample location. */
         };
 
         enum class address_mode {
@@ -23,6 +22,7 @@ namespace ember::graphics {
         struct descriptor {
             filter min_filter{ filter::nearest };                /**< Filter method to use when minifying the image (less pixels than texels). */
             filter mag_filter{ filter::nearest };                /**< Filter method to use when magnifying the image (more pixels than texels). */
+            filter mip_filter{ filter::nearest };                /**< Filter method to use when sampling between mips. */
             address_mode address_mode_u{ address_mode::repeat }; /**< What address mode to use on the image's U coordinate when sampling outside of an image's bounds. */
             address_mode address_mode_v{ address_mode::repeat }; /**< What address mode to use on the image's V coordinate when sampling outside of an image's bounds. */
             address_mode address_mode_w{ address_mode::repeat }; /**< What address mode to use on the image's W coordinate when sampling outside of an image's bounds. */
@@ -33,6 +33,6 @@ namespace ember::graphics {
     public:
         virtual ~sampler() = default;
 
-        virtual const &descriptor get_descriptor() const = 0;
+        virtual const descriptor &get_descriptor() const = 0;
     };
 }

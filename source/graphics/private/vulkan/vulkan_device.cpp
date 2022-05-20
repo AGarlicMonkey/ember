@@ -61,7 +61,7 @@ namespace ember::graphics {
         , family_indices{ family_indices }
         , queue{ physical_device, logical_device, family_indices } {
         memory_allocator = make_unique<device_memory_allocator>(logical_device, physical_device);
-        factory          = make_unique<vulkan_resource_factory>(logical_device, this->family_indices, memory_allocator.get());
+        factory          = make_unique<vulkan_resource_factory>(logical_device, physical_device, this->family_indices, memory_allocator.get());
         cache            = make_unique<vulkan_shader_cache>(logical_device);
     }
 

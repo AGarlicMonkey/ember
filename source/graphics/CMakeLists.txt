@@ -62,6 +62,9 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_image_view.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_image_view.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_image_view.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_sampler.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_sampler.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_sampler.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_shader.cpp
