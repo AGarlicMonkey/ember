@@ -49,7 +49,7 @@ namespace {
                 .objectHandle = reinterpret_cast<std::uint64_t>(object_handle),                                          \
                 .pObjectName  = object_name,                                                                             \
             };                                                                                                           \
-            EMBER_VULKAN_VERIFY_RESULT(fp_vkSetDebugUtilsObjectNameEXT(device, &name_info), "Failed to name VkBuffer."); \
+            EMBER_VULKAN_VERIFY_RESULT(fp_vkSetDebugUtilsObjectNameEXT(device, &name_info), "Failed to name resource."); \
         }
 #else
     #define SET_RESOURCE_NAME(object_handle, object_type, object_name)
@@ -188,6 +188,8 @@ namespace ember::graphics {
 
         VkSampler sampler_handle{ VK_NULL_HANDLE };
         EMBER_VULKAN_VERIFY_RESULT(vkCreateSampler(device, &create_info, &global_host_allocation_callbacks, &sampler_handle), "Failed to create VkSampler.");
+
+        SET_RESOURCE_NAME(sampler_handle, VK_OBJECT_TYPE_SAMPLER, name.data());
 
         return make_unique<vulkan_sampler>(descriptor, device, sampler_handle);
     }
