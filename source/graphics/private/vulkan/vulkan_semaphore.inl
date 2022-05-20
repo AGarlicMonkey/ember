@@ -6,10 +6,6 @@ namespace ember::graphics {
         , handle{ handle } {
     }
 
-    vulkan_semaphore::vulkan_semaphore(vulkan_semaphore &&other) noexcept = default;
-
-    vulkan_semaphore &vulkan_semaphore::operator=(vulkan_semaphore &&other) noexcept = default;
-
     vulkan_semaphore::~vulkan_semaphore() {
         vkDestroySemaphore(device, handle, &global_host_allocation_callbacks);
     }

@@ -16,11 +16,11 @@ namespace ember::graphics {
         vulkan_shader() = delete;
         inline vulkan_shader(VkDevice device, VkShaderModule module);
 
-        vulkan_shader(vulkan_shader const &other) = delete;
-        inline vulkan_shader(vulkan_shader &&other) noexcept;
+        vulkan_shader(vulkan_shader const &other)     = delete;
+        vulkan_shader(vulkan_shader &&other) noexcept = delete;
 
         vulkan_shader &operator=(vulkan_shader const &other) = delete;
-        inline vulkan_shader &operator=(vulkan_shader &&other) noexcept;
+        vulkan_shader &operator=(vulkan_shader &&other) noexcept = delete;
 
         inline ~vulkan_shader();
 

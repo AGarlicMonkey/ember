@@ -15,10 +15,6 @@ namespace ember::graphics {
         , handle{ handle } {
     }
 
-    vulkan_image::vulkan_image(vulkan_image &&other) noexcept = default;
-
-    vulkan_image &vulkan_image::operator=(vulkan_image &&other) noexcept = default;
-
     vulkan_image::~vulkan_image() {
         if(memory_allocator != nullptr) {
             vkDestroyImage(device, handle, &global_host_allocation_callbacks);

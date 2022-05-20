@@ -7,10 +7,6 @@ namespace ember::graphics {
         , handle{ handle } {
     }
 
-    vulkan_fence::vulkan_fence(vulkan_fence &&other) noexcept = default;
-
-    vulkan_fence &vulkan_fence::operator=(vulkan_fence &&other) noexcept = default;
-
     vulkan_fence::~vulkan_fence() {
         vkDestroyFence(device, handle, &global_host_allocation_callbacks);
     }

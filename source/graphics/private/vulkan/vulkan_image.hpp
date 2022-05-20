@@ -23,11 +23,11 @@ namespace ember::graphics {
         inline vulkan_image(descriptor desc, VkDevice device, VkImage handle, device_memory_allocator *memory_allocator, device_memory_allocator::chunk const *allocated_chunk);
         inline vulkan_image(descriptor desc, VkDevice device, VkImage handle);
 
-        vulkan_image(vulkan_image const &other) = delete;
-        inline vulkan_image(vulkan_image &&other) noexcept;
+        vulkan_image(vulkan_image const &other)     = delete;
+        vulkan_image(vulkan_image &&other) noexcept = delete;
 
         vulkan_image &operator=(vulkan_image const &other) = delete;
-        inline vulkan_image &operator=(vulkan_image &&other) noexcept;
+        vulkan_image &operator=(vulkan_image &&other) noexcept = delete;
 
         inline ~vulkan_image() override;
 

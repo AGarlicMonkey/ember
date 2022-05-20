@@ -13,7 +13,8 @@
 #include "vulkan_render_pass.hpp"
 #include "vulkan_semaphore.hpp"
 #include "vulkan_shader.hpp"
-#include "vulkan_swapchain.hpp"
+#include "vulkan_swapchain.hpp" 
+#include "host_memory_allocator.hpp"
 
 #include <ember/containers/array.hpp>
 #include <ember/core/log.hpp>

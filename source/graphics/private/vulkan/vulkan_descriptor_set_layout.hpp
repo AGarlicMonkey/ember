@@ -18,11 +18,11 @@ namespace ember::graphics {
         vulkan_descriptor_set_layout() = delete;
         inline vulkan_descriptor_set_layout(descriptor desc, VkDevice device, VkDescriptorSetLayout layout);
 
-        vulkan_descriptor_set_layout(vulkan_descriptor_set_layout const &other) = delete;
-        inline vulkan_descriptor_set_layout(vulkan_descriptor_set_layout &&other) noexcept;
+        vulkan_descriptor_set_layout(vulkan_descriptor_set_layout const &other)     = delete;
+        vulkan_descriptor_set_layout(vulkan_descriptor_set_layout &&other) noexcept = delete;
 
         vulkan_descriptor_set_layout &operator=(vulkan_descriptor_set_layout const &other) = delete;
-        inline vulkan_descriptor_set_layout &operator=(vulkan_descriptor_set_layout &&other) noexcept;
+        vulkan_descriptor_set_layout &operator=(vulkan_descriptor_set_layout &&other) noexcept = delete;
 
         inline ~vulkan_descriptor_set_layout() override;
 

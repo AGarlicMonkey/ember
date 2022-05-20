@@ -19,10 +19,10 @@ namespace ember::graphics {
         inline vulkan_sampler(descriptor desc, VkDevice device, VkSampler handle);
 
         vulkan_sampler(vulkan_sampler const &other) = delete;
-        inline vulkan_sampler(vulkan_sampler &&other) noexcept;
+        vulkan_sampler(vulkan_sampler &&other) noexcept = delete;
 
         vulkan_sampler &operator=(vulkan_sampler const &other) = delete;
-        inline vulkan_sampler &operator=(vulkan_sampler &&other) noexcept;
+        vulkan_sampler &operator=(vulkan_sampler &&other) noexcept = delete;
 
         inline ~vulkan_sampler() override;
 

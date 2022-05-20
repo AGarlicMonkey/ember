@@ -7,10 +7,6 @@ namespace ember::graphics {
         , handle{ handle } {
     }
 
-    vulkan_framebuffer::vulkan_framebuffer(vulkan_framebuffer &&other) noexcept = default;
-
-    vulkan_framebuffer &vulkan_framebuffer::operator=(vulkan_framebuffer &&other) noexcept = default;
-
     vulkan_framebuffer::~vulkan_framebuffer() {
         vkDestroyFramebuffer(device, handle, &global_host_allocation_callbacks);
     }

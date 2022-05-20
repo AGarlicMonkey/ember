@@ -25,10 +25,10 @@ namespace ember::graphics {
         vulkan_resource_factory(VkDevice device, VkPhysicalDevice physical_device, queue_family_indices family_indices, device_memory_allocator *memory_allocator);
 
         vulkan_resource_factory(vulkan_resource_factory const &other) = delete;
-        inline vulkan_resource_factory(vulkan_resource_factory &&other) noexcept;
+        vulkan_resource_factory(vulkan_resource_factory &&other) noexcept = delete;
 
         vulkan_resource_factory &operator=(vulkan_resource_factory const &other) = delete;
-        inline vulkan_resource_factory &operator=(vulkan_resource_factory &&other) noexcept;
+        vulkan_resource_factory &operator=(vulkan_resource_factory &&other) noexcept = delete;
 
         inline ~vulkan_resource_factory() override;
 

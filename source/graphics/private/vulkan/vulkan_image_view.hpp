@@ -19,10 +19,10 @@ namespace ember::graphics {
         inline vulkan_image_view(descriptor desc, VkDevice device, VkImageView handle);
 
         vulkan_image_view(vulkan_image_view const &other) = delete;
-        inline vulkan_image_view(vulkan_image_view &&other) noexcept;
+        vulkan_image_view(vulkan_image_view &&other) noexcept= delete;
 
         vulkan_image_view &operator=(vulkan_image_view const &other) = delete;
-        inline vulkan_image_view &operator=(vulkan_image_view &&other) noexcept;
+        vulkan_image_view &operator=(vulkan_image_view &&other) noexcept= delete;
 
         inline ~vulkan_image_view() override;
 

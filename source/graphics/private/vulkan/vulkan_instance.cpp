@@ -105,10 +105,6 @@ namespace ember::graphics {
         , device{ std::move(device) } {
     }
 
-    vulkan_instance::vulkan_instance(vulkan_instance &&other) noexcept = default;
-
-    vulkan_instance &vulkan_instance::operator=(vulkan_instance &&other) noexcept = default;
-
     vulkan_instance::~vulkan_instance() {
         //Reset the physical device before destroying the instance
         device.reset();

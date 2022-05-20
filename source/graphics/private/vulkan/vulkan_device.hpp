@@ -32,11 +32,11 @@ namespace ember::graphics {
         vulkan_device() = delete;
         vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices);
 
-        vulkan_device(vulkan_device const &other) = delete;
-        inline vulkan_device(vulkan_device &&other) noexcept;
+        vulkan_device(vulkan_device const &other)     = delete;
+        vulkan_device(vulkan_device &&other) noexcept = delete;
 
         vulkan_device &operator=(vulkan_device const &other) = delete;
-        inline vulkan_device &operator=(vulkan_device &&other) noexcept;
+        vulkan_device &operator=(vulkan_device &&other) noexcept = delete;
 
         ~vulkan_device();
 
@@ -57,5 +57,3 @@ namespace ember::graphics {
         static std::int32_t score_physical_device(VkPhysicalDevice physical_device, containers::array<char const *> const &required_extensions);
     };
 }
-
-#include "vulkan_device.inl"

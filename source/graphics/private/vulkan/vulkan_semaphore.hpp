@@ -17,10 +17,10 @@ namespace ember::graphics {
         inline vulkan_semaphore(VkDevice device, VkSemaphore handle);
 
         vulkan_semaphore(vulkan_semaphore const &other) = delete;
-        inline vulkan_semaphore(vulkan_semaphore &&other) noexcept;
+        vulkan_semaphore(vulkan_semaphore &&other) noexcept = delete;
 
         vulkan_semaphore &operator=(vulkan_semaphore const &other) = delete;
-        inline vulkan_semaphore &operator=(vulkan_semaphore &&other) noexcept;
+        vulkan_semaphore &operator=(vulkan_semaphore &&other) noexcept = delete;
 
         inline ~vulkan_semaphore() override;
 

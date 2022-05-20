@@ -18,11 +18,11 @@ namespace ember::graphics {
         vulkan_framebuffer() = delete;
         inline vulkan_framebuffer(descriptor desc, VkDevice device, VkFramebuffer handle);
 
-        vulkan_framebuffer(vulkan_framebuffer const &other) = delete;
-        inline vulkan_framebuffer(vulkan_framebuffer &&other) noexcept;
+        vulkan_framebuffer(vulkan_framebuffer const &other)            = delete;
+        vulkan_framebuffer(vulkan_framebuffer &&other) noexcept = delete;
 
         vulkan_framebuffer &operator=(vulkan_framebuffer const &other) = delete;
-        inline vulkan_framebuffer &operator=(vulkan_framebuffer &&other) noexcept;
+        vulkan_framebuffer &operator=(vulkan_framebuffer &&other) noexcept = delete;
 
         inline ~vulkan_framebuffer() override;
 

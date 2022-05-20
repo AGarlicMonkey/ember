@@ -19,10 +19,10 @@ namespace ember::graphics {
         inline vulkan_render_pass(descriptor desc, VkDevice device, VkRenderPass handle);
 
         vulkan_render_pass(vulkan_render_pass const &other) = delete;
-        inline vulkan_render_pass(vulkan_render_pass &&other) noexcept;
+        vulkan_render_pass(vulkan_render_pass &&other) noexcept = delete;
 
         vulkan_render_pass &operator=(vulkan_render_pass const &other) = delete;
-        inline vulkan_render_pass &operator=(vulkan_render_pass &&other) noexcept;
+        vulkan_render_pass &operator=(vulkan_render_pass &&other) noexcept = delete;
 
         inline ~vulkan_render_pass() override;
 

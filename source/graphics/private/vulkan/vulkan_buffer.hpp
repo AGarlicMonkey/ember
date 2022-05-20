@@ -22,11 +22,11 @@ namespace ember::graphics {
         vulkan_buffer() = delete;
         inline vulkan_buffer(descriptor desc, VkDevice device, VkBuffer handle, device_memory_allocator *memory_allocator, device_memory_allocator::chunk const *allocated_chunk);
 
-        vulkan_buffer(vulkan_buffer const &other) = delete;
-        inline vulkan_buffer(vulkan_buffer &&other) noexcept;
+        vulkan_buffer(vulkan_buffer const &other)     = delete;
+        vulkan_buffer(vulkan_buffer &&other) noexcept = delete;
 
         vulkan_buffer &operator=(vulkan_buffer const &other) = delete;
-        inline vulkan_buffer &operator=(vulkan_buffer &&other) noexcept;
+        vulkan_buffer &operator=(vulkan_buffer &&other) noexcept = delete;
 
         inline ~vulkan_buffer() override;
 

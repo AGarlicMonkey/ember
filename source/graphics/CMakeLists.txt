@@ -41,7 +41,6 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_instance.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_device.hpp
-    ${SOURCE_PRIVATE}/vulkan/vulkan_device.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_device.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_resource_factory.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_resource_factory.inl
@@ -50,7 +49,6 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_swapchain.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_queue.hpp
-    ${SOURCE_PRIVATE}/vulkan/vulkan_queue.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_queue.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_buffer.hpp

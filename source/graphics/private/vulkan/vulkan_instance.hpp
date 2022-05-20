@@ -25,10 +25,10 @@ namespace ember::graphics {
         vulkan_instance(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger, memory::unique_ptr<vulkan_device> device);
 
         vulkan_instance(vulkan_instance const &other) = delete;
-        vulkan_instance(vulkan_instance &&other) noexcept;
+        vulkan_instance(vulkan_instance &&other) noexcept = delete;
 
         vulkan_instance &operator=(vulkan_instance const &other) = delete;
-        vulkan_instance &operator=(vulkan_instance &&other) noexcept;
+        vulkan_instance &operator=(vulkan_instance &&other) noexcept = delete;
 
         ~vulkan_instance();
 

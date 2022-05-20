@@ -7,10 +7,6 @@ namespace ember::graphics {
         , handle{ handle } {
     }
 
-    vulkan_sampler::vulkan_sampler(vulkan_sampler &&other) noexcept = default;
-
-    vulkan_sampler &vulkan_sampler::operator=(vulkan_sampler &&other) noexcept = default;
-
     vulkan_sampler::~vulkan_sampler() {
         vkDestroySampler(device, handle, &global_host_allocation_callbacks);
     }

@@ -66,10 +66,10 @@ namespace ember::graphics {
         vulkan_queue(VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices);
 
         vulkan_queue(vulkan_queue const &other) = delete;
-        inline vulkan_queue(vulkan_queue &&other) noexcept;
+        vulkan_queue(vulkan_queue &&other) noexcept = delete;
 
         vulkan_queue &operator=(vulkan_queue const &other) = delete;
-        inline vulkan_queue &operator=(vulkan_queue &&other) noexcept;
+        vulkan_queue &operator=(vulkan_queue &&other) noexcept = delete;
 
         ~vulkan_queue();
 
@@ -95,5 +95,3 @@ namespace ember::graphics {
         VkCommandBuffer alloc_buffer(queue &queue);
     };
 }
-
-#include "vulkan_queue.inl"

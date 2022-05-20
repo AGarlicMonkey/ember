@@ -27,10 +27,10 @@ namespace ember::graphics {
         vulkan_swapchain(VkInstance instance, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR handle, VkFormat swapchain_image_format, VkExtent2D swapchain_extent, containers::array<memory::unique_ptr<vulkan_image>> images);
 
         vulkan_swapchain(vulkan_swapchain const &other) = delete;
-        inline vulkan_swapchain(vulkan_swapchain &&other) noexcept;
+        vulkan_swapchain(vulkan_swapchain &&other) noexcept = delete;
 
         vulkan_swapchain &operator=(vulkan_swapchain const &other) = delete;
-        inline vulkan_swapchain &operator=(vulkan_swapchain &&other) noexcept;
+        vulkan_swapchain &operator=(vulkan_swapchain &&other) noexcept = delete;
 
         inline ~vulkan_swapchain();
 

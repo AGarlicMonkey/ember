@@ -20,10 +20,10 @@ namespace ember::graphics {
         inline vulkan_graphics_pipeline_object(descriptor desc, VkDevice device, VkPipeline pipeline_handle, VkPipelineLayout pipeline_layout_handle);
 
         vulkan_graphics_pipeline_object(vulkan_graphics_pipeline_object const &other) = delete;
-        inline vulkan_graphics_pipeline_object(vulkan_graphics_pipeline_object &&other) noexcept;
+        vulkan_graphics_pipeline_object(vulkan_graphics_pipeline_object &&other) noexcept = delete;
 
         vulkan_graphics_pipeline_object &operator=(vulkan_graphics_pipeline_object const &other) = delete;
-        inline vulkan_graphics_pipeline_object &operator=(vulkan_graphics_pipeline_object &&other) noexcept;
+        vulkan_graphics_pipeline_object &operator=(vulkan_graphics_pipeline_object &&other) noexcept = delete;
 
         inline ~vulkan_graphics_pipeline_object() override;
 

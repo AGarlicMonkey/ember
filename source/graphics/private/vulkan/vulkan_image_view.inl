@@ -7,10 +7,6 @@ namespace ember::graphics {
         , handle{ handle } {
     }
 
-    vulkan_image_view::vulkan_image_view(vulkan_image_view &&other) noexcept = default;
-
-    vulkan_image_view &vulkan_image_view ::operator=(vulkan_image_view &&other) noexcept = default;
-
     vulkan_image_view::~vulkan_image_view() {
         vkDestroyImageView(device, handle, &global_host_allocation_callbacks);
     }

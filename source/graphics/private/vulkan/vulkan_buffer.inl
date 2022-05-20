@@ -9,10 +9,6 @@ namespace ember::graphics {
         , allocated_chunk{ allocated_chunk } {
     }
 
-    vulkan_buffer::vulkan_buffer(vulkan_buffer &&other) noexcept = default;
-
-    vulkan_buffer &vulkan_buffer::operator=(vulkan_buffer &&other) noexcept = default;
-
     vulkan_buffer::~vulkan_buffer() {
         vkDestroyBuffer(device, handle, &global_host_allocation_callbacks);
         memory_allocator->free(allocated_chunk);

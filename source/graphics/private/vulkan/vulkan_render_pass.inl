@@ -7,10 +7,6 @@ namespace ember::graphics {
         , handle{ handle } {
     }
 
-    vulkan_render_pass::vulkan_render_pass(vulkan_render_pass &&other) noexcept = default;
-
-    vulkan_render_pass &vulkan_render_pass::operator=(vulkan_render_pass &&other) noexcept = default;
-
     vulkan_render_pass::~vulkan_render_pass() {
         vkDestroyRenderPass(device, handle, &global_host_allocation_callbacks);
     }

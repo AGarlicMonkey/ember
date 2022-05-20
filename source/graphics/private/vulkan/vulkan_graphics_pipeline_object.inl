@@ -8,10 +8,6 @@ namespace ember::graphics {
         , pipeline_layout_handle{ pipeline_layout_handle } {
     }
 
-    vulkan_graphics_pipeline_object::vulkan_graphics_pipeline_object(vulkan_graphics_pipeline_object &&other) noexcept = default;
-
-    vulkan_graphics_pipeline_object &vulkan_graphics_pipeline_object::operator=(vulkan_graphics_pipeline_object &&other) noexcept = default;
-
     vulkan_graphics_pipeline_object::~vulkan_graphics_pipeline_object() {
         vkDestroyPipeline(device, pipeline_handle, &global_host_allocation_callbacks);
         vkDestroyPipelineLayout(device, pipeline_layout_handle, &global_host_allocation_callbacks);
