@@ -61,7 +61,25 @@ namespace ember::graphics {
         }
     };
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_image_to_buffer_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_image_to_buffer_command) {
+        image const *const source;
+        maths::vec3i const source_offset;
+        maths::vec3u const source_extent;
+        std::uint32_t const source_base_layer;
+        std::uint32_t const source_layer_count;
+        buffer const *const destination;
+        std::size_t const destination_offset;
+
+        recorded_command(image const *const source, maths::vec3i const source_offset, maths::vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer const *const destination, std::size_t const destination_offset)
+            : source{ source }
+            , source_offset{ source_offset }
+            , source_extent{ source_extent }
+            , source_base_layer{ source_base_layer }
+            , source_layer_count{ source_layer_count }
+            , destination{ destination }
+            , destination_offset{ destination_offset } {
+        }
+    };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::execution_barrier_command) {
         pipeline_stage const source_stage;
@@ -108,7 +126,13 @@ namespace ember::graphics {
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::pop_user_marker_command){};
 #endif
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::bind_compute_pipeline_object_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::bind_compute_pipeline_object_command) {
+        compute_pipeline_object const *const pipeline_object;
+
+        recorded_command(compute_pipeline_object const *const pipeline_object)
+            : pipeline_object{ pipeline_object } {
+        }
+    };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::bind_descriptor_set_command) {
         descriptor_set const *const descriptor_set;
@@ -139,9 +163,23 @@ namespace ember::graphics {
         }
     };
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::dispatch_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::dispatch_command) {
+        maths::vec3u const group_count;
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::dispatch_indirect_command){};
+        recorded_command(maths::vec3u const group_count)
+            : group_count{ group_count } {
+        }
+    };
+
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::dispatch_indirect_command) {
+        buffer const *const indirect_buffer;
+        std::size_t const offset;
+
+        recorded_command(buffer const *const indirect_buffer, std::size_t const offset)
+            : indirect_buffer{ indirect_buffer }
+            , offset{ offset } {
+        }
+    };
 
     //Graphics command buffer
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::begin_render_pass_command) {

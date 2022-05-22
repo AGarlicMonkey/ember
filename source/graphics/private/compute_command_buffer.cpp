@@ -16,8 +16,7 @@ namespace ember::graphics {
 #endif
 
     void compute_command_buffer::bind_pipeline_object(compute_pipeline_object const *const pipeline_object) {
-        //TODO
-        EMBER_CHECK(false);
+        record_command<command_type::bind_compute_pipeline_object_command>(pipeline_object);
     }
 
     void compute_command_buffer::bind_descriptor_set(descriptor_set const *const descriptor_set, std::uint32_t const set_num) {
@@ -29,12 +28,10 @@ namespace ember::graphics {
     }
 
     void compute_command_buffer::dispatch(vec3u const group_count) {
-        //TODO
-        EMBER_CHECK(false);
+        record_command<command_type::dispatch_command>(group_count);
     }
 
     void compute_command_buffer::dispatch_indirect(buffer const *const indirect_buffer, std::size_t const offset) {
-        //TODO
-        EMBER_CHECK(false);
+        record_command<command_type::dispatch_indirect_command>(indirect_buffer, offset);
     }
 }

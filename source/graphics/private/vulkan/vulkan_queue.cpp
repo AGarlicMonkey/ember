@@ -187,6 +187,7 @@ namespace ember::graphics {
                     vkCmdCopyBufferToImage(vk_cmd_buffer, source, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
                 } break;
                 case command_type::copy_image_to_buffer_command:
+                    EMBER_CHECK(false);
                     break;
                 case command_type::execution_barrier_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::execution_barrier_command> *>(command_memory) };
@@ -254,6 +255,7 @@ namespace ember::graphics {
 
                 } break;
                 case command_type::bind_compute_pipeline_object_command:
+                    EMBER_CHECK(false);
                     break;
                 case command_type::bind_descriptor_set_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::bind_descriptor_set_command> *>(command_memory) };
@@ -268,8 +270,10 @@ namespace ember::graphics {
                     vkCmdPushConstants(vk_cmd_buffer, current_pipeline_layout, vulkan_shader::convert_stage(command->stage), command->offset, command->bytes, command->data);
                 } break;
                 case command_type::dispatch_command:
+                    EMBER_CHECK(false);
                     break;
                 case command_type::dispatch_indirect_command:
+                    EMBER_CHECK(false);
                     break;
                 case command_type::begin_render_pass_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::begin_render_pass_command> *>(command_memory) };
