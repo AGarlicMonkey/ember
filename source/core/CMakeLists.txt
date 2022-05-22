@@ -6,9 +6,9 @@ set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 set(TRACY_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/../../external/tracy_profiler/client)
 
 #CMake
-option(EMBER_CORE_ENABLE_LOGGING "Enables the logging macros in ember. Allowing the application to output log messages." ON)
-option(EMBER_CORE_ENABLE_ASSERTIONS "Enables the assertion macros in ember." ON)
-option(EMBER_CORE_ENABLE_EXCEPTIONS "Enables the exception macros in ember. Allowing the application to throw." ON)
+option(EMBER_CORE_ENABLE_LOGGING "Enables the logging macros in ember. Allowing the application to output log messages." OFF)
+option(EMBER_CORE_ENABLE_ASSERTIONS "Enables the assertion macros in ember." OFF)
+option(EMBER_CORE_ENABLE_EXCEPTIONS "Enables the exception macros in ember. Allowing the application to throw." OFF)
 
 option(EMBER_CORE_ENABLE_PROFILING "Enables ember's profiler" OFF)
 

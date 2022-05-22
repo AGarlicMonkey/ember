@@ -4,10 +4,10 @@ set(SOURCE_PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/public/ember/graphics)
 set(SOURCE_PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/private)
 
 #CMake
-option(EMBER_GRAPHICS_DEVICE_VALIDATION "Enables API specific device validation layers." ON)
-option(EMBER_GRAPHICS_USAGE_VALIDATION "Enables ember's API usage validation. This helps prevent issues developing a renderer for one API and for it not to work on another." ON)
-option(EMBER_GRAPHICS_TRACK_MEMORY "Enables extra logging of memory state within a device." ON)
-option(EMBER_GRAPHICS_DEBUG_UTILITIES "Enables the graphics debugging utilities such as naming resources and adding user markers." ON)
+option(EMBER_GRAPHICS_DEVICE_VALIDATION "Enables API specific device validation layers." OFF)
+option(EMBER_GRAPHICS_USAGE_VALIDATION "Enables ember's API usage validation. This helps prevent issues developing a renderer for one API and for it not to work on another." OFF)
+option(EMBER_GRAPHICS_TRACK_MEMORY "Enables extra logging of memory state within a device." OFF)
+option(EMBER_GRAPHICS_DEBUG_UTILITIES "Enables the graphics debugging utilities such as naming resources and adding user markers." OFF)
 option(EMBER_GRAPHICS_COMPILE_DEBUG_SHADERS "Compiles shaders in debug mode, with no optimisations enabled." OFF)
 
 find_package(shaderc REQUIRED CONFIG)
