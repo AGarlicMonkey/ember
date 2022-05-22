@@ -201,11 +201,14 @@ namespace ember::graphics {
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::set_viewport_command) {
         maths::vec2i const position;
         maths::vec2u const size;
+        float const min_depth;
+        float const max_depth;
 
-        recorded_command(maths::vec2i const position, maths::vec2u const size)
+        recorded_command(maths::vec2i const position, maths::vec2u const size, float const min_depth, float const max_depth)
             : position{ position }
-            , size{ size } {
-        }
+            , size{ size }
+            , min_depth{ min_depth }
+            , max_depth{ max_depth } {}
     };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::set_scissor_command) {

@@ -70,7 +70,7 @@ namespace ember::graphics {
          * @param position 
          * @param size 
          */
-        void set_viewport(maths::vec2i const position, maths::vec2u const size);
+        void set_viewport(maths::vec2i const position, maths::vec2u const size, float const min_depth = 0.0f, float const max_depth = 1.0f);
         /**
          * @brief
          * @param position 

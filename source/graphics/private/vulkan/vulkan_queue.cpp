@@ -313,8 +313,8 @@ namespace ember::graphics {
                         .y        = static_cast<float>(command->position.y),
                         .width    = static_cast<float>(command->size.x),
                         .height   = static_cast<float>(command->size.y),
-                        .minDepth = 0.0f,
-                        .maxDepth = 1.0f,
+                        .minDepth = command->min_depth,
+                        .maxDepth = command->max_depth,
                     };
 
                     vkCmdSetViewport(vk_cmd_buffer, 0, 1, &viewport);

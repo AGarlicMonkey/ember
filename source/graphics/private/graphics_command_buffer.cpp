@@ -14,8 +14,8 @@ namespace ember::graphics {
         record_command<command_type::end_render_pass_command>();
     }
 
-    void graphics_command_buffer::set_viewport(vec2i const position, vec2u const size) {
-        record_command<command_type::set_viewport_command>(position, size);
+    void graphics_command_buffer::set_viewport(vec2i const position, vec2u const size, float const min_depth, float const max_depth) {
+        record_command<command_type::set_viewport_command>(position, size, min_depth, max_depth);
     }
 
     void graphics_command_buffer::set_scissor(vec2i const position, vec2u const size) {
