@@ -15,6 +15,7 @@ namespace ember::graphics {
 
     void transfer_command_buffer::copy_image_to_buffer(image const *const source, maths::vec3i const source_offset, maths::vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer const *const destination, std::size_t const destination_offset) {
         //TODO
+        EMBER_CHECK(false);
     }
 
     void transfer_command_buffer::execution_barrier(pipeline_stage const source_stage, pipeline_stage const destination_stage) {
