@@ -65,7 +65,7 @@ namespace ember::graphics {
         vulkan_queue() = delete;
         vulkan_queue(VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices);
 
-        vulkan_queue(vulkan_queue const &other) = delete;
+        vulkan_queue(vulkan_queue const &other)     = delete;
         vulkan_queue(vulkan_queue &&other) noexcept = delete;
 
         vulkan_queue &operator=(vulkan_queue const &other) = delete;
@@ -82,11 +82,11 @@ namespace ember::graphics {
         void release_resources();
 
     private:
-        void record_commands(queue &queue, VkCommandBuffer vk_buffer, command_buffer const &command_buffer);
+        void record_commands(queue &queue, VkPipelineBindPoint const bind_point, VkCommandBuffer vk_buffer, command_buffer const &command_buffer);
 
         queue create_queue(std::uint32_t const family_index, std::string_view name);
         template<typename submit_info_t>
-        void submit_to_queue(queue &queue, submit_info_t const &submit_info, fence const *const signal_fence);
+        void submit_to_queue(queue &queue, VkPipelineBindPoint const bind_point, submit_info_t const &submit_info, fence const *const signal_fence);
         void destroy_queue(queue &queue);
 
         std::uint32_t get_queue_family_index(queue_type const queue_type);

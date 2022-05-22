@@ -20,7 +20,7 @@ namespace ember::graphics {
     }
 
     void compute_command_buffer::bind_descriptor_set(descriptor_set const *const descriptor_set, std::uint32_t const set_num) {
-        //TODO
+        record_command<command_type::bind_descriptor_set_command>(descriptor_set, set_num);
     }
 
     void compute_command_buffer::push_constant(shader::stage const stage, std::size_t const offset, std::size_t const bytes, void const *const data) {

@@ -2,10 +2,12 @@
 
 #include "commands.hpp"
 #include "ember/graphics/command_buffer.hpp"
+#include "host_memory_allocator.hpp"
 #include "memory_barrier_simplification.hpp"
 #include "resource_cast.hpp"
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
+#include "vulkan_descriptor_set.hpp"
 #include "vulkan_extension_functions.hpp"
 #include "vulkan_fence.hpp"
 #include "vulkan_framebuffer.hpp"
@@ -13,8 +15,7 @@
 #include "vulkan_render_pass.hpp"
 #include "vulkan_semaphore.hpp"
 #include "vulkan_shader.hpp"
-#include "vulkan_swapchain.hpp" 
-#include "host_memory_allocator.hpp"
+#include "vulkan_swapchain.hpp"
 
 #include <ember/containers/array.hpp>
 #include <ember/core/log.hpp>
@@ -76,15 +77,15 @@ namespace ember::graphics {
     vulkan_queue::~vulkan_queue() = default;
 
     void vulkan_queue::submit(graphics_submit_info const &submit_info, fence const *const signal_fence) {
-        submit_to_queue(graphics_queue, submit_info, signal_fence);
+        submit_to_queue(graphics_queue, VK_PIPELINE_BIND_POINT_GRAPHICS, submit_info, signal_fence);
     }
 
     void vulkan_queue::submit(compute_submit_info const &submit_info, fence const *const signal_fence) {
-        submit_to_queue(graphics_queue, submit_info, signal_fence);
+        submit_to_queue(graphics_queue, VK_PIPELINE_BIND_POINT_COMPUTE, submit_info, signal_fence);
     }
 
     void vulkan_queue::submit(transfer_submit_info const &submit_info, fence const *const signal_fence) {
-        submit_to_queue(graphics_queue, submit_info, signal_fence);
+        submit_to_queue(graphics_queue, static_cast<VkPipelineBindPoint>(0), submit_info, signal_fence);//NOTE: No bind point available for transfer
     }
 
     swapchain::result vulkan_queue::present(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) {
@@ -112,7 +113,7 @@ namespace ember::graphics {
         destroy_queue(transfer_queue);
     }
 
-    void vulkan_queue::record_commands(queue &queue, VkCommandBuffer vk_cmd_buffer, command_buffer const &command_buffer) {
+    void vulkan_queue::record_commands(queue &queue, VkPipelineBindPoint const bind_point, VkCommandBuffer vk_cmd_buffer, command_buffer const &command_buffer) {
         EMBER_PROFILE_FUNCTION;
 
         VkPipelineLayout current_pipeline_layout{ VK_NULL_HANDLE };
@@ -254,8 +255,13 @@ namespace ember::graphics {
                 } break;
                 case command_type::bind_compute_pipeline_object_command:
                     break;
-                case command_type::bind_descriptor_set_command:
-                    break;
+                case command_type::bind_descriptor_set_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::bind_descriptor_set_command> *>(command_memory) };
+
+                    VkDescriptorSet const descriptor_set_handle{ resource_cast<vulkan_descriptor_set const>(command->descriptor_set)->get_handle() };
+
+                    vkCmdBindDescriptorSets(vk_cmd_buffer, bind_point, current_pipeline_layout, command->set_num, 1, &descriptor_set_handle, 0, nullptr);
+                } break;
                 case command_type::push_constant_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::push_constant_command> *>(command_memory) };
 
@@ -397,7 +403,7 @@ namespace ember::graphics {
     }
 
     template<typename submit_info_t>
-    void vulkan_queue::submit_to_queue(queue &queue, submit_info_t const &submit_info, fence const *const signal_fence) {
+    void vulkan_queue::submit_to_queue(queue &queue, VkPipelineBindPoint const bind_point, submit_info_t const &submit_info, fence const *const signal_fence) {
         EMBER_PROFILE_FUNCTION;
 
         reset_available_buffers(queue);
@@ -416,7 +422,7 @@ namespace ember::graphics {
 
             EMBER_VULKAN_VERIFY_RESULT(vkBeginCommandBuffer(vk_command_buffer, &begin_info), "Failed to begin recording.");
 
-            record_commands(queue, vk_command_buffer, *command_buffer);
+            record_commands(queue, bind_point, vk_command_buffer, *command_buffer);
 #if EMBER_CORE_ENABLE_PROFILING
             if(queue.profiling_context != nullptr) {
                 TracyVkCollect(queue.profiling_context, vk_command_buffer);
@@ -484,7 +490,7 @@ namespace ember::graphics {
     void vulkan_queue::destroy_queue(queue &queue) {
         vkQueueWaitIdle(queue.handle);
 
-        if(queue.pooled_buffers.size() > 0){
+        if(queue.pooled_buffers.size() > 0) {
             vkFreeCommandBuffers(logical_device, queue.command_pool, queue.pooled_buffers.size(), queue.pooled_buffers.data());
         }
         for(auto *fence : queue.pooled_fences) {

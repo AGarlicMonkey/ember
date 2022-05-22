@@ -110,7 +110,15 @@ namespace ember::graphics {
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::bind_compute_pipeline_object_command){};
 
-    EMBER_GRAPHICS_CREATE_COMMAND(command_type::bind_descriptor_set_command){};
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::bind_descriptor_set_command) {
+        descriptor_set const *const descriptor_set;
+        std::uint32_t const set_num;
+
+        recorded_command(graphics::descriptor_set const *const descriptor_set, std::uint32_t const set_num)
+            : descriptor_set{ descriptor_set }
+            , set_num{ set_num } {
+        }
+    };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::push_constant_command) {
         shader::stage const stage;
