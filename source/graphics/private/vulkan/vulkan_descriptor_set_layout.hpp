@@ -29,8 +29,6 @@ namespace ember::graphics {
         descriptor const &get_descriptor() const override;
 
         inline VkDescriptorSetLayout get_layout() const;
-
-        static VkDescriptorType convert_descriptor_type(descriptor_type const type);
     };
 }
 

@@ -6,6 +6,7 @@
 #include "resource_cast.hpp"
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
+#include "vulkan_descriptor.hpp"
 #include "vulkan_descriptor_set_layout.hpp"
 #include "vulkan_device.hpp"
 #include "vulkan_extension_functions.hpp"
@@ -434,7 +435,7 @@ namespace ember::graphics {
             auto const &binding{ descriptor.bindings[i] };
             layout_bindings[i] = VkDescriptorSetLayoutBinding{
                 .binding            = binding.binding,
-                .descriptorType     = vulkan_descriptor_set_layout::convert_descriptor_type(binding.type),
+                .descriptorType     = convert_descriptor_type(binding.type),
                 .descriptorCount    = static_cast<std::uint32_t>(binding.array_size),
                 .stageFlags         = vulkan_shader::convert_stage(binding.stage),
                 .pImmutableSamplers = nullptr,

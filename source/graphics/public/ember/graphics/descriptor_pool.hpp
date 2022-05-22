@@ -53,7 +53,7 @@ namespace ember::graphics {
          * @param layouts 
          * @return 
          */
-        virtual containers::array<memory::unique_ptr<descriptor_set>> allocate_descriptor_sets(memory::array<descriptor_set_layout const *> const &layouts) = 0;
+        virtual containers::array<memory::unique_ptr<descriptor_set>> allocate_descriptor_sets(containers::array<descriptor_set_layout const *> const &layouts) = 0;
 
         /**
          * @brief Reset all allocated sets from this pool. 

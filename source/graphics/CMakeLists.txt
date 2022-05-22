@@ -20,7 +20,7 @@ endif()
 set(
     validation_files
 
-
+    #TODO
 )
 
 set(
@@ -71,9 +71,14 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_pipeline_object.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_pipeline_object.cpp
 
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_render_pass.inl
