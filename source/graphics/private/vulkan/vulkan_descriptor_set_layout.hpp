@@ -11,12 +11,12 @@ namespace ember::graphics {
         descriptor desc{};
 
         VkDevice device{ VK_NULL_HANDLE };
-        VkDescriptorSetLayout layout{ VK_NULL_HANDLE };
+        VkDescriptorSetLayout handle{ VK_NULL_HANDLE };
 
         //FUNCTIONS
     public:
         vulkan_descriptor_set_layout() = delete;
-        inline vulkan_descriptor_set_layout(descriptor desc, VkDevice device, VkDescriptorSetLayout layout);
+        inline vulkan_descriptor_set_layout(descriptor desc, VkDevice device, VkDescriptorSetLayout handle);
 
         vulkan_descriptor_set_layout(vulkan_descriptor_set_layout const &other)     = delete;
         vulkan_descriptor_set_layout(vulkan_descriptor_set_layout &&other) noexcept = delete;
@@ -28,7 +28,7 @@ namespace ember::graphics {
 
         descriptor const &get_descriptor() const override;
 
-        inline VkDescriptorSetLayout get_layout() const;
+        inline VkDescriptorSetLayout get_handle() const;
     };
 }
 

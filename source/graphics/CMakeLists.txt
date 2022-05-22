@@ -76,6 +76,9 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set_layout.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_pool.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_pool.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_pool.cpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor_set.cpp

@@ -7,6 +7,7 @@
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
 #include "vulkan_descriptor.hpp"
+#include "vulkan_descriptor_pool.hpp"
 #include "vulkan_descriptor_set_layout.hpp"
 #include "vulkan_device.hpp"
 #include "vulkan_extension_functions.hpp"
@@ -197,9 +198,9 @@ namespace ember::graphics {
 
     unique_ptr<graphics_pipeline_object> vulkan_resource_factory::create_graphics_pipeline_object(graphics_pipeline_object::descriptor descriptor, std::string_view name) const {
         //Descriptor set layouts
-        array<VkDescriptorSetLayout> descriptor_layouts(descriptor.descriptor_set_layouts.size());
-        for(std::size_t i{ 0 }; i < descriptor_layouts.size(); ++i) {
-            descriptor_layouts[i] = resource_cast<vulkan_descriptor_set_layout const>(descriptor.descriptor_set_layouts[i])->get_layout();
+        array<VkDescriptorSetLayout> descriptor_layout_handles(descriptor.descriptor_set_layouts.size());
+        for(std::size_t i{ 0 }; i < descriptor_layout_handles.size(); ++i) {
+            descriptor_layout_handles[i] = resource_cast<vulkan_descriptor_set_layout const>(descriptor.descriptor_set_layouts[i])->get_handle();
         }
 
         //Push constants
@@ -218,8 +219,8 @@ namespace ember::graphics {
             .sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
             .pNext                  = nullptr,
             .flags                  = 0,
-            .setLayoutCount         = static_cast<std::uint32_t>(descriptor_layouts.size()),
-            .pSetLayouts            = descriptor_layouts.data(),
+            .setLayoutCount         = static_cast<std::uint32_t>(descriptor_layout_handles.size()),
+            .pSetLayouts            = descriptor_layout_handles.data(),
             .pushConstantRangeCount = static_cast<std::uint32_t>(push_constant_ranges.size()),
             .pPushConstantRanges    = push_constant_ranges.data(),
         };
@@ -456,6 +457,34 @@ namespace ember::graphics {
         SET_RESOURCE_NAME(layout_handle, VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT, name.data());
 
         return make_unique<vulkan_descriptor_set_layout>(descriptor, device, layout_handle);
+    }
+
+    unique_ptr<descriptor_pool> vulkan_resource_factory::create_descriptor_pool(descriptor_pool::descriptor descriptor, std::string_view name) const {
+        std::size_t const num_descriptor_types{ descriptor.descriptor_types.size() };
+
+        array<VkDescriptorPoolSize> pool_sizes(num_descriptor_types);
+        for(std::size_t i{ 0 }; i < num_descriptor_types; ++i) {
+            pool_sizes[i] = VkDescriptorPoolSize{
+                .type            = convert_descriptor_type(descriptor.descriptor_types[i].type),
+                .descriptorCount = descriptor.descriptor_types[i].count,
+            };
+        }
+
+        VkDescriptorPoolCreateInfo const create_info{
+            .sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
+            .pNext         = nullptr,
+            .flags         = 0,
+            .maxSets       = descriptor.max_sets,
+            .poolSizeCount = static_cast<std::uint32_t>(num_descriptor_types),
+            .pPoolSizes    = pool_sizes.data(),
+        };
+
+        VkDescriptorPool pool_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateDescriptorPool(device, &create_info, &global_host_allocation_callbacks, &pool_handle), "Failed to create VkDescriptorPool.");
+
+        SET_RESOURCE_NAME(pool_handle, VK_OBJECT_TYPE_DESCRIPTOR_POOL, name.data());
+
+        return make_unique<vulkan_descriptor_pool>(descriptor, device, pool_handle);
     }
 
     unique_ptr<render_pass> vulkan_resource_factory::create_render_pass(render_pass::descriptor descriptor, std::string_view name) const {
