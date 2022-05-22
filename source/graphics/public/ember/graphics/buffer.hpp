@@ -39,8 +39,8 @@ namespace ember::graphics {
         struct descriptor {
             std::size_t bytes{ 0 };
             usage_mode usage_flags{};
-            sharing_mode sharing_mode{};
-            memory_type memory_type{};
+            sharing_mode sharing_mode{ sharing_mode::exclusive };
+            memory_type memory_type{ memory_type::device_local };
         };
 
         //FUNCTIONS
