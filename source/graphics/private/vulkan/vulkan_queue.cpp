@@ -269,6 +269,8 @@ namespace ember::graphics {
                 } break;
                 case command_type::dispatch_command:
                     break;
+                case command_type::dispatch_indirect_command:
+                    break;
                 case command_type::begin_render_pass_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::begin_render_pass_command> *>(command_memory) };
 

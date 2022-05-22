@@ -24,6 +24,7 @@ namespace ember::graphics {
         bind_descriptor_set_command,
         push_constant_command,
         dispatch_command,
+        dispatch_indirect_command,
 
         //Graphics
         begin_render_pass_command,
@@ -35,6 +36,13 @@ namespace ember::graphics {
         bind_index_buffer_command,
         draw_indexed_command,
         draw_indexed_indirect_command,
+    };
+
+    //NOTE: The size of the buffer directly matches that of the vulkan indirect dispatch command
+    struct dispatch_indirect_info {
+        std::uint32_t x{};
+        std::uint32_t y{};
+        std::uint32_t z{};
     };
 
     //NOTE: The size of the buffer directly matches that of the vulkan indirect draw command

@@ -28,7 +28,12 @@ namespace ember::graphics {
         record_command<command_type::push_constant_command>(stage, offset, bytes, data);
     }
 
-    void compute_command_buffer::disptach(vec3u const group_count) {
+    void compute_command_buffer::dispatch(vec3u const group_count) {
+        //TODO
+        EMBER_CHECK(false);
+    }
+
+    void compute_command_buffer::dispatch_indirect(buffer const *const indirect_buffer, std::size_t const offset) {
         //TODO
         EMBER_CHECK(false);
     }

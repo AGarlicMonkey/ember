@@ -27,6 +27,7 @@ namespace ember::graphics {
             case command_type::bind_descriptor_set_command:             return sizeof(recorded_command<command_type::bind_descriptor_set_command>);
             case command_type::push_constant_command:                   return sizeof(recorded_command<command_type::push_constant_command>);
             case command_type::dispatch_command:                        return sizeof(recorded_command<command_type::dispatch_command>);
+            case command_type::dispatch_indirect_command:               return sizeof(recorded_command<command_type::dispatch_indirect_command>);
             case command_type::begin_render_pass_command:               return sizeof(recorded_command<command_type::begin_render_pass_command>);
             case command_type::end_render_pass_command:                 return sizeof(recorded_command<command_type::end_render_pass_command>);
             case command_type::set_viewport_command:                    return sizeof(recorded_command<command_type::set_viewport_command>);
@@ -58,6 +59,7 @@ namespace ember::graphics {
             case command_type::bind_descriptor_set_command:             do_destruct<command_type::bind_descriptor_set_command>(command_memory); break;
             case command_type::push_constant_command:                   do_destruct<command_type::push_constant_command>(command_memory); break;
             case command_type::dispatch_command:                        do_destruct<command_type::dispatch_command>(command_memory); break;
+            case command_type::dispatch_indirect_command:               do_destruct<command_type::dispatch_indirect_command>(command_memory); break;
             case command_type::begin_render_pass_command:               do_destruct<command_type::begin_render_pass_command>(command_memory); break;
             case command_type::end_render_pass_command:                 do_destruct<command_type::end_render_pass_command>(command_memory); break;
             case command_type::set_viewport_command:                    do_destruct<command_type::set_viewport_command>(command_memory); break;
@@ -68,7 +70,7 @@ namespace ember::graphics {
             case command_type::draw_indexed_command:                    do_destruct<command_type::draw_indexed_command>(command_memory); break;
             case command_type::draw_indexed_indirect_command:           do_destruct<command_type::draw_indexed_indirect_command>(command_memory); break;
             default: EMBER_CHECK(false);
-            // clang-format on
+                // clang-format on
         }
     }
 }

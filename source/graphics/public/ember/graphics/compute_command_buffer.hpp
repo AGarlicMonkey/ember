@@ -67,7 +67,14 @@ namespace ember::graphics {
          * @brief Disptach a compute workload.
          * @param group_count How many groups on each axis to dispatch.
          */
-        void disptach(maths::vec3u const group_count);
+        void dispatch(maths::vec3u const group_count);
+
+        /**
+         * @brief Dispatch an indirect compute workload.
+         * @param indirect_buffer A buffer with one or many tightly packed dispatch_indirect_info written into it.
+         * @param offset Offset into the indirect_buffer to start the dispatch from.
+         */
+        void dispatch_indirect(buffer const *const indirect_buffer, std::size_t const offset);
     };
 }
 

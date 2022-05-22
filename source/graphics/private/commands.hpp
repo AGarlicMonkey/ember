@@ -141,6 +141,8 @@ namespace ember::graphics {
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::dispatch_command){};
 
+    EMBER_GRAPHICS_CREATE_COMMAND(command_type::dispatch_indirect_command){};
+
     //Graphics command buffer
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::begin_render_pass_command) {
         render_pass const *const render_pass;
