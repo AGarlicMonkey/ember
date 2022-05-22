@@ -5,6 +5,7 @@
 #include <ember/core/export.hpp>
 #include <ember/maths/vector.hpp>
 #include <ember/memory/unique_ptr.hpp>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -67,7 +68,7 @@ namespace ember::platform {
         inline window(window &&other) noexcept;
 
         window &operator=(window const &other) = delete;
-        inline window &operator=(window &&other) noexcept;
+        inline window &operator                =(window &&other) noexcept;
 
         inline ~window();
 
