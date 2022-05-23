@@ -101,7 +101,7 @@ namespace ember::graphics {
                 return VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             case layout::depth_stencil_attachment_optimal:
                 return VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-            case layout::cepth_stencil_read_only_optimal:
+            case layout::depth_stencil_read_only_optimal:
                 return VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
             default:
                 EMBER_CHECK(false);

@@ -47,7 +47,7 @@ namespace ember::graphics {
             shader_read_only_optimal,
             colour_attachment_optimal,
             depth_stencil_attachment_optimal,
-            cepth_stencil_read_only_optimal
+            depth_stencil_read_only_optimal
         };
 
         using access_type = std::uint16_t;
