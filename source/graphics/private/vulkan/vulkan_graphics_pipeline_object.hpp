@@ -33,6 +33,7 @@ namespace ember::graphics {
         inline VkPipelineLayout get_layout_handle() const;
 
         static VkFormat convert_attribute_format(vertex_attribute_format const format);
+        static VkCompareOp convert_compare_op(compare_op const op);
     };
 }
 

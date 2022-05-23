@@ -369,7 +369,7 @@ namespace ember::graphics {
             .flags                 = 0,
             .depthTestEnable       = static_cast<VkBool32>(descriptor.depth_state.depth_test ? VK_TRUE : VK_FALSE),
             .depthWriteEnable      = static_cast<VkBool32>(descriptor.depth_state.depth_write ? VK_TRUE : VK_FALSE),
-            .depthCompareOp        = VK_COMPARE_OP_LESS,
+            .depthCompareOp        = vulkan_graphics_pipeline_object::convert_compare_op(descriptor.depth_state.compare_op),
             .depthBoundsTestEnable = VK_FALSE,
             .stencilTestEnable     = VK_FALSE,
             .front                 = {},

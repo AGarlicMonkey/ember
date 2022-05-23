@@ -24,4 +24,16 @@ namespace ember::graphics {
                 return VK_FORMAT_UNDEFINED;
         }
     }
+
+    VkCompareOp vulkan_graphics_pipeline_object::convert_compare_op(compare_op const op) {
+        switch(op) {
+            case compare_op::less:
+                return VK_COMPARE_OP_LESS;
+            case compare_op::less_or_equal:
+                return VK_COMPARE_OP_LESS_OR_EQUAL;
+            default:
+                EMBER_CHECK(false);
+                return VK_COMPARE_OP_NEVER;
+        }
+    }
 }

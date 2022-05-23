@@ -39,6 +39,11 @@ namespace ember::graphics {
         dynamic,
     };
 
+    enum class compare_op{
+        less,
+        less_or_equal,
+    };
+
     struct area_descriptor {
         element_state state{ element_state::fixed }; /**< Dynamic states stop the pipeline object needing to be recreated if changed but require their data to be recorded everyframe. */
         maths::vec2i position{ 0 };                  /**< Not required if state is dynamic. */
@@ -52,6 +57,7 @@ namespace ember::graphics {
     struct depth_state_descriptor {
         bool depth_test{ true };
         bool depth_write{ true };
+        compare_op compare_op{ compare_op::less };
     };
 
     struct push_constant_descriptor {
