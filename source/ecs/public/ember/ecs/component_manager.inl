@@ -1,5 +1,7 @@
 #include "ember/ecs/function_traits.hpp"
 
+#include <algorithm>
+
 namespace ember::ecs {
     component_manager::component_manager() = default;
 
