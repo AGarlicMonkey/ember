@@ -16,8 +16,8 @@ namespace ember::graphics {
             transfer_destination = 1 << 1, /**< To be used as a destination in  a transfer operation. */
             vertex_buffer        = 1 << 2, /**< To be used as a vertex buffer. */
             index_buffer         = 1 << 3, /**< To be used as an index buffer. */
-            uniform_buffer       = 1 << 4, /**< Uploaded to shaders as a uniform buffer (read only shader data). */
-            storage_buffer       = 1 << 5, /**< Uploaded to shaders as a storage buffer (read/write from compute). */
+            uniform_buffer       = 1 << 4, /**< Uploaded to shaders as a uniform buffer. Uniform buffers are ready only and the size needs to be known by the shader. */
+            storage_buffer       = 1 << 5, /**< Uploaded to shaders as a storage buffer. Storage buffers are read/write and can be of dynamic size in the shader. */
             indirect_buffer      = 1 << 6, /**< Can be used to store indirect commands for compute or draw distpatches. */
         };
 
