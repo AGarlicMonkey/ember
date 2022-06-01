@@ -56,7 +56,7 @@ namespace ember::ecs {
         template<typename function_t, std::size_t... parameter_indices_t>
         archetype_id_t generate_archetype_id_from_function(std::index_sequence<parameter_indices_t...>);
 
-        template<typename... components_t>
+        template<typename component_t, typename... components_t>
         archetype_id_t generate_archetype_id_from_types();
     };
 }

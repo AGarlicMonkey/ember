@@ -140,9 +140,17 @@ namespace ember::ecs {
         return generate_archetype_id_from_types<std::tuple_element_t<parameter_indices_t, typename internal::function_traits<function_t>::decayed_parameter_types_tuple>...>();
     }
 
-    template<typename... components_t>
+    template<typename component_t, typename... components_t>
     archetype_id_t component_manager::generate_archetype_id_from_types() {
-        archetype_id_t id{ id_generator::get<components_t>()... };
+        archetype_id_t id;
+
+        //If the first 'component' is actually an entity then don't use it to generate the ID
+        if constexpr(std::is_same_v<component_t, entity>) {
+            id = { id_generator::get<components_t>()... };
+        } else {
+            id = { id_generator::get<component_t>(), id_generator::get<components_t>()... };
+        }
+
         std::sort(id.begin(), id.end());
         return id;
     }

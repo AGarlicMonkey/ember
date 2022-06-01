@@ -32,8 +32,9 @@ namespace ember::ecs {
     private:
         archetype_id_t id{};
 
-        containers::map<entity, std::size_t> entities{}; /**< All entities belonging to this archetype. */
-        component_arena component_data{};                /**< Memory pool for the archetype's components. */
+        containers::map<entity, std::size_t> entity_to_index{};        /**< All entities belonging to this archetype. */
+        containers::map<std::size_t, entity> index_to_entity{}; /**< Maps an index in the arena to an entity. */
+        component_arena component_data{};                       /**< Memory pool for the archetype's components. */
 
         containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map; /**< Maps a component id to it's helper type*/
         containers::map<component_id_t, std::size_t> component_offsets{};                                       /**< Map of component offsets into the memory buffer.*/
@@ -47,7 +48,7 @@ namespace ember::ecs {
         archetype(archetype &&other) noexcept;
 
         archetype &operator=(archetype const &other) = delete;
-        archetype &operator=(archetype &&other) noexcept;
+        archetype &operator                          =(archetype &&other) noexcept;
 
         ~archetype();
 
@@ -90,12 +91,12 @@ namespace ember::ecs {
 
         template<typename function_t, std::size_t... parameter_indices_t>
         void invoke(function_t function, std::index_sequence<parameter_indices_t...>);
-        template<typename function_t, typename... components_t>
+        template<typename function_t, typename component_t, typename... components_t>
         void invoke(function_t function);
 
         template<typename function_t, typename object_t, std::size_t... parameter_indices_t>
         void invoke_member(function_t function, object_t *object, std::index_sequence<parameter_indices_t...>);
-        template<typename function_t, typename object_t, typename... components_t>
+        template<typename function_t, typename object_t, typename component_t, typename... components_t>
         void invoke_member(function_t function, object_t *object);
 
         void destruct_memory_arena();

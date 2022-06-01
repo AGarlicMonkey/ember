@@ -9,7 +9,7 @@ namespace ember::ecs {
     }
 
     bool archetype::contains_entity(entity const entity) const {
-        return entities.contains(entity);
+        return entity_to_index.contains(entity);
     }
 
     bool archetype::allows_component(component_id_t const component_id) const {
@@ -82,28 +82,40 @@ namespace ember::ecs {
     template<typename function_t, std::size_t... parameter_indices_t>
     void archetype::invoke(function_t function, std::index_sequence<parameter_indices_t...>) {
         //Generate an invoke call where the inidices are used to expand out each type of the function's params
-        return invoke<function_t, std::tuple_element_t<parameter_indices_t, typename internal::function_traits<function_t>::decayed_parameter_types_tuple>...>(function);
+        invoke<function_t, std::tuple_element_t<parameter_indices_t, typename internal::function_traits<function_t>::decayed_parameter_types_tuple>...>(function);
     }
 
-    template<typename function_t, typename... components_t>
+    template<typename function_t, typename component_t, typename... components_t>
     void archetype::invoke(function_t function) {
         for(std::size_t i{ 0 }; i < component_data.allocations; ++i) {
             std::byte *const archetype_block{ component_data.memory + (i * component_data.stride) };
-            function(get_component_within_block<components_t>(archetype_block)...);
+
+            //If the first 'component' is an entity the retrieve it from the map and call with the rest of the component types
+            if constexpr(std::is_same_v<component_t, entity>) {
+                function(index_to_entity.at(i), get_component_within_block<components_t>(archetype_block)...);
+            } else {
+                function(get_component_within_block<component_t>(archetype_block), get_component_within_block<components_t>(archetype_block)...);
+            }
         }
     }
 
     template<typename function_t, typename object_t, std::size_t... parameter_indices_t>
     void archetype::invoke_member(function_t function, object_t *object, std::index_sequence<parameter_indices_t...>) {
         //Generate an invoke call where the inidices are used to expand out each type of the function's params
-        return invoke_member<function_t, object_t, std::tuple_element_t<parameter_indices_t, typename internal::function_traits<function_t>::decayed_parameter_types_tuple>...>(function, object);
+        invoke_member<function_t, object_t, std::tuple_element_t<parameter_indices_t, typename internal::function_traits<function_t>::decayed_parameter_types_tuple>...>(function, object);
     }
 
-    template<typename function_t, typename object_t, typename... components_t>
+    template<typename function_t, typename object_t, typename component_t, typename... components_t>
     void archetype::invoke_member(function_t function, object_t *object) {
         for(std::size_t i{ 0 }; i < component_data.allocations; ++i) {
             std::byte *const archetype_block{ component_data.memory + (i * component_data.stride) };
-            (object->*function)(get_component_within_block<components_t>(archetype_block)...);
+
+            //If the first 'component' is an entity the retrieve it from the map and call with the rest of the component types
+            if constexpr(std::is_same_v<component_t, entity>) {
+                (object->*function)(index_to_entity.at(i), get_component_within_block<components_t>(archetype_block)...);
+            } else {
+                (object->*function)(get_component_within_block<component_t>(archetype_block), get_component_within_block<components_t>(archetype_block)...);
+            }
         }
     }
 }

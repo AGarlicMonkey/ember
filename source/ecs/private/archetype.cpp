@@ -22,17 +22,19 @@ namespace ember::ecs {
 
     archetype::archetype(archetype &&other) noexcept
         : id{ std::move(other.id) }
-        , entities{ std::move(other.entities) }
+        , entity_to_index{ std::move(other.entity_to_index) }
+        , index_to_entity{ std::move(other.index_to_entity) }
         , component_helper_map{ other.component_helper_map }
         , component_offsets{ std::move(other.component_offsets) } {
         destruct_memory_arena();
-        component_data = std::move(other.component_data);
+        component_data              = std::move(other.component_data);
         other.component_data.memory = nullptr;
     }
 
     archetype &archetype::operator=(archetype &&other) noexcept {
         id                   = std::move(other.id);
-        entities             = std::move(other.entities);
+        entity_to_index      = std::move(other.entity_to_index);
+        index_to_entity      = std::move(index_to_entity);
         component_helper_map = other.component_helper_map;
         component_offsets    = std::move(other.component_offsets);
 
@@ -53,7 +55,9 @@ namespace ember::ecs {
         }
         ++component_data.allocations;
 
-        entities[entity] = component_data.allocations - 1;
+        std::size_t const index{ component_data.allocations - 1 };
+        entity_to_index[entity] = index;
+        index_to_entity[index]  = entity;
     }
 
     void archetype::transfer_entity(entity const entity, archetype &previous_archetype) {
@@ -81,13 +85,7 @@ namespace ember::ecs {
         }
 
         std::size_t const to_move_index{ component_data.allocations - 1 };
-        ecs::entity to_move_entity{};
-        for(auto &&[tracked_entity, entity_index] : entities) {
-            if(entity_index == to_move_index) {
-                to_move_entity = tracked_entity;
-                break;
-            }
-        }
+        ecs::entity const to_move_entity{ index_to_entity.at(to_move_index) };
         EMBER_CHECK(to_move_entity != null_entity);
 
         //If we removed from the middle of the array then move the components at the end to the new location
@@ -98,11 +96,14 @@ namespace ember::ecs {
 
                 component_helper_map->at(component_id)->move(old_component_memory, new_component_memory);
             }
-            entities.at(to_move_entity) = entities.at(entity);
+            entity_to_index.at(to_move_entity)                     = entity_to_index.at(entity);
+            index_to_entity.at(entity_to_index.at(to_move_entity)) = to_move_entity;
         }
 
         --component_data.allocations;
-        entities.erase(entity);
+        entity_to_index.erase(entity);
+        index_to_entity.erase(to_move_index);
+        EMBER_CHECK(entity_to_index.size() == index_to_entity.size());
     }
 
     void archetype::increase_arena_size() {
@@ -135,7 +136,7 @@ namespace ember::ecs {
     std::byte *archetype::get_component_memory(entity const entity, component_id_t const component_id) const {
         EMBER_CHECK(contains_entity(entity));
 
-        std::size_t const entity_index{ entities.at(entity) };
+        std::size_t const entity_index{ entity_to_index.at(entity) };
         return component_data.memory + (component_data.stride * entity_index) + get_component_offset(component_id);
     }
 

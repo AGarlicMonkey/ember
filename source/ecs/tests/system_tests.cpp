@@ -1,6 +1,8 @@
 #include <ember/ecs/entity_manager.hpp>
 #include <gtest/gtest.h>
 
+#include <vector>
+
 using namespace ember::ecs;
 
 struct bool_component {
@@ -198,9 +200,6 @@ TEST(system_tests, can_use_member_function) {
 }
 
 TEST(system_tests, entities_components_are_removed) {
-    //Remove individual components
-    //Remove whole entities
-
     entity_manager manager{};
 
     entity entity_1{ manager.create() };
@@ -298,10 +297,30 @@ TEST(system_tests, entities_components_are_removed) {
     EXPECT_EQ(complex_comp_count, 0);
 }
 
-/*
 TEST(system_tests, can_get_entity) {
+    entity_manager manager{};
+
+    entity entity_1{ manager.create() };
+    entity entity_2{ manager.create() };
+    entity entity_3{ manager.create() };
+
+    manager.add_component<int_component>(entity_1);
+    manager.add_component<int_component>(entity_2);
+    manager.add_component<int_component>(entity_3);
+
+    manager.add_component<bool_component>(entity_2);
+    manager.add_component<complex_component>(entity_3);
+
+    std::vector<entity> found_list{};
+
+    manager.for_each([&](entity entity, int_component &comp) {
+        found_list.push_back(entity);
+    });
+
+    EXPECT_TRUE(std::find(found_list.begin(), found_list.end(), entity_1) != found_list.end());
+    EXPECT_TRUE(std::find(found_list.begin(), found_list.end(), entity_2) != found_list.end());
+    EXPECT_TRUE(std::find(found_list.begin(), found_list.end(), entity_3) != found_list.end());
 }
-*/
 
 /*
 TEST(system_tests, can_exclude_components_with_lambda_function) {
