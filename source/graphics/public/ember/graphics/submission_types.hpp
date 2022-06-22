@@ -13,21 +13,14 @@ namespace ember::graphics {
 }
 
 namespace ember::graphics {
-    struct graphics_submit_info {
+    template<typename command_buffer_t>
+    struct submit_info {
         containers::array<std::pair<semaphore const *, pipeline_stage>> wait_semaphores{}; /**< What semaphore each submission will wait on at which stage. */
-        containers::array<graphics_command_buffer const *> command_buffers{};              /**< Which command buffers to execute. */
+        containers::array<command_buffer_t const *> command_buffers{};                     /**< Which command buffers to execute. */
         containers::array<semaphore const *> signal_semaphores{};                          /**< The semaphores that will be signaled when execution has finished.*/
     };
 
-    struct compute_submit_info {
-        containers::array<std::pair<semaphore const *, pipeline_stage>> wait_semaphores{}; /**< What semaphore each submission will wait on at which stage. */
-        containers::array<compute_command_buffer const *> command_buffers{};               /**< Which command buffers to execute. */
-        containers::array<semaphore const *> signal_semaphores{};                          /**< The semaphores that will be signaled when execution has finished.*/
-    };
-
-    struct transfer_submit_info {
-        containers::array<std::pair<semaphore const *, pipeline_stage>> wait_semaphores{}; /**< What semaphore each submission will wait on at which stage. */
-        containers::array<transfer_command_buffer const *> command_buffers{};              /**< Which command buffers to execute. */
-        containers::array<semaphore const *> signal_semaphores{};                          /**< The semaphores that will be signaled when execution has finished.*/
-    };
+    using graphics_submit_info = submit_info<graphics_command_buffer>;
+    using compute_submit_info  = submit_info<compute_command_buffer>;
+    using transfer_submit_info = submit_info<transfer_command_buffer>;
 }
