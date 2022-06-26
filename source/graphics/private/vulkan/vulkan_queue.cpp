@@ -81,11 +81,11 @@ namespace ember::graphics {
     }
 
     void vulkan_queue::submit(compute_submit_info const &submit_info, fence const *const signal_fence) {
-        submit_to_queue(graphics_queue, VK_PIPELINE_BIND_POINT_COMPUTE, submit_info, signal_fence);
+        submit_to_queue(compute_queue, VK_PIPELINE_BIND_POINT_COMPUTE, submit_info, signal_fence);
     }
 
     void vulkan_queue::submit(transfer_submit_info const &submit_info, fence const *const signal_fence) {
-        submit_to_queue(graphics_queue, static_cast<VkPipelineBindPoint>(0), submit_info, signal_fence);//NOTE: No bind point available for transfer
+        submit_to_queue(transfer_queue, static_cast<VkPipelineBindPoint>(0), submit_info, signal_fence);//NOTE: No bind point available for transfer
     }
 
     swapchain::result vulkan_queue::present(swapchain const *const swapchain, std::size_t const image_index, semaphore const *const wait_semaphore) {
@@ -572,7 +572,7 @@ namespace ember::graphics {
             VkCommandBufferAllocateInfo const buffer_alloc_info{
                 .sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
                 .pNext              = nullptr,
-                .commandPool        = graphics_queue.command_pool,
+                .commandPool        = queue.command_pool,
                 .level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
                 .commandBufferCount = 1,
             };
