@@ -1,15 +1,14 @@
-#include <fmt/format.h>
+#include <format>
 
 namespace ember {
     template<typename... args_t>
     void logger::log(std::string_view category, log_level level, std::string_view msg, args_t &&...args) {
-        fmt::memory_buffer message_buffer{};
-        fmt::format_to(message_buffer, msg, std::forward<args_t>(args)...);
+        //Use vformat here as std::format uses _Basic_format_string which is consteval
+        std::string const message{ std::vformat(msg, std::make_format_args(std::forward<args_t>(args)...)) };
 
         std::string_view constexpr full_message_format{ "{}: {}" };
-        fmt::memory_buffer full_message_buffer{};
-        fmt::format_to(full_message_buffer, full_message_format, category, std::string_view{ message_buffer.data(), message_buffer.size() });
+        std::string const full_message{ std::format(full_message_format, category, message) };
 
-        do_log(level, std::string_view{ full_message_buffer.data(), full_message_buffer.size() });
+        do_log(level, full_message);
     }
 }
