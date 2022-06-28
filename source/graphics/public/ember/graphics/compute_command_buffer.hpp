@@ -85,12 +85,21 @@ namespace ember::graphics::internal {
         compute_command_buffer &buffer;
 
     public:
+        scoped_user_marker() = delete;
+        scoped_user_marker(compute_command_buffer &buffer, std::string name)
+            : buffer{ buffer } {
+            buffer.push_user_marker(std::move(name), maths::vec4f{ 0, 0, 0, 1 });
+        }
         scoped_user_marker(compute_command_buffer &buffer, std::string name, maths::vec4f const colour)
             : buffer{ buffer } {
             buffer.push_user_marker(std::move(name), colour);
         }
 
-        //TODO: other ctors
+        scoped_user_marker(scoped_user_marker const &other)     = delete;
+        scoped_user_marker(scoped_user_marker &&other) noexcept = delete;
+
+        scoped_user_marker &operator=(scoped_user_marker const &other)     = delete;
+        scoped_user_marker &operator=(scoped_user_marker &&other) noexcept = delete;
 
         ~scoped_user_marker() {
             buffer.pop_user_marker();
@@ -101,14 +110,16 @@ namespace ember::graphics::internal {
     #define INTERNAL_EMBER_GRAPHICS_CAT2(a, b, c) a##b##c
     #define INTERNAL_EMBER_GRAPHICS_CAT(a, b, c) INTERNAL_EMBER_GRAPHICS_CAT2(a, b, c)
 
-    /**
-     * @brief Automatically pushses and pops a user marker.
-     */
-    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name, colour)                                                                                      \
-        ember::graphics::internal::scoped_user_marker INTERNAL_EMBER_GRAPHICS_CAT(scoped_user_marker, __COUNT__, __LINE__){ command_buffer, name, colour }; \
+    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name)                                                                                        \
+        ::ember::graphics::internal::scoped_user_marker INTERNAL_EMBER_GRAPHICS_CAT(scoped_user_marker, __COUNT__, __LINE__){ command_buffer, name }; \
+        EMBER_PROFILE_SCOPE(name)
+
+    #define EMBER_GRAPHICS_SCOPED_MARKER_C(command_buffer, name, r, g, b)                                                                                                                     \
+        ::ember::graphics::internal::scoped_user_marker INTERNAL_EMBER_GRAPHICS_CAT(scoped_user_marker, __COUNT__, __LINE__){ command_buffer, name, ::ember::maths::vec4f{ r, g, b, 1.0f } }; \
         EMBER_PROFILE_SCOPE(name)
 #else
-    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name, colour)
+    #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name)
+    #define EMBER_GRAPHICS_SCOPED_MARKER_C(command_buffer, name, colour)
 #endif
 
 #include "compute_command_buffer.inl"

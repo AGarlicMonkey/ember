@@ -3,7 +3,7 @@
 #include <cinttypes>
 #include <ember/maths/vector.hpp>
 
-#define EMBER_GRAPHICS_ENABLE_USER_MARKERS EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING
+#define EMBER_GRAPHICS_ENABLE_USER_MARKERS (EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING)
 
 namespace ember::graphics {
     enum class command_type : std::uint8_t {
