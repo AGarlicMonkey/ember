@@ -187,9 +187,28 @@ namespace ember::graphics {
 
                     vkCmdCopyBufferToImage(vk_cmd_buffer, source, destination, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy_region);
                 } break;
-                case command_type::copy_image_to_buffer_command:
-                    EMBER_CHECK(false);
-                    break;
+                case command_type::copy_image_to_buffer_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::copy_image_to_buffer_command> *>(command_memory) };
+
+                    VkBufferImageCopy const copy_region{
+                        .bufferOffset      = command->destination_offset,
+                        .bufferRowLength   = 0,//Tightly packed
+                        .bufferImageHeight = 0,//Tightly packed
+                        .imageSubresource  = {
+                             .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,//TODO: Handle other aspect masks
+                             .mipLevel       = 0,
+                             .baseArrayLayer = command->source_base_layer,
+                             .layerCount     = command->source_layer_count,
+                        },
+                        .imageOffset = { static_cast<std::int32_t>(command->source_offset.x), static_cast<std::int32_t>(command->source_offset.y), static_cast<std::int32_t>(command->source_offset.z) },
+                        .imageExtent = { command->source_extent.x, command->source_extent.y, command->source_extent.z },
+                    };
+
+                    VkImage source{ resource_cast<vulkan_image const>(command->source)->get_handle() };
+                    VkBuffer destination{ resource_cast<vulkan_buffer const>(command->destination)->get_handle() };
+
+                    vkCmdCopyImageToBuffer(vk_cmd_buffer, source, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, destination, 1, &copy_region);
+                } break;
                 case command_type::execution_barrier_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::execution_barrier_command> *>(command_memory) };
 
