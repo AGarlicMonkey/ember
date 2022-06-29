@@ -6,6 +6,7 @@
 #include "resource_cast.hpp"
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
+#include "vulkan_compute_pipeline_object.hpp"
 #include "vulkan_descriptor.hpp"
 #include "vulkan_descriptor_pool.hpp"
 #include "vulkan_descriptor_set_layout.hpp"
@@ -428,6 +429,63 @@ namespace ember::graphics {
         SET_RESOURCE_NAME(pipeline_handle, VK_OBJECT_TYPE_PIPELINE, name.data());
 
         return make_unique<vulkan_graphics_pipeline_object>(descriptor, device, pipeline_handle, pipeline_layout_handle);
+    }
+
+    unique_ptr<compute_pipeline_object> vulkan_resource_factory::create_compute_pipeline_object(compute_pipeline_object::descriptor descriptor, std::string_view name) const {
+        //Descriptor set layouts
+        array<VkDescriptorSetLayout> descriptor_layout_handles(descriptor.descriptor_set_layouts.size());
+        for(std::size_t i{ 0 }; i < descriptor_layout_handles.size(); ++i) {
+            descriptor_layout_handles[i] = resource_cast<vulkan_descriptor_set_layout const>(descriptor.descriptor_set_layouts[i])->get_handle();
+        }
+
+        //Push constants
+        array<VkPushConstantRange> push_constant_ranges(descriptor.push_constants.size());
+        for(std::size_t i{ 0 }; i < push_constant_ranges.size(); ++i) {
+            auto const &push_constant{ descriptor.push_constants[i] };
+            push_constant_ranges[i] = VkPushConstantRange{
+                .stageFlags = vulkan_shader::convert_stage(push_constant.stage),
+                .offset     = static_cast<std::uint32_t>(push_constant.offset),
+                .size       = static_cast<std::uint32_t>(push_constant.bytes),
+            };
+        }
+
+        //Pipeline layout
+        VkPipelineLayoutCreateInfo const pipeline_layout_info{
+            .sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
+            .pNext                  = nullptr,
+            .flags                  = 0,
+            .setLayoutCount         = static_cast<std::uint32_t>(descriptor_layout_handles.size()),
+            .pSetLayouts            = descriptor_layout_handles.data(),
+            .pushConstantRangeCount = static_cast<std::uint32_t>(push_constant_ranges.size()),
+            .pPushConstantRanges    = push_constant_ranges.data(),
+        };
+
+        VkPipelineLayout pipeline_layout_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreatePipelineLayout(device, &pipeline_layout_info, &global_host_allocation_callbacks, &pipeline_layout_handle), "Failed to create VkPipelineLayout.");
+
+        //Shader
+        VkPipelineShaderStageCreateInfo const shader_stage{
+            .sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
+            .stage  = VK_SHADER_STAGE_COMPUTE_BIT,
+            .module = resource_cast<vulkan_shader const>(descriptor.shader)->get_module(),
+            .pName  = "main",
+        };
+
+        //Pipeline
+        VkComputePipelineCreateInfo const pipeline_info{
+            .sType  = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO,
+            .pNext  = nullptr,
+            .flags  = 0,
+            .stage  = shader_stage,
+            .layout = pipeline_layout_handle,
+        };
+
+        VkPipeline pipeline_handle{ VK_NULL_HANDLE };
+        EMBER_VULKAN_VERIFY_RESULT(vkCreateComputePipelines(device, VK_NULL_HANDLE, 1, &pipeline_info, &global_host_allocation_callbacks, &pipeline_handle), "Failed to create VkPipeline.");
+
+        SET_RESOURCE_NAME(pipeline_handle, VK_OBJECT_TYPE_PIPELINE, name.data());
+
+        return make_unique<vulkan_compute_pipeline_object>(descriptor, device, pipeline_handle, pipeline_layout_handle);
     }
 
     unique_ptr<descriptor_set_layout> vulkan_resource_factory::create_descriptor_set_layout(descriptor_set_layout::descriptor descriptor, std::string_view name) const {

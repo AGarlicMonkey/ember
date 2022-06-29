@@ -70,6 +70,9 @@ set(
     ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_pipeline_object.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_pipeline_object.inl
     ${SOURCE_PRIVATE}/vulkan/vulkan_graphics_pipeline_object.cpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_compute_pipeline_object.hpp
+    ${SOURCE_PRIVATE}/vulkan/vulkan_compute_pipeline_object.inl
+    ${SOURCE_PRIVATE}/vulkan/vulkan_compute_pipeline_object.cpp
 
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor.hpp
     ${SOURCE_PRIVATE}/vulkan/vulkan_descriptor.cpp
@@ -109,6 +112,7 @@ add_library(
     ${SOURCE_PRIVATE}/resource_cast.hpp
     ${SOURCE_PRIVATE}/resource_cast.inl
     ${SOURCE_PUBLIC}/submission_types.hpp
+    ${SOURCE_PUBLIC}/push_constant_descriptor.hpp
     ${SOURCE_PUBLIC}/pipeline_stage.hpp
 
     ${SOURCE_PUBLIC}/graphics.hpp

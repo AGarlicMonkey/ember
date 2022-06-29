@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ember/graphics/buffer.hpp"
+#include "ember/graphics/compute_pipeline_object.hpp"
 #include "ember/graphics/descriptor_pool.hpp"
 #include "ember/graphics/descriptor_set_layout.hpp"
 #include "ember/graphics/fence.hpp"
@@ -60,6 +61,13 @@ namespace ember::graphics {
          * @return 
          */
         virtual memory::unique_ptr<graphics_pipeline_object> create_graphics_pipeline_object(graphics_pipeline_object::descriptor descriptor, std::string_view name) const = 0;
+        /**
+         * @brief 
+         * @param descriptor 
+         * @param name 
+         * @return 
+         */
+        virtual memory::unique_ptr<compute_pipeline_object> create_compute_pipeline_object(compute_pipeline_object::descriptor descriptor, std::string_view name) const = 0;
 
         /**
          * @brief

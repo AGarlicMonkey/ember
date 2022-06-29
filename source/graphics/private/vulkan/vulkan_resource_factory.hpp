@@ -24,10 +24,10 @@ namespace ember::graphics {
         vulkan_resource_factory() = delete;
         vulkan_resource_factory(VkDevice device, VkPhysicalDevice physical_device, queue_family_indices family_indices, device_memory_allocator *memory_allocator);
 
-        vulkan_resource_factory(vulkan_resource_factory const &other) = delete;
+        vulkan_resource_factory(vulkan_resource_factory const &other)     = delete;
         vulkan_resource_factory(vulkan_resource_factory &&other) noexcept = delete;
 
-        vulkan_resource_factory &operator=(vulkan_resource_factory const &other) = delete;
+        vulkan_resource_factory &operator=(vulkan_resource_factory const &other)     = delete;
         vulkan_resource_factory &operator=(vulkan_resource_factory &&other) noexcept = delete;
 
         inline ~vulkan_resource_factory() override;
@@ -38,6 +38,7 @@ namespace ember::graphics {
         memory::unique_ptr<sampler> create_sampler(sampler::descriptor descriptor, std::string_view name) const override;
 
         memory::unique_ptr<graphics_pipeline_object> create_graphics_pipeline_object(graphics_pipeline_object::descriptor descriptor, std::string_view name) const override;
+        memory::unique_ptr<compute_pipeline_object> create_compute_pipeline_object(compute_pipeline_object::descriptor descriptor, std::string_view name) const override;
 
         memory::unique_ptr<descriptor_set_layout> create_descriptor_set_layout(descriptor_set_layout::descriptor descriptor, std::string_view name) const override;
         memory::unique_ptr<descriptor_pool> create_descriptor_pool(descriptor_pool::descriptor descriptor, std::string_view name) const override;

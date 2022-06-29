@@ -1,11 +1,10 @@
 #pragma once
 
-#include "ember/graphics/shader.hpp"
+#include "ember/graphics/push_constant_descriptor.hpp"
 
 #include <cinttypes>
-#include <cstddef>
-#include <ember/maths/vector.hpp>
 #include <ember/containers/array.hpp>
+#include <ember/maths/vector.hpp>
 
 namespace ember::graphics {
     class render_pass;
@@ -39,7 +38,7 @@ namespace ember::graphics {
         dynamic,
     };
 
-    enum class compare_op{
+    enum class compare_op {
         less,
         less_or_equal,
     };
@@ -58,12 +57,6 @@ namespace ember::graphics {
         bool depth_test{ true };
         bool depth_write{ true };
         compare_op compare_op{ compare_op::less };
-    };
-
-    struct push_constant_descriptor {
-        shader::stage stage{ 0 };
-        std::size_t offset{ 0 }; /**< Offset specified in the shader (layout(offset = x)). Required if using different push constants for different stages. */
-        std::size_t bytes{ 0 };
     };
 }
 
