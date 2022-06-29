@@ -7,6 +7,7 @@
 #include "resource_cast.hpp"
 #include "verification.hpp"
 #include "vulkan_buffer.hpp"
+#include "vulkan_compute_pipeline_object.hpp"
 #include "vulkan_descriptor_set.hpp"
 #include "vulkan_extension_functions.hpp"
 #include "vulkan_fence.hpp"
@@ -254,9 +255,14 @@ namespace ember::graphics {
                     vkCmdPipelineBarrier(vk_cmd_buffer, previous_access_info.stage_mask, next_access_info.stage_mask, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
                 } break;
-                case command_type::bind_compute_pipeline_object_command:
-                    EMBER_CHECK(false);
-                    break;
+                case command_type::bind_compute_pipeline_object_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::bind_compute_pipeline_object_command> *>(command_memory) };
+
+                    auto const *pipeline{ resource_cast<vulkan_compute_pipeline_object const>(command->pipeline_object) };
+
+                    current_pipeline_layout = pipeline->get_layout_handle();
+                    vkCmdBindPipeline(vk_cmd_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->get_pipeline_handle());
+                } break;
                 case command_type::bind_descriptor_set_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::bind_descriptor_set_command> *>(command_memory) };
 
@@ -269,12 +275,18 @@ namespace ember::graphics {
 
                     vkCmdPushConstants(vk_cmd_buffer, current_pipeline_layout, vulkan_shader::convert_stage(command->stage), command->offset, command->bytes, command->data);
                 } break;
-                case command_type::dispatch_command:
-                    EMBER_CHECK(false);
-                    break;
-                case command_type::dispatch_indirect_command:
-                    EMBER_CHECK(false);
-                    break;
+                case command_type::dispatch_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::dispatch_command> *>(command_memory) };
+
+                    vkCmdDispatch(vk_cmd_buffer, command->group_count.x, command->group_count.y, command->group_count.z);
+                } break;
+                case command_type::dispatch_indirect_command: {
+                    auto *command{ reinterpret_cast<recorded_command<command_type::dispatch_indirect_command> *>(command_memory) };
+
+                    VkBuffer const buffer_handle{ resource_cast<vulkan_buffer const>(command->indirect_buffer)->get_handle() };
+
+                    vkCmdDispatchIndirect(vk_cmd_buffer, buffer_handle, command->offset);
+                } break;
                 case command_type::begin_render_pass_command: {
                     auto *command{ reinterpret_cast<recorded_command<command_type::begin_render_pass_command> *>(command_memory) };
 
