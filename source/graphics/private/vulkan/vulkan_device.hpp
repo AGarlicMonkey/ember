@@ -21,6 +21,8 @@ namespace ember::graphics {
 
         queue_family_indices family_indices{};
 
+        limits device_limits{};
+
         memory::unique_ptr<device_memory_allocator> memory_allocator{ nullptr };
 
         memory::unique_ptr<vulkan_resource_factory> factory{ nullptr };
@@ -30,7 +32,7 @@ namespace ember::graphics {
         //FUNCTIONS
     public:
         vulkan_device() = delete;
-        vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices);
+        vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices, limits device_limits);
 
         vulkan_device(vulkan_device const &other)     = delete;
         vulkan_device(vulkan_device &&other) noexcept = delete;
@@ -39,6 +41,8 @@ namespace ember::graphics {
         vulkan_device &operator=(vulkan_device &&other) noexcept = delete;
 
         ~vulkan_device();
+
+        limits const &get_limits() const override;
 
         resource_factory const *get_factory() const override;
         shader_cache *get_shader_cache() override;

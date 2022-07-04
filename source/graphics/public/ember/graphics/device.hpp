@@ -26,9 +26,21 @@ namespace ember::graphics {
      * could be a discrete GPU, an integrated GPU, a virtual GPU or a CPU.
      */
     class device {
+        //TYPES
+    public:
+        struct limits {
+            std::size_t min_uniform_buffer_offset_alignment{ 0 }; /**< Minimum byte alignment between data elements in a buffer being used as a UBO. */
+        };
+
         //FUNCTIONS
     public:
         virtual ~device() = default;
+
+        /**
+         * @brief
+         * @return 
+         */
+        virtual limits const &get_limits() const = 0;
 
         /**
          * @brief Returns the factory object used to create graphics resources.

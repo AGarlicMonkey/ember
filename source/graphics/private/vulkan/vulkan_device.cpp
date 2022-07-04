@@ -54,11 +54,12 @@ namespace {
 }
 
 namespace ember::graphics {
-    vulkan_device::vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices)
+    vulkan_device::vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices, limits device_limits)
         : instance{ instance }
         , physical_device{ physical_device }
         , logical_device{ logical_device }
         , family_indices{ family_indices }
+        , device_limits{ device_limits }
         , queue{ physical_device, logical_device, family_indices } {
         memory_allocator = make_unique<device_memory_allocator>(logical_device, physical_device);
         factory          = make_unique<vulkan_resource_factory>(logical_device, physical_device, this->family_indices, memory_allocator.get());
@@ -73,6 +74,10 @@ namespace ember::graphics {
         cache.reset();
 
         vkDestroyDevice(logical_device, &global_host_allocation_callbacks);
+    }
+
+    device::limits const &vulkan_device::get_limits() const {
+        return device_limits;
     }
 
     resource_factory const *vulkan_device::get_factory() const {

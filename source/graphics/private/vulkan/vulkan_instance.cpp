@@ -257,12 +257,12 @@ namespace ember::graphics {
 #endif
 
             //Score avilable devices. Anything below 0 is considered in-complete and shouldn't be selected
-            ordered_map<std::int32_t, VkPhysicalDevice> device_Scores{};
+            ordered_map<std::int32_t, VkPhysicalDevice> device_scores{};
             for(auto const &physical_device : physical_devices) {
-                device_Scores[vulkan_device::score_physical_device(physical_device, required_device_extensions)] = physical_device;
+                device_scores[vulkan_device::score_physical_device(physical_device, required_device_extensions)] = physical_device;
             }
-            if(device_Scores.rbegin()->first > 0) {
-                physical_device = device_Scores.rbegin()->second;
+            if(device_scores.rbegin()->first > 0) {
+                physical_device = device_scores.rbegin()->second;
             }
             EMBER_THROW_IF_FAILED(physical_device != VK_NULL_HANDLE, device_selection_failed_exception{ "Failed to create initialise Vulkan. Could not find a suitable device." });
 
@@ -340,7 +340,15 @@ namespace ember::graphics {
             };
 
             EMBER_VULKAN_VERIFY_RESULT(vkCreateDevice(physical_device, &create_info, &global_host_allocation_callbacks, &logical_device), "Failed to create logical device for vulkan. ");
-            selected_device = make_unique<vulkan_device>(instance, physical_device, logical_device, queue_family_indices);
+
+            //Generate our own limits struct
+            VkPhysicalDeviceProperties device_poperties{};
+            vkGetPhysicalDeviceProperties(physical_device, &device_poperties);
+            device::limits limits{
+                .min_uniform_buffer_offset_alignment = device_poperties.limits.minUniformBufferOffsetAlignment,
+            };
+
+            selected_device = make_unique<vulkan_device>(instance, physical_device, logical_device, queue_family_indices, limits);
         }
 
 #if EMBER_CORE_ENABLE_PROFILING
