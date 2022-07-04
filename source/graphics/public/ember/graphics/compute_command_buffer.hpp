@@ -88,7 +88,7 @@ namespace ember::graphics::internal {
         scoped_user_marker() = delete;
         scoped_user_marker(compute_command_buffer &buffer, std::string name)
             : buffer{ buffer } {
-            buffer.push_user_marker(std::move(name), maths::vec4f{ 0, 0, 0, 1 });
+            buffer.push_user_marker(std::move(name), maths::vec4f{ 0, 0, 0, 0 });
         }
         scoped_user_marker(compute_command_buffer &buffer, std::string name, maths::vec4f const colour)
             : buffer{ buffer } {
