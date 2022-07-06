@@ -72,3 +72,45 @@ TEST(unique_ptr_tests, destructor_is_properly_called) {
 
     EXPECT_EQ(scope_called, true);
 }
+
+TEST(unique_ptr_tests, ownership_is_properly_transfered) {
+    unique_ptr<std::int32_t> a{ make_unique<std::int32_t>(5) };
+    unique_ptr<std::int32_t> b{};
+
+    ASSERT_NE(a, nullptr);
+    ASSERT_EQ(*a, 5);
+    ASSERT_EQ(b, nullptr);
+
+    b = std::move(a);
+
+    EXPECT_EQ(a, nullptr);
+    EXPECT_NE(b, nullptr);
+    EXPECT_EQ(*b, 5);
+}
+
+TEST(unique_ptr_tests, prior_data_is_destroyed_when_transfering_ownership) {
+    struct test_type {
+        bool &called;
+
+        test_type(bool &called)
+            : called{ called } {
+        }
+        ~test_type() {
+            called = true;
+        }
+    };
+
+    bool a_called{ false };
+    bool b_called{ false };
+
+    unique_ptr<test_type> a{ make_unique<test_type>(a_called) };
+    unique_ptr<test_type> b{ make_unique<test_type>(b_called) };
+
+    EXPECT_FALSE(a_called);
+    EXPECT_FALSE(b_called);
+
+    a = std::move(b);
+
+    EXPECT_TRUE(a_called);
+    EXPECT_FALSE(b_called);
+}
