@@ -114,3 +114,22 @@ TEST(unique_ptr_tests, prior_data_is_destroyed_when_transfering_ownership) {
     EXPECT_TRUE(a_called);
     EXPECT_FALSE(b_called);
 }
+
+TEST(unique_ptr_tests, can_use_custom_deleter) {
+    bool deleter_called_a{ false };
+    bool deleter_called_b{ false };
+    {
+        auto ptr_a = unique_ptr<std::int32_t, std::function<void(std::int32_t *)>>(ember::memory::construct<std::int32_t>(6), [&](std::int32_t *i) {
+            ember::memory::destruct(i);
+            deleter_called_a = true;
+        });
+
+        auto ptr_b{ unique_ptr<std::int32_t, std::function<void(std::int32_t *)>>(ember::memory::construct<std::int32_t>(6), [&](std::int32_t *i) {
+            ember::memory::destruct(i);
+            deleter_called_b = true;
+        })};
+    }
+
+    EXPECT_TRUE(deleter_called_a);
+    EXPECT_TRUE(deleter_called_b);
+}
