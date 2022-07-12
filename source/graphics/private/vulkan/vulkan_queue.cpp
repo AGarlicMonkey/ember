@@ -586,7 +586,10 @@ namespace ember::graphics {
             }
         }
 
-        queue.pending_buffers.erase(std::remove_if(queue.pending_buffers.begin(), queue.pending_buffers.end(), are_buffers_finished), queue.pending_buffers.end());
+        queue.pending_buffers.erase(std::remove_if(queue.pending_buffers.begin(), queue.pending_buffers.end(), [fences_to_reset](pending_buffer_info const &info) {
+                                        return std::find(fences_to_reset.begin(), fences_to_reset.end(), info.fence) != fences_to_reset.end();
+                                    }),
+                                    queue.pending_buffers.end());
 
         if(!fences_to_reset.empty()) {
             vkResetFences(logical_device, fences_to_reset.size(), fences_to_reset.data());
