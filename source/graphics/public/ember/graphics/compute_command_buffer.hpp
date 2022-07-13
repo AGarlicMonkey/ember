@@ -119,7 +119,7 @@ namespace ember::graphics::internal {
         EMBER_PROFILE_SCOPE(name)
 #else
     #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name)
-    #define EMBER_GRAPHICS_SCOPED_MARKER_C(command_buffer, name, colour)
+    #define EMBER_GRAPHICS_SCOPED_MARKER_C(command_buffer, name, r, g, b)
 #endif
 
 #include "compute_command_buffer.inl"
