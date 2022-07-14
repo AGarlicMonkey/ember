@@ -1,4 +1,4 @@
-namespace ember::graphics {
+namespace ember::inline graphics {
     graphics_command_buffer::graphics_command_buffer() = default;
 
     graphics_command_buffer::graphics_command_buffer(graphics_command_buffer &&other) noexcept = default;

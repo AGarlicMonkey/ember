@@ -3,7 +3,7 @@
 #include <cinttypes>
 #include <ember/core/enum.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief 
      */

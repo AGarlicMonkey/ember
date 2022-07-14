@@ -18,19 +18,19 @@
     #endif
 #endif
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class command_buffer;
     class fence;
     class semaphore;
     class swapchain;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_queue {
         //TYPES
     private:
         struct pending_buffer_info {
-            containers::array<VkCommandBuffer> buffers{};
+            array<VkCommandBuffer> buffers{};
             VkFence fence{};
         };
 
@@ -38,14 +38,14 @@ namespace ember::graphics {
             VkQueue handle{ VK_NULL_HANDLE };
             VkCommandPool command_pool{ VK_NULL_HANDLE };//TODO: It would be nice to have a pool per frame and just reset at the beginning but the current abstraction does not allow for that.
 
-            containers::array<VkCommandBuffer> pooled_buffers{};
-            containers::array<VkFence> pooled_fences{};
-            containers::array<pending_buffer_info> pending_buffers{};
+            array<VkCommandBuffer> pooled_buffers{};
+            array<VkFence> pooled_fences{};
+            array<pending_buffer_info> pending_buffers{};
 
 #if EMBER_CORE_ENABLE_PROFILING
             TracyVkCtx profiling_context{ nullptr };
-            containers::stack<tracy::VkCtxScope> scoped_events{};
-            containers::map<std::string, tracy::SourceLocationData> source_datas{};//Bit hack but because of how we do command buffers we need to make our own source locations
+            stack<tracy::VkCtxScope> scoped_events{};
+            map<std::string, tracy::SourceLocationData> source_datas{};//Bit hack but because of how we do command buffers we need to make our own source locations
 #endif
         };
 

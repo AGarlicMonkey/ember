@@ -9,7 +9,7 @@
 #include <string>
 #include <variant>
 
-namespace ember::platform {
+namespace ember::inline platform {
     /**
      * @brief RAII handle to a platform window. Will automatically close
      * the window when out of scope.
@@ -19,7 +19,7 @@ namespace ember::platform {
     public:
         struct descriptor {
             std::string title{ "Ember Window" };
-            maths::vec2u size{ 800, 600 };
+            vec2u size{ 800, 600 };
         };
 
         struct mouse_event {
@@ -38,7 +38,7 @@ namespace ember::platform {
             type type{ type::invalid };
 
             mouse_button button{ mouse_button::none };
-            maths::vec2i pos{ 0, 0 };
+            vec2i pos{ 0, 0 };
         };
 
         struct key_event {
@@ -85,7 +85,7 @@ namespace ember::platform {
          * @brief Returns the size of the window's client region.
          * @return 
          */
-        virtual maths::vec2u get_size() const = 0;
+        virtual vec2u get_size() const = 0;
 
         /**
          * @brief Returns the platform's native window handle.
@@ -101,7 +101,7 @@ namespace ember::platform {
      * @param descriptor 
      * @return 
      */
-    EMBER_API memory::unique_ptr<window> open_window(window::descriptor const &descriptor);
+    EMBER_API unique_ptr<window> open_window(window::descriptor const &descriptor);
 }
 
 #include "window.inl"

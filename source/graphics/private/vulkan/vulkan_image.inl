@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_image::vulkan_image(descriptor desc, VkDevice device, VkImage handle, device_memory_allocator *memory_allocator, device_memory_allocator::chunk const *allocated_chunk)
         : desc{ desc }
         , device{ device }

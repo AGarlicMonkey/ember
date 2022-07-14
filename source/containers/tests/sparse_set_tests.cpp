@@ -1,7 +1,7 @@
 #include <ember/containers/sparse_set.hpp>
 #include <gtest/gtest.h>
 
-using namespace ember::containers;
+using namespace ember;
 
 struct object {
     std::int32_t a{};

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief A synchronisation object used to synchronise graphics operations with the host application.
      */

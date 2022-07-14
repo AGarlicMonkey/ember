@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <ember/core/enum.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class buffer {
         //TYPES
     public:

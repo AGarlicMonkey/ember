@@ -2,10 +2,7 @@
 
 #include "commands.hpp"
 
-using namespace ember::maths;
-using namespace ember::containers;
-
-namespace ember::graphics {
+namespace ember::inline graphics {
     void graphics_command_buffer::begin_render_pass(render_pass const *const render_pass, framebuffer const *const framebuffer, render_area const render_area, array<clear_value> clear_values) {
         record_command<command_type::begin_render_pass_command>(render_pass, framebuffer, render_area, std::move(clear_values));
     }

@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace ember {
+namespace ember::inline core {
     class exception : public std::runtime_error {
     public:
         explicit exception(std::string const &message)

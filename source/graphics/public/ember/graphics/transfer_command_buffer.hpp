@@ -9,12 +9,12 @@
 #include <ember/maths/vector.hpp>
 #include <optional>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class buffer;
     class image;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     enum class queue_type {
         none,
         graphics,
@@ -76,7 +76,7 @@ namespace ember::graphics {
          * @param destination_base_layer If the image is an array and/or a cube map, which index to start the copy from. Otherwise will be 0.
          * @param destination_layer_count If the image is an array and/or a cube map, how many layers to copy. Otherwise will be 1.
          */
-        void copy_buffer_to_image(buffer const *const source, std::size_t const source_offset, image const *const destination, maths::vec3u const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer = 0, std::uint32_t const destination_layer_count = 1);
+        void copy_buffer_to_image(buffer const *const source, std::size_t const source_offset, image const *const destination, vec3u const destination_offset, vec3u const destination_extent, std::uint32_t const destination_base_layer = 0, std::uint32_t const destination_layer_count = 1);
 
         /**
          * @brief Copy the contents of an image into a buffer.
@@ -88,7 +88,7 @@ namespace ember::graphics {
          * @param destination Buffer to copy to.
          * @param destination_offset  Offset into the destination to copy into.
          */
-        void copy_image_to_buffer(image const *const source, maths::vec3i const source_offset, maths::vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer const *const destination, std::size_t const destination_offset);
+        void copy_image_to_buffer(image const *const source, vec3i const source_offset, vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer const *const destination, std::size_t const destination_offset);
 
         /**
          * @brief Creates an execution barrier. Controlling the execution order of commands between pipeline stages.

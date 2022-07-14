@@ -2,7 +2,7 @@
 
 #include <stack>
 
-namespace ember::containers{
+namespace ember::inline containers{
     template<typename T>
     using stack = std::stack<T>;
 }

@@ -5,11 +5,11 @@
 
 #include <ember/memory/unique_ptr.hpp>
 
-namespace ember::platform {
+namespace ember::inline platform {
     class window;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class resource_factory;
     class shader_cache;
     class fence;
@@ -20,7 +20,7 @@ namespace ember::graphics {
     class transfer_queue;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Represents a device that can recieve graphics operations. This device
      * could be a discrete GPU, an integrated GPU, a virtual GPU or a CPU.
@@ -61,7 +61,7 @@ namespace ember::graphics {
          * @param window 
          * @return 
          */
-        virtual memory::unique_ptr<swapchain> create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const = 0;
+        virtual unique_ptr<swapchain> create_swapchain(swapchain::descriptor descriptor, window const &window) const = 0;
 
         /**
          * @brief 

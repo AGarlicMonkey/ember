@@ -20,7 +20,7 @@ namespace {
     }
 
 }
-namespace ember::graphics {
+namespace ember::inline graphics {
     bool operator==(device_memory_allocator::chunk const &lhs, device_memory_allocator::chunk const &rhs) {
         return lhs.offset == rhs.offset &&
             lhs.bytes == rhs.bytes &&

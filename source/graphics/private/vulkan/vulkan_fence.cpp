@@ -1,6 +1,6 @@
 #include "vulkan_fence.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     fence::descriptor const &vulkan_fence::get_descriptor() const {
         return desc;
     }

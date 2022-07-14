@@ -2,7 +2,7 @@
 
 #include "ember/ecs/types.hpp"
 
-namespace ember::ecs::internal {
+namespace ember::inline ecs::internal {
     class component_helpers {
     public:
         virtual void move(std::byte *source, std::byte *destination) const = 0;

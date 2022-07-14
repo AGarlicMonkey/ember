@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_descriptor_set_layout : public descriptor_set_layout {
         //VARIABLES
     private:

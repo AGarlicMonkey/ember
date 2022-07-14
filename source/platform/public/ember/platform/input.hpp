@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::platform {
+namespace ember::inline platform {
     enum class mouse_button {
         none,
         undefined,

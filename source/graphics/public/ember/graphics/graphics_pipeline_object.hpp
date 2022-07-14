@@ -6,7 +6,7 @@
 #include <ember/containers/array.hpp>
 #include <ember/maths/vector.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class render_pass;
     class descriptor_set_layout;
 
@@ -45,8 +45,8 @@ namespace ember::graphics {
 
     struct area_descriptor {
         element_state state{ element_state::fixed }; /**< Dynamic states stop the pipeline object needing to be recreated if changed but require their data to be recorded everyframe. */
-        maths::vec2i position{ 0 };                  /**< Not required if state is dynamic. */
-        maths::vec2u size{ 0 };                      /**< Not required if state is dynamic. */
+        vec2i position{ 0 };                         /**< Not required if state is dynamic. */
+        vec2u size{ 0 };                             /**< Not required if state is dynamic. */
     };
 
     struct rasteriser_descriptor {
@@ -60,7 +60,7 @@ namespace ember::graphics {
     };
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Represents the state of the current graphics pipeline.
      */
@@ -72,7 +72,7 @@ namespace ember::graphics {
             shader const *pixel_shader{ nullptr };
 
             vertex_input_binding_descriptor vertex_input{};
-            containers::array<vertex_attribute_descriptor> vertex_attributes{}; /**< The index of each element maps to the layout(location = x) in the vertex shader. */
+            array<vertex_attribute_descriptor> vertex_attributes{}; /**< The index of each element maps to the layout(location = x) in the vertex shader. */
 
             area_descriptor viewport{};
             area_descriptor scissor{};
@@ -84,8 +84,8 @@ namespace ember::graphics {
 
             render_pass const *render_pass{ nullptr };
 
-            containers::array<descriptor_set_layout const *> descriptor_set_layouts{};
-            containers::array<push_constant_descriptor> push_constants{};
+            array<descriptor_set_layout const *> descriptor_set_layouts{};
+            array<push_constant_descriptor> push_constants{};
         };
 
         //FUNCTIONS

@@ -1,7 +1,7 @@
 #include <ember/maths/vector.hpp>
 #include <gtest/gtest.h>
 
-using namespace ember::maths;
+using namespace ember;
 
 TEST(vector_tests, can_default_construct_a_vector) {
     vec<2, float> v2{};

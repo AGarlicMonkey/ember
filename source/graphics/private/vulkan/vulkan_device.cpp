@@ -23,15 +23,11 @@
 #include <ember/memory/unique_ptr.hpp>
 #include <ember/platform/window.hpp>
 
-using namespace ember::containers;
-using namespace ember::maths;
-using namespace ember::memory;
-
 namespace {
-    bool check_device_extension_support(VkPhysicalDevice device, array<char const *> const &extensions) {
+    bool check_device_extension_support(VkPhysicalDevice device, ember::array<char const *> const &extensions) {
         uint32_t extension_count{ 0 };
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extension_count, nullptr);
-        array<VkExtensionProperties> available_extensions(extension_count);
+        ember::array<VkExtensionProperties> available_extensions(extension_count);
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extension_count, available_extensions.data());
 
         for(char const *extensionName : extensions) {
@@ -53,7 +49,7 @@ namespace {
     }
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_device::vulkan_device(VkInstance instance, VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices, limits device_limits)
         : instance{ instance }
         , physical_device{ physical_device }
@@ -88,7 +84,7 @@ namespace ember::graphics {
         return cache.get();
     }
 
-    unique_ptr<swapchain> vulkan_device::create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const {
+    unique_ptr<swapchain> vulkan_device::create_swapchain(swapchain::descriptor descriptor, window const &window) const {
 #if EMBER_PLATFORM_WIN32
         VkWin32SurfaceCreateInfoKHR const surface_create_info{
             .sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,

@@ -3,13 +3,13 @@
 #include <ember/core/log.hpp>
 
 namespace {
-    template<ember::graphics::command_type type>
+    template<ember::command_type type>
     void do_destruct(std::byte *const command_memory) {
-        reinterpret_cast<ember::graphics::recorded_command<type> *>(command_memory)->~recorded_command<type>();
+        reinterpret_cast<ember::recorded_command<type> *>(command_memory)->~recorded_command<type>();
     }
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     std::size_t get_size_of_command(command_type const type) {
         switch(type) {
             // clang-format off

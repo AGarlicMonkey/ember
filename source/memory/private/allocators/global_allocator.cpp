@@ -59,7 +59,7 @@ namespace {
     }
 }
 
-namespace ember::memory {
+namespace ember::inline memory {
     global_allocator::global_allocator(std::size_t initial_memory_size)
         : size{ initial_memory_size } {
         create_new_arena(initial_memory_size);

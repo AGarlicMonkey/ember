@@ -2,7 +2,7 @@
 
 #include <ember/core/exception.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class graphics_exception : public exception {
     public:
         using exception::exception;

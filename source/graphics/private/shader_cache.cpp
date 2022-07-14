@@ -6,22 +6,20 @@
 #include <fstream>
 #include <shaderc/shaderc.hpp>
 
-using namespace ember::containers;
-
 EMBER_LOG_CATEGORY(EmberGraphicsShaderCompiler);
 
 namespace {
     std::filesystem::path const default_save_dir{ std::filesystem::current_path() };
 
-    ember::graphics::shader_cache *instance{ nullptr };
+    ember::shader_cache *instance{ nullptr };
 
-    ember::containers::array<char> read_file(std::filesystem::path const &file_path) {
+    ember::array<char> read_file(std::filesystem::path const &file_path) {
         //Start at the end so we can get the file size
         std::ifstream file{ file_path.c_str(), std::ios::ate | std::ios::binary };
-        EMBER_THROW_IF_FAILED(file.is_open(), ember::graphics::shader_compilation_failed_exception("Failed to open shader file.", file_path.filename().string()));
+        EMBER_THROW_IF_FAILED(file.is_open(), ember::shader_compilation_failed_exception("Failed to open shader file.", file_path.filename().string()));
 
         auto const file_size{ file.tellg() };
-        array<char> buffer(static_cast<std::size_t>(file_size));
+        ember::array<char> buffer(static_cast<std::size_t>(file_size));
 
         file.seekg(0);
         file.read(buffer.data(), static_cast<std::streamsize>(file_size));
@@ -31,13 +29,13 @@ namespace {
         return buffer;
     }
 
-    shaderc_shader_kind convert_shader_stage(ember::graphics::shader::stage const shader_stage) {
+    shaderc_shader_kind convert_shader_stage(ember::shader::stage const shader_stage) {
         switch(shader_stage) {
-            case ember::graphics::shader::stage::vertex:
+            case ember::shader::stage::vertex:
                 return shaderc_vertex_shader;
-            case ember::graphics::shader::stage::pixel:
+            case ember::shader::stage::pixel:
                 return shaderc_fragment_shader;
-            case ember::graphics::shader::stage::compute:
+            case ember::shader::stage::compute:
                 return shaderc_compute_shader;
             default:
                 EMBER_CHECK(false);
@@ -46,7 +44,7 @@ namespace {
     }
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     void shader_cache::add_compile_job(std::string const &shader_name, std::filesystem::path const &source_path, shader::stage const shader_stage) {
         EMBER_THROW_IF_FAILED(source_path.has_filename(), shader_compilation_failed_exception("Failed to compile shader. source_path is not a file", source_path.string()));
 

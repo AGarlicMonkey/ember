@@ -1,7 +1,7 @@
 #include <ember/maths/matrix.hpp>
 #include <gtest/gtest.h>
 
-using namespace ember::maths;
+using namespace ember;
 
 TEST(matrix_tests, can_create_default_matrix) {
     mat4f matrix{};

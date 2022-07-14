@@ -1,5 +1,5 @@
 
-namespace ember::maths {
+namespace ember::inline maths {
     namespace internal {
         template<std::size_t size>
         struct size_to_int_type;

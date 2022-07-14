@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     enum class descriptor_type {
         uniform_buffer,
         storage_buffer,

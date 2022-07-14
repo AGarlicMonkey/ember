@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace ember::ecs {
+namespace ember::inline ecs {
     component_manager::component_manager() = default;
 
     component_manager::component_manager(component_manager &&other) noexcept = default;
@@ -18,7 +18,7 @@ namespace ember::ecs {
         component_id_t const component_id{ id_generator::get<component_t>() };
 
         if(!component_helper_map.contains(component_id)) {
-            component_helper_map[component_id] = memory::make_unique<internal::component_helpers_impl<component_t>>();
+            component_helper_map[component_id] = make_unique<internal::component_helpers_impl<component_t>>();
         }
 
         archetype *new_archetype{ nullptr };

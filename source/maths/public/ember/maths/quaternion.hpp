@@ -3,7 +3,7 @@
 #include "concepts.hpp"
 
 //Quaternion types
-namespace ember::maths {
+namespace ember::inline maths {
     template<number T>
     struct quat {
         T x{ 0 };

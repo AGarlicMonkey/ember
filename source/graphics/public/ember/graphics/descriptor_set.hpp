@@ -6,13 +6,13 @@
 #include <cinttypes>
 #include <cstddef>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class buffer;
     class image_view;
     class sampler;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Used to associate data into a binding inside a shader.
      * @details A 'set' is defined in the shader by: layout(set = 0, binding = 1). Whenever

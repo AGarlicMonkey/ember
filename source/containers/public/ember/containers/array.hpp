@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <iterator>
 
-namespace ember::containers::internal {
+namespace ember::inline containers::internal {
     template<typename array_type>
     class const_array_iterator {
         //TYPES
@@ -145,7 +145,7 @@ namespace ember::containers::internal {
     };
 }
 
-namespace ember::containers {
+namespace ember::inline containers {
     /**
      * @brief Dynamically sized contiguous array of type T.
      * @tparam T 

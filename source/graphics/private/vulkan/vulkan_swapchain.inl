@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_swapchain::~vulkan_swapchain() {
         vkDestroySwapchainKHR(device, handle, &global_host_allocation_callbacks);
         vkDestroySurfaceKHR(instance, surface, &global_host_allocation_callbacks);

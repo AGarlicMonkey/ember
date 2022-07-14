@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_graphics_pipeline_object : public graphics_pipeline_object {
         //VARIABLES
     private:

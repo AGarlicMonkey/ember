@@ -1,6 +1,6 @@
 #include <ember/core/log.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     template<typename dest_type, typename source_type>
     dest_type *resource_cast(source_type *source) {
 #if EMBER_GRAPHICS_USAGE_VALIDATION

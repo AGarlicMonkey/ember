@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Describes how a shader should sample an image
      */

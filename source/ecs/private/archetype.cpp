@@ -2,8 +2,8 @@
 
 #include <ember/memory/memory.hpp>
 
-namespace ember::ecs {
-    archetype::archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map)
+namespace ember::inline ecs {
+    archetype::archetype(archetype_id_t id, map<component_id_t, unique_ptr<internal::component_helpers>> *component_helper_map)
         : id{ std::move(id) }
         , component_helper_map{ component_helper_map } {
         component_data.stride = 0;

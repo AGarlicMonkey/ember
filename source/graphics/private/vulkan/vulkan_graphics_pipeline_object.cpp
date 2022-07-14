@@ -2,7 +2,7 @@
 
 #include "ember/core/log.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     graphics_pipeline_object::descriptor const &vulkan_graphics_pipeline_object::get_descriptor() const {
         return desc;
     }

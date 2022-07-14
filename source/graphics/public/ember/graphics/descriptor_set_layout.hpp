@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <ember/containers/array.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Describes a single binding within a descriptor set
      */
@@ -19,7 +19,7 @@ namespace ember::graphics {
     };
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Describes the layout of an entire descriptor_set that will be bound into a pipeline object.
      * @details A 'set' is defined in the shader by: layout(set = 0, binding = 1). This
@@ -33,7 +33,7 @@ namespace ember::graphics {
         //VARIABLES
     public:
         struct descriptor {
-            containers::array<descriptor_set_binding_info> bindings{};
+            array<descriptor_set_binding_info> bindings{};
         };
 
         //FUNCTIONS

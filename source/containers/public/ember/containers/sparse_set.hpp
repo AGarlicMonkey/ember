@@ -2,7 +2,7 @@
 
 #include "ember/containers/array.hpp"
 
-namespace ember::containers {
+namespace ember::inline containers {
     template<typename T>
     concept integral_t = std::is_integral_v<T>;
 

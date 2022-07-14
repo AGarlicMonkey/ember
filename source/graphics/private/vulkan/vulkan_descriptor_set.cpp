@@ -7,7 +7,7 @@
 #include "vulkan_image_view.hpp"
 #include "vulkan_sampler.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     void vulkan_descriptor_set::write(buffer const &buffer, std::size_t const offset, std::size_t const bytes, descriptor_type const type, std::uint32_t const slot) {
         VkBuffer const buffer_handle{ resource_cast<vulkan_buffer const>(&buffer)->get_handle() };
 

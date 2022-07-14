@@ -22,9 +22,6 @@
 #include <ember/containers/ordered_map.hpp>
 #include <ember/containers/set.hpp>
 
-using namespace ember::containers;
-using namespace ember::memory;
-
 EMBER_LOG_CATEGORY(Vulkan)
 
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
@@ -72,11 +69,11 @@ namespace {
         }
     }
 
-    bool check_validation_layer_support(array<char const *> const &validation_layers) {
+    bool check_validation_layer_support(ember::array<char const *> const &validation_layers) {
         std::uint32_t layer_count{ 0 };
         vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
 
-        array<VkLayerProperties> available_layers(layer_count);
+        ember::array<VkLayerProperties> available_layers(layer_count);
         vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
 
         for(char const *layerName : validation_layers) {
@@ -98,7 +95,7 @@ namespace {
     }
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_instance::vulkan_instance(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger, unique_ptr<vulkan_device> device)
         : instance{ instance }
         , debug_messenger{ debug_messenger }

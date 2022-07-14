@@ -3,7 +3,7 @@
 #include <ember/memory/memory.hpp>
 #include <cstring>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     void *alloc(void *user_data, std::size_t size, std::size_t alignment, VkSystemAllocationScope allocation_scope) {
         return memory::alloc(size, alignment);
     }

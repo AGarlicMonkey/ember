@@ -3,7 +3,7 @@
 #include <cinttypes>
 #include <ember/core/log.hpp>
 
-namespace ember::maths {
+namespace ember::inline maths {
     namespace internal {
         template<size_t N, std::floating_point T>
         mat<N, N, T> get_cofactor(mat<N, N, T> const &m, int32_t p, int32_t q, int32_t n) {

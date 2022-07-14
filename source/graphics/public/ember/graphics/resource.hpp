@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     enum class sharing_mode {
         exclusive, /**< Can only be accessed by a single queue type at a time. The ownership must be explicitly transfered between queues. */
         concurrent /**< Can be accessed between different queue types without transferring ownership. */

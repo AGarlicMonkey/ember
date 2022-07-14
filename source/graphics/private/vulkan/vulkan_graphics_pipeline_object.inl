@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_graphics_pipeline_object::vulkan_graphics_pipeline_object(descriptor desc, VkDevice device, VkPipeline pipeline_handle, VkPipelineLayout pipeline_layout_handle)
         : desc{ desc }
         , device{ device }

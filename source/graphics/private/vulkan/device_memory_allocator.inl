@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     device_memory_allocator::block::block(VkDevice device, VkDeviceMemory memory, VkDeviceSize bytes, std::uint32_t memory_type_index)
         : device{ device }
         , memory{ memory }

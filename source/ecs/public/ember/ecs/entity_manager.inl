@@ -1,6 +1,6 @@
 #include <ember/core/log.hpp>
 
-namespace ember::ecs {
+namespace ember::inline ecs {
     entity_manager::entity_manager() = default;
 
     entity_manager::entity_manager(entity_manager &&other) noexcept = default;

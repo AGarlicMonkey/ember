@@ -10,8 +10,6 @@
 
 EMBER_LOG_CATEGORY(EmberWindowWin32);
 
-using namespace ember::maths;
-
 namespace {
     /**
      * @brief Maps keys like shift/control/alt to their left and right versions. Windows does not do this by default.
@@ -37,14 +35,14 @@ namespace {
     }
 }
 
-namespace ember::platform {
+namespace ember::inline platform {
     class win32_window : public window {
         //VARIABLES
     private:
         HWND window_handle{ nullptr };
 
         static std::uint32_t constexpr max_event_queue_size{ 16 };//Keep an upper limit on cached events incase no one polls a window for a while.
-        containers::queue<event> event_queue{};
+        queue<event> event_queue{};
 
         //FUNCTIONS
     public:
@@ -106,7 +104,7 @@ namespace ember::platform {
             window_handle = nullptr;
         }
 
-        maths::vec2u get_size() const override {
+        vec2u get_size() const override {
             EMBER_CHECK(is_open());
 
             RECT window_rect{};
@@ -210,7 +208,7 @@ namespace {
      * @return 
      */
     LRESULT CALLBACK forward_message(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param) {
-        auto *const window{ reinterpret_cast<ember::platform::win32_window *>(GetWindowLongPtr(window_handle, GWLP_USERDATA)) };
+        auto *const window{ reinterpret_cast<ember::win32_window *>(GetWindowLongPtr(window_handle, GWLP_USERDATA)) };
         return window->handle_message(window_handle, message, w_param, l_param);
     }
 
@@ -234,8 +232,8 @@ namespace {
     }
 }
 
-namespace ember::platform {
-    memory::unique_ptr<window> open_window(window::descriptor const &descriptor) {
+namespace ember::inline platform {
+    unique_ptr<window> open_window(window::descriptor const &descriptor) {
         HINSTANCE instance{ GetModuleHandle(nullptr) };
 
         WNDCLASSEX window_class{

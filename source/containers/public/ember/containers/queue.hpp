@@ -2,7 +2,7 @@
 
 #include <queue>
 
-namespace ember::containers {
+namespace ember::inline containers {
     template<typename T>
     using queue = std::queue<T>;
 }

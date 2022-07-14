@@ -7,17 +7,17 @@
 #include <ember/containers/map.hpp>
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_shader;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_shader_cache : public shader_cache {
         //VARIABLES
     private:
         VkDevice device{ VK_NULL_HANDLE };
 
-        containers::map<std::string, memory::unique_ptr<vulkan_shader>> compiled_modules{};
+        map<std::string, unique_ptr<vulkan_shader>> compiled_modules{};
 
         //FUNCTIONS
     public:

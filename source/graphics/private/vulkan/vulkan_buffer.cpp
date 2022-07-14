@@ -1,6 +1,6 @@
 #include "vulkan_buffer.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     buffer::descriptor const &vulkan_buffer::get_descriptor() const {
         return desc;
     }

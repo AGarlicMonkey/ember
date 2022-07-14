@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <ember/containers/array.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class command_buffer {
         //TYPES
     public:
@@ -23,7 +23,7 @@ namespace ember::graphics {
             iterator(iterator const &other)     = delete;
             iterator(iterator &&other) noexcept = delete;
 
-            iterator &operator=(iterator const &other) = delete;
+            iterator &operator=(iterator const &other)     = delete;
             iterator &operator=(iterator &&other) noexcept = delete;
 
             inline ~iterator();
@@ -52,7 +52,7 @@ namespace ember::graphics {
     private:
         command *head{ nullptr };
         command *current{ nullptr };
-        containers::array<arena> arenas{};
+        array<arena> arenas{};
         arena *current_arena{ nullptr };
 
         //FUNCTIONS

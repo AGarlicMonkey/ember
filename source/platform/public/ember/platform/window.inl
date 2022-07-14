@@ -1,4 +1,4 @@
-namespace ember::platform {
+namespace ember::inline platform {
     window::window() = default;
 
     window::window(window &&other) noexcept = default;

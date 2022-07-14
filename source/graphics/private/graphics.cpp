@@ -6,8 +6,8 @@
 
 EMBER_LOG_CATEGORY(EmberGraphics)
 
-namespace ember::graphics {
-    memory::unique_ptr<instance> create_instance(api api) {
+namespace ember::inline graphics {
+    unique_ptr<instance> create_instance(api api) {
 #if EMBER_GRAPHICS_DEVICE_VALIDATION
         EMBER_LOG(EmberGraphics, log_level::debug, "Initialising with device validation enabled.");
 #endif

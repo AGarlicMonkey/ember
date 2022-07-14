@@ -2,11 +2,11 @@
 
 #include <ember/containers/array.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class device;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Represents an instance of a graphics API. The instance can
      * be used to quiery for and retrieve graphics devices to use for rendering.

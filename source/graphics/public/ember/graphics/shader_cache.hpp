@@ -4,20 +4,20 @@
 
 #include <cinttypes>
 #include <ember/containers/array.hpp>
+#include <ember/containers/map.hpp>
 #include <ember/core/export.hpp>
 #include <filesystem>
 #include <string>
-#include <ember/containers/map.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief 
      */
     class EMBER_API shader_cache {
         //VARIABLES
     private:
-        inline static containers::map<std::string, std::string> raw_shaders{};                           /**< Contains raw glsl shader code with the name as the key. */
-        inline static containers::map<std::string, containers::array<std::uint32_t>> compiled_shaders{}; /**< Contains SPIR-V byte code compiled shader with the name as key. */
+        inline static map<std::string, std::string> raw_shaders{};               /**< Contains raw glsl shader code with the name as the key. */
+        inline static map<std::string, array<std::uint32_t>> compiled_shaders{}; /**< Contains SPIR-V byte code compiled shader with the name as key. */
 
         //FUNCTIONS
     public:
@@ -49,10 +49,10 @@ namespace ember::graphics {
         virtual shader *get_shader(std::string const &shader_name) = 0;
 
     protected:
-        inline containers::array<std::uint32_t> get_spriv_for_shader(std::string const &shader_name);
+        inline array<std::uint32_t> get_spriv_for_shader(std::string const &shader_name);
 
     private:
-        static containers::array<std::uint32_t> compile(std::string const &shader_name, std::string const &shader_source, shader::stage const shader_stage);
+        static array<std::uint32_t> compile(std::string const &shader_name, std::string const &shader_source, shader::stage const shader_stage);
     };
 }
 

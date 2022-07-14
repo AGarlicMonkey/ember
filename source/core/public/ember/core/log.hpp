@@ -15,7 +15,7 @@ namespace spdlog {
     }
 }
 
-namespace ember {
+namespace ember::inline core {
     enum class log_level {
         trace,
         debug,
@@ -26,7 +26,7 @@ namespace ember {
     };
 }
 
-namespace ember {
+namespace ember::inline core {
     class EMBER_API logger {
         //VARIABLES
     private:
@@ -64,7 +64,7 @@ namespace ember {
         {                                                                                 \
             auto sink{ std::make_shared<spdlog::sinks::basic_file_sink_mt>(name, true) }; \
             sink->set_pattern("[%D %T][%l] %v");                                          \
-            ::ember::logger::get().add_sink(std::move(sink));                             \
+            ::ember::core::logger::get().add_sink(std::move(sink));                       \
         }
 
     #define EMBER_INTERNAL_EXPAND_CATEGORY(category_name) LOG_CATEGORY##category_name
@@ -73,7 +73,7 @@ namespace ember {
             static std::string_view constexpr name{ #category_name }; \
         };
 
-    #define EMBER_LOG(category, level, msg, ...) ::ember::logger::get().log(EMBER_INTERNAL_EXPAND_CATEGORY(category)::name, level, msg, __VA_ARGS__)
+    #define EMBER_LOG(category, level, msg, ...) ::ember::core::logger::get().log(EMBER_INTERNAL_EXPAND_CATEGORY(category)::name, level, msg, __VA_ARGS__)
 
 #else
     #define EBMER_LOG_ADD_FILE_SINK(name)
@@ -90,8 +90,8 @@ namespace ember {
 #if EMBER_CORE_ENABLE_ASSERTIONS
     #ifdef _MSC_VER
         #if EMBER_CORE_ENABLE_LOGGING
-            #define EMBER_DEBUG_BREAK           \
-                ::ember::logger::get().flush(); \
+            #define EMBER_DEBUG_BREAK                 \
+                ::ember::core::logger::get().flush(); \
                 __debugbreak()
         #else
             #define EMBER_DEBUG_BREAK \
@@ -103,22 +103,22 @@ namespace ember {
 
 EMBER_LOG_CATEGORY(EmberAssertion)
 
-    #define EMBER_CHECK(expression)                                                                              \
-        {                                                                                                        \
-            if(!(expression)) {                                                                                  \
-                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "Assertion failed: {0}", #expression);   \
-                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tfunction: {0}", EMBER_FUNCTION_NAME); \
-                EMBER_DEBUG_BREAK;                                                                               \
-            }                                                                                                    \
+    #define EMBER_CHECK(expression)                                                                                    \
+        {                                                                                                              \
+            if(!(expression)) {                                                                                        \
+                EMBER_LOG(EmberAssertion, ::ember::core::log_level::critical, "Assertion failed: {0}", #expression);   \
+                EMBER_LOG(EmberAssertion, ::ember::core::log_level::critical, "\tfunction: {0}", EMBER_FUNCTION_NAME); \
+                EMBER_DEBUG_BREAK;                                                                                     \
+            }                                                                                                          \
         }
-    #define EMBER_CHECK_MSG(expression, msg, ...)                                                                \
-        {                                                                                                        \
-            if(!(expression)) {                                                                                  \
-                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "Assertion failed: {0}", #expression);   \
-                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tmessage: {0}", msg, __VA_ARGS__);     \
-                EMBER_LOG(EmberAssertion, ::ember::log_level::critical, "\tfunction: {0}", EMBER_FUNCTION_NAME); \
-                EMBER_DEBUG_BREAK;                                                                               \
-            }                                                                                                    \
+    #define EMBER_CHECK_MSG(expression, msg, ...)                                                                      \
+        {                                                                                                              \
+            if(!(expression)) {                                                                                        \
+                EMBER_LOG(EmberAssertion, ::ember::core::log_level::critical, "Assertion failed: {0}", #expression);   \
+                EMBER_LOG(EmberAssertion, ::ember::core::log_level::critical, "\tmessage: {0}", msg, __VA_ARGS__);     \
+                EMBER_LOG(EmberAssertion, ::ember::core::log_level::critical, "\tfunction: {0}", EMBER_FUNCTION_NAME); \
+                EMBER_DEBUG_BREAK;                                                                                     \
+            }                                                                                                          \
         }
 
     #define EMBER_VERIFY(expression) EMBER_CHECK(expression)

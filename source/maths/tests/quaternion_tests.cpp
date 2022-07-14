@@ -1,7 +1,7 @@
 #include <ember/maths/quaternion.hpp>
 #include <gtest/gtest.h>
 
-using namespace ember::maths;
+using namespace ember;
 
 TEST(quaternion_tests, can_default_construct_a_quaternion) {
     quatf q{};

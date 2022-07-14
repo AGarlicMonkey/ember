@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_descriptor_set_layout::vulkan_descriptor_set_layout(descriptor desc, VkDevice device, VkDescriptorSetLayout handle)
         : desc{ desc }
         , device{ device }

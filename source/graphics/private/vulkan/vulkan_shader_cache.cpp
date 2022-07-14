@@ -3,10 +3,7 @@
 #include "host_memory_allocator.hpp"
 #include "verification.hpp"
 
-using namespace ember::containers;
-using namespace ember::memory;
-
-namespace ember::graphics {
+namespace ember::inline graphics {
     shader *vulkan_shader_cache::get_shader(std::string const &shader_name) {
         if(!compiled_modules.contains(shader_name)) {
             array<std::uint32_t> const shader_spirv{ get_spriv_for_shader(shader_name) };

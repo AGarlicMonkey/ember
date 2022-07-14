@@ -1,6 +1,6 @@
 #include "vulkan_shader.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     VkShaderStageFlags vulkan_shader::convert_stage(stage const stage) {
         VkShaderStageFlags flags{ 0 };
         if((stage & stage::vertex) != 0) {

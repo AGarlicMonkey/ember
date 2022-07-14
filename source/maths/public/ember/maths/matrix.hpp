@@ -8,7 +8,7 @@
 #include <vector>
 
 //Matrix types
-namespace ember::maths {
+namespace ember::inline maths {
     template<size_t R, size_t C, number T>
     struct mat {
         //TYPES
@@ -18,7 +18,7 @@ namespace ember::maths {
 
         //VARIABLES
     public:
-        containers::static_array<col_type, R> data{};
+        static_array<col_type, R> data{};
 
         //FUNCTIONS
     public:

@@ -8,20 +8,20 @@
 #include <span>
 #include <variant>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class render_pass;
     class framebuffer;
     class graphics_pipeline_object;
     class swapchain;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     struct render_area {
-        maths::vec2i origin{};
-        maths::vec2u size{};
+        vec2i origin{};
+        vec2u size{};
     };
 
-    using colour_value = maths::vec4f;
+    using colour_value = vec4f;
 
     struct depth_stencil_value {
         float depth{ 0.0f };
@@ -35,7 +35,7 @@ namespace ember::graphics {
     };
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Can record transfer, compute and graphics operations.
      */
@@ -59,7 +59,7 @@ namespace ember::graphics {
          * @param render_area What area to render to in the framebuffer.
          * @param clear_values An a array of clear values. Each element in the array represents an attachment in the framebuffer.
          */
-        void begin_render_pass(render_pass const *const render_pass, framebuffer const *const framebuffer, render_area const render_area, containers::array<clear_value> clear_values);
+        void begin_render_pass(render_pass const *const render_pass, framebuffer const *const framebuffer, render_area const render_area, array<clear_value> clear_values);
         /**
          * @brief Ends the current render pass. Must be called before starting a new one.
          */
@@ -70,13 +70,13 @@ namespace ember::graphics {
          * @param position 
          * @param size 
          */
-        void set_viewport(maths::vec2i const position, maths::vec2u const size, float const min_depth = 0.0f, float const max_depth = 1.0f);
+        void set_viewport(vec2i const position, vec2u const size, float const min_depth = 0.0f, float const max_depth = 1.0f);
         /**
          * @brief
          * @param position 
          * @param size 
          */
-        void set_scissor(maths::vec2i const position, maths::vec2u const size);
+        void set_scissor(vec2i const position, vec2u const size);
 
         /**
          * @brief 

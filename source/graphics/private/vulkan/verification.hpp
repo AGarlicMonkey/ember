@@ -7,7 +7,7 @@
     #include <string>
     #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     inline std::string convert_result(VkResult const result) {
         switch(result) {
             case VK_ERROR_OUT_OF_HOST_MEMORY:

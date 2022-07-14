@@ -6,7 +6,7 @@
 #include <ember/containers/array.hpp>
 #include <ember/core/export.hpp>
 
-namespace ember::ecs {
+namespace ember::inline ecs {
     /**
      * @brief Manages all entities and their components.
      */
@@ -15,7 +15,7 @@ namespace ember::ecs {
     private:
         inline static entity next_entity{ 0 };
 
-        containers::array<entity> entities{};
+        array<entity> entities{};
         component_manager components{};
 
         //FUNCTIONS

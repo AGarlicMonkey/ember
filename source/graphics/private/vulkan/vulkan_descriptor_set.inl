@@ -1,4 +1,4 @@
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_descriptor_set::vulkan_descriptor_set(VkDevice device, VkDescriptorSet handle)
         : device{ device }
         , handle{ handle } {

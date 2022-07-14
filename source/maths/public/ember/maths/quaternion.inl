@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace ember::maths {
+namespace ember::inline maths {
     template<number T>
     constexpr quat<T> operator+(quat<T> const &a, quat<T> const &b) {
         return { a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w };

@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_semaphore : public semaphore {
         //VARIABLES
     private:

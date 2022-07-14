@@ -6,7 +6,7 @@
 
 static ember::logger *instance{ nullptr };
 
-namespace ember {
+namespace ember::inline core {
     logger::logger() {
         //Always add a console sink by default. Any other sinks should be added manually.
         auto console_sink{ std::make_shared<spdlog::sinks::stdout_color_sink_mt>() };

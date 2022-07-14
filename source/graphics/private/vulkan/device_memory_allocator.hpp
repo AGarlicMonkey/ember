@@ -5,7 +5,7 @@
 #include <ember/containers/array.hpp>
 #include <ember/containers/linked_list.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Handles allocating memory from vulkan's VkDeviceMemory.
      * @details memory_allocator pools blocks of 256MB. It will sub-allocate
@@ -43,7 +43,7 @@ namespace ember::graphics {
             VkDeviceSize bytes{ 0 };
             std::uint32_t memory_type_index{ 0 };
 
-            containers::linked_list<chunk> chunks{};
+            linked_list<chunk> chunks{};
 
             //FUNCTIONS
         public:
@@ -73,7 +73,7 @@ namespace ember::graphics {
         VkDevice logical_device{ VK_NULL_HANDLE };
         VkPhysicalDevice physical_device{ VK_NULL_HANDLE };
 
-        containers::array<block> memory_blocks{};
+        array<block> memory_blocks{};
 
         //FUNCTIONS
     public:

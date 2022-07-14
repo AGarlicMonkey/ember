@@ -1,7 +1,7 @@
 #include <cmath>
 #include <ember/core/log.hpp>
 
-namespace ember::maths {
+namespace ember::inline maths {
     template<number T>
     constexpr vec<2, T> operator+(vec<2, T> const &a, vec<2, T> const &b) {
         return { a.x + b.x, a.y + b.y };

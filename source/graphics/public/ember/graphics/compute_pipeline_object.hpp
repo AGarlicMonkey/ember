@@ -4,20 +4,20 @@
 
 #include <ember/containers/array.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class shader;
     class descriptor_set_layout;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class compute_pipeline_object {
         //TYPES
     public:
         struct descriptor {
             shader const *shader{ nullptr };
 
-            containers::array<descriptor_set_layout const *> descriptor_set_layouts{};
-            containers::array<push_constant_descriptor> push_constants{};
+            array<descriptor_set_layout const *> descriptor_set_layouts{};
+            array<push_constant_descriptor> push_constants{};
         };
 
         //FUNCTIONS

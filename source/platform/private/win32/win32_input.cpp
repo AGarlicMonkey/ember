@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-namespace ember::platform {
+namespace ember::inline platform {
     mouse_button convert_button(std::uint8_t button_code) {
         switch(GET_KEYSTATE_WPARAM(button_code)) {
             case MK_LBUTTON:

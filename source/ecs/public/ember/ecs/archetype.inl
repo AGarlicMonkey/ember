@@ -3,7 +3,7 @@
 #include <ember/core/log.hpp>
 #include <numeric>
 
-namespace ember::ecs {
+namespace ember::inline ecs {
     archetype_id_t const &archetype::get_id() const {
         return id;
     }

@@ -2,7 +2,7 @@
 
 #include "log.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     VkDescriptorType convert_descriptor_type(descriptor_type const type) {
         switch(type) {
             case descriptor_type::uniform_buffer:

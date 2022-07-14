@@ -1,6 +1,6 @@
 #include "ember/memory/memory.hpp"
 
-namespace ember::memory {
+namespace ember::inline memory {
     namespace internal {
         template<typename type_t>
         void default_deleter::operator()(type_t *object) {

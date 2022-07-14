@@ -1,7 +1,7 @@
 #include <ember/ecs/entity_manager.hpp>
 #include <gtest/gtest.h>
 
-using namespace ember::ecs;
+using namespace ember;
 
 TEST(entity_tests, entity_default_inits_to_null_entity) {
     entity entity{};

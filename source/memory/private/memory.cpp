@@ -2,7 +2,7 @@
 
 #include "allocators/global_allocator.hpp"
 
-namespace ember::memory {
+namespace ember::inline memory {
     std::byte *alloc(std::size_t const bytes, std::size_t const alignment) {
 #if !EMBER_MEMORY_DISABLE_GLOBAL_ALLOCATOR
         return global_allocator::get().alloc(bytes, alignment);

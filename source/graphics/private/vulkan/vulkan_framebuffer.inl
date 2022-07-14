@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_framebuffer::vulkan_framebuffer(descriptor desc, VkDevice device, VkFramebuffer handle)
         : desc{ desc }
         , device{ device }

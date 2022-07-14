@@ -5,10 +5,7 @@
 #include "vulkan_descriptor_set.hpp"
 #include "vulkan_descriptor_set_layout.hpp"
 
-using namespace ember::memory;
-using namespace ember::containers;
-
-namespace ember::graphics {
+namespace ember::inline graphics {
     descriptor_pool::descriptor const &vulkan_descriptor_pool::get_descriptor() const {
         return desc;
     }

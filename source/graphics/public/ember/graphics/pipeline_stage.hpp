@@ -1,6 +1,6 @@
 #pragma once
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     enum class pipeline_stage {
         //External Stages
         top, /**< Before any following stages commence. */

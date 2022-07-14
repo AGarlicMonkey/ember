@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_image_view : public image_view {
         //VARIABLES
     private:

@@ -7,7 +7,7 @@
 #include <ember/core/enum.hpp>
 #include <ember/memory/unique_ptr.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class descriptor_set;
     class descriptor_set_layout;
 
@@ -17,7 +17,7 @@ namespace ember::graphics {
     };
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Used to allocate descriptor_sets. A descriptor_pool is not tied to a specific descriptor_set_layout.
      */
@@ -31,8 +31,8 @@ namespace ember::graphics {
         };
 
         struct descriptor {
-            containers::array<descriptor_type_info> descriptor_types{}; /**< What and how many types to pool for allocation. */
-            std::uint32_t max_sets{ 1 };                                /**< The maximum amount of sets that can be allocated from this pool. */
+            array<descriptor_type_info> descriptor_types{}; /**< What and how many types to pool for allocation. */
+            std::uint32_t max_sets{ 1 };                    /**< The maximum amount of sets that can be allocated from this pool. */
             flag flags{ flag::none };
         };
 
@@ -47,13 +47,13 @@ namespace ember::graphics {
          * @param layout 
          * @return 
          */
-        virtual memory::unique_ptr<descriptor_set> allocate_descriptor_set(descriptor_set_layout const &layout) = 0;
+        virtual unique_ptr<descriptor_set> allocate_descriptor_set(descriptor_set_layout const &layout) = 0;
         /**
          * @brief Allocates multiple descriptor sets from this pool.
          * @param layouts 
          * @return 
          */
-        virtual containers::array<memory::unique_ptr<descriptor_set>> allocate_descriptor_sets(containers::array<descriptor_set_layout const *> const &layouts) = 0;
+        virtual array<unique_ptr<descriptor_set>> allocate_descriptor_sets(array<descriptor_set_layout const *> const &layouts) = 0;
 
         /**
          * @brief Reset all allocated sets from this pool. 

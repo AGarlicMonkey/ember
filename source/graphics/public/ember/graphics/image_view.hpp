@@ -2,7 +2,7 @@
 
 #include <cinttypes>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Views a subset of an image.
      * @details images are not directly accessed by shaders for reading / writing.

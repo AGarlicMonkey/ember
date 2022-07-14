@@ -5,11 +5,7 @@
 #include "vulkan_image.hpp"
 #include "vulkan_semaphore.hpp"
 
-using namespace ember::containers;
-using namespace ember::maths;
-using namespace ember::memory;
-
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_swapchain::vulkan_swapchain(VkInstance instance, VkDevice device, VkSurfaceKHR surface, VkSwapchainKHR handle, VkFormat swapchain_image_format, VkExtent2D swapchain_extent, array<unique_ptr<vulkan_image>> images)
         : instance{ instance }
         , device{ device }

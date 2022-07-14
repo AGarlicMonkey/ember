@@ -22,12 +22,10 @@
 #include <ember/core/log.hpp>
 #include <ember/core/profiling.hpp>
 
-using namespace ember::containers;
-
 namespace {
-    VkIndexType get_index_type(ember::graphics::index_type const type) {
+    VkIndexType get_index_type(ember::index_type const type) {
         switch(type) {
-            case ember::graphics::index_type::uint16:
+            case ember::index_type::uint16:
                 return VK_INDEX_TYPE_UINT16;
             default:
                 EMBER_CHECK(false);
@@ -35,25 +33,25 @@ namespace {
         }
     }
 
-    VkPipelineStageFlags convert_stage(ember::graphics::pipeline_stage const stage) {
+    VkPipelineStageFlags convert_stage(ember::pipeline_stage const stage) {
         switch(stage) {
-            case ember::graphics::pipeline_stage::top:
+            case ember::pipeline_stage::top:
                 return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            case ember::graphics::pipeline_stage::transfer:
+            case ember::pipeline_stage::transfer:
                 return VK_PIPELINE_STAGE_TRANSFER_BIT;
-            case ember::graphics::pipeline_stage::compute_shader:
+            case ember::pipeline_stage::compute_shader:
                 return VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
-            case ember::graphics::pipeline_stage::vertex_input:
+            case ember::pipeline_stage::vertex_input:
                 return VK_PIPELINE_STAGE_VERTEX_INPUT_BIT;
-            case ember::graphics::pipeline_stage::vertex_shader:
+            case ember::pipeline_stage::vertex_shader:
                 return VK_PIPELINE_STAGE_VERTEX_SHADER_BIT;
-            case ember::graphics::pipeline_stage::pixel_shader:
+            case ember::pipeline_stage::pixel_shader:
                 return VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-            case ember::graphics::pipeline_stage::early_pixel_test:
+            case ember::pipeline_stage::early_pixel_test:
                 return VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            case ember::graphics::pipeline_stage::late_pixel_test:
+            case ember::pipeline_stage::late_pixel_test:
                 return VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-            case ember::graphics::pipeline_stage::colour_attachment_output:
+            case ember::pipeline_stage::colour_attachment_output:
                 return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
             default:
                 EMBER_CHECK(false);
@@ -65,7 +63,7 @@ namespace {
     struct match : Ts... { using Ts::operator()...; };
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_queue::vulkan_queue(VkPhysicalDevice physical_device, VkDevice logical_device, queue_family_indices family_indices)
         : physical_device{ physical_device }
         , logical_device{ logical_device }
@@ -452,7 +450,7 @@ namespace ember::graphics {
         };
 
         //Record all command buffers
-        containers::array<VkCommandBuffer> recorded_command_buffers{};
+        array<VkCommandBuffer> recorded_command_buffers{};
 
         for(auto const *command_buffer : submit_info.command_buffers) {
             VkCommandBuffer vk_command_buffer{ alloc_buffer(queue) };
@@ -472,8 +470,8 @@ namespace ember::graphics {
         }
 
         //Do the actual queue submission
-        containers::array<VkSemaphore> wait_semaphores{};
-        containers::array<VkPipelineStageFlags> wait_stages{};
+        array<VkSemaphore> wait_semaphores{};
+        array<VkPipelineStageFlags> wait_stages{};
         std::size_t const wait_semaphore_count{ submit_info.wait_semaphores.size() };
         wait_semaphores.resize(wait_semaphore_count);
         wait_stages.resize(wait_semaphore_count);
@@ -482,7 +480,7 @@ namespace ember::graphics {
             wait_stages[i]     = convert_stage(submit_info.wait_semaphores[i].second);
         }
 
-        containers::array<VkSemaphore> signal_semaphores{};
+        array<VkSemaphore> signal_semaphores{};
         std::size_t const signal_semaphore_count{ submit_info.signal_semaphores.size() };
         signal_semaphores.resize(signal_semaphore_count);
         for(std::size_t i{ 0 }; i < signal_semaphore_count; ++i) {

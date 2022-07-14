@@ -2,7 +2,7 @@
 
 #include "ember/core/log.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     render_pass::descriptor const &vulkan_render_pass::get_descriptor() const {
         return desc;
     }

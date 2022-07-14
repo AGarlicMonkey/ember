@@ -5,7 +5,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_buffer : public buffer {
         //VARIABLES
     private:

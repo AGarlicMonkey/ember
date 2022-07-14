@@ -6,23 +6,23 @@
 #include <ember/containers/array.hpp>
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_device;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_instance : public instance {
         //VARIABLES
     private:
         VkInstance instance{ VK_NULL_HANDLE };
         VkDebugUtilsMessengerEXT debug_messenger{ VK_NULL_HANDLE };
 
-        memory::unique_ptr<vulkan_device> device{};
+        unique_ptr<vulkan_device> device{};
 
         //FUNCTIONS
     public:
         vulkan_instance() = delete;
-        vulkan_instance(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger, memory::unique_ptr<vulkan_device> device);
+        vulkan_instance(VkInstance instance, VkDebugUtilsMessengerEXT debug_messenger, unique_ptr<vulkan_device> device);
 
         vulkan_instance(vulkan_instance const &other) = delete;
         vulkan_instance(vulkan_instance &&other) noexcept = delete;
@@ -36,6 +36,6 @@ namespace ember::graphics {
     };
 }
 
-namespace ember::graphics {
-    memory::unique_ptr<vulkan_instance> create_vulkan_instance();
+namespace ember::inline graphics {
+    unique_ptr<vulkan_instance> create_vulkan_instance();
 }

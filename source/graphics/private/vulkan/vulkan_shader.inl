@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_shader::vulkan_shader(VkDevice device, VkShaderModule module)
         : device{ device }
         , module{ module } {

@@ -8,12 +8,12 @@
 #include <ember/maths/vector.hpp>
 #include <string>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class compute_pipeline_object;
     class descriptor_set;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief Can record transfer and compute operations.
      */
@@ -35,7 +35,7 @@ namespace ember::graphics {
          * @brief Pushes a user marker into the command buffer.
          * @param name 
          */
-        void push_user_marker(std::string name, maths::vec4f const colour);
+        void push_user_marker(std::string name, vec4f const colour);
         /**
          * @brief Pops the most recently pushed command from the buffer.
          */
@@ -67,7 +67,7 @@ namespace ember::graphics {
          * @brief Disptach a compute workload.
          * @param group_count How many groups on each axis to dispatch.
          */
-        void dispatch(maths::vec3u const group_count);
+        void dispatch(vec3u const group_count);
 
         /**
          * @brief Dispatch an indirect compute workload.
@@ -79,7 +79,7 @@ namespace ember::graphics {
 }
 
 #if EMBER_GRAPHICS_ENABLE_USER_MARKERS
-namespace ember::graphics::internal {
+namespace ember::inline graphics::internal {
     class scoped_user_marker {
     private:
         compute_command_buffer &buffer;
@@ -88,9 +88,9 @@ namespace ember::graphics::internal {
         scoped_user_marker() = delete;
         scoped_user_marker(compute_command_buffer &buffer, std::string name)
             : buffer{ buffer } {
-            buffer.push_user_marker(std::move(name), maths::vec4f{ 0, 0, 0, 0 });
+            buffer.push_user_marker(std::move(name), vec4f{ 0, 0, 0, 0 });
         }
-        scoped_user_marker(compute_command_buffer &buffer, std::string name, maths::vec4f const colour)
+        scoped_user_marker(compute_command_buffer &buffer, std::string name, vec4f const colour)
             : buffer{ buffer } {
             buffer.push_user_marker(std::move(name), colour);
         }

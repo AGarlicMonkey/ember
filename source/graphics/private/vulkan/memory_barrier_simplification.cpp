@@ -1,7 +1,7 @@
 #include "memory_barrier_simplification.hpp"
 
 namespace {
-    ember::graphics::buffer_access_info const buffer_access_map[] = { //NOLINT TODO: Convert to containers::static_array when it's not an alias so it gets automatic type deduction
+    ember::buffer_access_info const buffer_access_map[] = { //NOLINT TODO: Convert to containers::static_array when it's not an alias so it gets automatic type deduction
         { VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0 },//none
 
         { VK_PIPELINE_STAGE_VERTEX_SHADER_BIT, VK_ACCESS_UNIFORM_READ_BIT },  //vertex_shader_read_uniform_buffer
@@ -13,7 +13,7 @@ namespace {
         { VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_WRITE_BIT },    //transfer_write
     };
 
-    ember::graphics::image_access_info const image_access_map[] = { //NOLINT TODO: Convert to containers::static_array when it's not an alias so it gets automatic type deduction
+    ember::image_access_info const image_access_map[] = { //NOLINT TODO: Convert to containers::static_array when it's not an alias so it gets automatic type deduction
         { VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, 0, VK_IMAGE_LAYOUT_UNDEFINED },//none
 
         { VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, VK_ACCESS_SHADER_READ_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL },                                                                          //pixel_shader_read_sampled
@@ -29,7 +29,7 @@ namespace {
     };
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     buffer_access_info get_buffer_access(buffer::access const access) {
         return buffer_access_map[static_cast<buffer::access_type>(access)];
     }

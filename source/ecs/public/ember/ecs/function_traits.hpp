@@ -3,7 +3,7 @@
 #include <tuple>
 #include <cstddef>
 
-namespace ember::ecs::internal {
+namespace ember::inline ecs::internal {
     template<typename function_t>
     struct function_traits;
 

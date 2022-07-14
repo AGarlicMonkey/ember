@@ -2,7 +2,7 @@
 
 #include <ember/core/log.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     image_view::descriptor const &vulkan_image_view::get_descriptor() const {
         return desc;
     }

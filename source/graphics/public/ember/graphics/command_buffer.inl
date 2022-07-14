@@ -1,4 +1,4 @@
-namespace ember::graphics {
+namespace ember::inline graphics {
     command_buffer::iterator::~iterator() = default;
 
     bool operator==(command_buffer::iterator const &lhs, command_buffer::iterator const &rhs) {

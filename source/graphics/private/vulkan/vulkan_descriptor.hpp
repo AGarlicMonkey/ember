@@ -4,6 +4,6 @@
 
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     VkDescriptorType convert_descriptor_type(descriptor_type const type);
 }

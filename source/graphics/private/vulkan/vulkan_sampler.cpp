@@ -2,7 +2,7 @@
 
 #include "log.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     sampler::descriptor const &vulkan_sampler::get_descriptor() const {
         return desc;
     }

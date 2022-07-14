@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace ember::memory {
+namespace ember::inline memory {
     /**
      * @brief global_allocator is essentially a free list allocator except it bypasses
      * ember's memory/allocation system. Providing a place to allocate memory from for the entire application.

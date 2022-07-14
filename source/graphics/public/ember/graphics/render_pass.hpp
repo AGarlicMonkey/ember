@@ -5,7 +5,7 @@
 #include <ember/containers/array.hpp>
 #include <optional>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     enum class load_operation {
         load,
         clear,
@@ -32,7 +32,7 @@ namespace ember::graphics {
     };
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     /**
      * @brief A render_pass describes a set of attachments that graphics_pipeline_object can render to.
      * @details The actual attchments themselves are stored in a framebuffer object. This class is used
@@ -42,8 +42,8 @@ namespace ember::graphics {
         //TYPES
     public:
         struct descriptor {
-            containers::array<attachment_descriptor> colour_attachments{}; /**< Array of attachment descriptors for each colour output attachment. */
-            std::optional<attachment_descriptor> depth_attachment{};       /**< Optional descriptor for the depth attachment. */
+            array<attachment_descriptor> colour_attachments{};       /**< Array of attachment descriptors for each colour output attachment. */
+            std::optional<attachment_descriptor> depth_attachment{}; /**< Optional descriptor for the depth attachment. */
         };
 
         //FUNCTIONS

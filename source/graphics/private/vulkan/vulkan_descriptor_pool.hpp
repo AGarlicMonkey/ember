@@ -4,7 +4,7 @@
 
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_descriptor_pool : public descriptor_pool {
         //VARIABLES
     private:
@@ -28,8 +28,8 @@ namespace ember::graphics {
 
         descriptor const &get_descriptor() const override;
 
-        memory::unique_ptr<descriptor_set> allocate_descriptor_set(descriptor_set_layout const &layout) override;
-        containers::array<memory::unique_ptr<descriptor_set>> allocate_descriptor_sets(containers::array<descriptor_set_layout const *> const &layouts) override;
+        unique_ptr<descriptor_set> allocate_descriptor_set(descriptor_set_layout const &layout) override;
+        array<unique_ptr<descriptor_set>> allocate_descriptor_sets(array<descriptor_set_layout const *> const &layouts) override;
 
         void reset() override;
 

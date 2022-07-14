@@ -25,15 +25,12 @@
 #include <ember/containers/array.hpp>
 #include <ember/containers/static_array.hpp>
 
-using namespace ember::containers;
-using namespace ember::memory;
-
 namespace {
-    VkMemoryPropertyFlags get_memory_property_flags(ember::graphics::memory_type memory_type) {
+    VkMemoryPropertyFlags get_memory_property_flags(ember::memory_type memory_type) {
         switch(memory_type) {
-            case ember::graphics::memory_type::host_visible:
+            case ember::memory_type::host_visible:
                 return VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;//Including HOST_COHERENT here as this makes mapping memory more simple
-            case ember::graphics::memory_type::device_local:
+            case ember::memory_type::device_local:
                 return VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
             default:
                 EMBER_CHECK(false);
@@ -58,7 +55,7 @@ namespace {
     #define SET_RESOURCE_NAME(object_handle, object_type, object_name)
 #endif
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_resource_factory::vulkan_resource_factory(VkDevice device, VkPhysicalDevice physical_device, queue_family_indices family_indices, device_memory_allocator *memory_allocator)
         : device{ device }
         , family_indices{ family_indices }

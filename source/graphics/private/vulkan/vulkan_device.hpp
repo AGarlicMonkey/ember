@@ -11,7 +11,7 @@
 #include <ember/containers/array.hpp>
 #include <vulkan/vulkan.h>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class vulkan_device : public device {
         //VARIABLES
     private:
@@ -23,10 +23,10 @@ namespace ember::graphics {
 
         limits device_limits{};
 
-        memory::unique_ptr<device_memory_allocator> memory_allocator{ nullptr };
+        unique_ptr<device_memory_allocator> memory_allocator{ nullptr };
 
-        memory::unique_ptr<vulkan_resource_factory> factory{ nullptr };
-        memory::unique_ptr<vulkan_shader_cache> cache{ nullptr };
+        unique_ptr<vulkan_resource_factory> factory{ nullptr };
+        unique_ptr<vulkan_shader_cache> cache{ nullptr };
         vulkan_queue queue;
 
         //FUNCTIONS
@@ -47,7 +47,7 @@ namespace ember::graphics {
         resource_factory const *get_factory() const override;
         shader_cache *get_shader_cache() override;
 
-        memory::unique_ptr<swapchain> create_swapchain(swapchain::descriptor descriptor, platform::window const &window) const override;
+        unique_ptr<swapchain> create_swapchain(swapchain::descriptor descriptor, window const &window) const override;
 
         void submit_to_graphics_queue(graphics_submit_info const &submit_info, fence const *const signal_fence) override;
         void submit_to_compute_queue(compute_submit_info const &submit_info, fence const *const signal_fence) override;
@@ -58,6 +58,6 @@ namespace ember::graphics {
         void wait_until_idle() const override;
 
         static queue_family_indices get_physical_device_queue_family_indices(VkPhysicalDevice device);
-        static std::int32_t score_physical_device(VkPhysicalDevice physical_device, containers::array<char const *> const &required_extensions);
+        static std::int32_t score_physical_device(VkPhysicalDevice physical_device, array<char const *> const &required_extensions);
     };
 }

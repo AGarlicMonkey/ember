@@ -5,7 +5,7 @@
 
 #define EMBER_GRAPHICS_ENABLE_USER_MARKERS (EMBER_GRAPHICS_DEBUG_UTILITIES || EMBER_CORE_ENABLE_PROFILING)
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     enum class command_type : std::uint8_t {
         //Transfer
         copy_buffer_to_buffer_command,

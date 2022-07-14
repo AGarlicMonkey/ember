@@ -1,4 +1,4 @@
-namespace ember::containers {
+namespace ember::inline containers {
     template<integral_t key_t, moveable_t value_t>
     sparse_set<key_t, value_t>::sparse_set() = default;
 

@@ -1,4 +1,4 @@
-namespace ember::ecs::internal{
+namespace ember::inline ecs::internal {
     template<typename component_t>
     void component_helpers_impl<component_t>::move(std::byte *source, std::byte *destination) const {
         auto *component_source{ reinterpret_cast<component_t *>(source) };

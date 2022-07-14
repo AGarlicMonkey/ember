@@ -15,11 +15,11 @@
 #include <span>
 #include <string>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class buffer;
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
 #define EMBER_GRAPHICS_CREATE_COMMAND(type) \
     template<>                              \
     struct recorded_command<type> : public command
@@ -45,12 +45,12 @@ namespace ember::graphics {
         buffer const *const source;
         std::size_t const source_offset;
         image const *const destination;
-        maths::vec3u const destination_offset;
-        maths::vec3u const destination_extent;
+        vec3u const destination_offset;
+        vec3u const destination_extent;
         std::uint32_t const destination_base_layer;
         std::uint32_t const destination_layer_count;
 
-        recorded_command(buffer const *const source, std::size_t const source_offset, image const *const destination, maths::vec3u const destination_offset, maths::vec3u const destination_extent, std::uint32_t const destination_base_layer, std::uint32_t const destination_layer_count)
+        recorded_command(buffer const *const source, std::size_t const source_offset, image const *const destination, vec3u const destination_offset, vec3u const destination_extent, std::uint32_t const destination_base_layer, std::uint32_t const destination_layer_count)
             : source{ source }
             , source_offset{ source_offset }
             , destination{ destination }
@@ -63,14 +63,14 @@ namespace ember::graphics {
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::copy_image_to_buffer_command) {
         image const *const source;
-        maths::vec3i const source_offset;
-        maths::vec3u const source_extent;
+        vec3i const source_offset;
+        vec3u const source_extent;
         std::uint32_t const source_base_layer;
         std::uint32_t const source_layer_count;
         buffer const *const destination;
         std::size_t const destination_offset;
 
-        recorded_command(image const *const source, maths::vec3i const source_offset, maths::vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer const *const destination, std::size_t const destination_offset)
+        recorded_command(image const *const source, vec3i const source_offset, vec3u const source_extent, std::uint32_t const source_base_layer, std::uint32_t const source_layer_count, buffer const *const destination, std::size_t const destination_offset)
             : source{ source }
             , source_offset{ source_offset }
             , source_extent{ source_extent }
@@ -115,9 +115,9 @@ namespace ember::graphics {
 #if EMBER_GRAPHICS_ENABLE_USER_MARKERS
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::push_user_marker_command) {
         std::string name;
-        maths::vec4f colour;
+        vec4f colour;
 
-        recorded_command(std::string name, maths::vec4f colour)
+        recorded_command(std::string name, vec4f colour)
             : name{ name }
             , colour{ colour } {
         }
@@ -164,9 +164,9 @@ namespace ember::graphics {
     };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::dispatch_command) {
-        maths::vec3u const group_count;
+        vec3u const group_count;
 
-        recorded_command(maths::vec3u const group_count)
+        recorded_command(vec3u const group_count)
             : group_count{ group_count } {
         }
     };
@@ -186,9 +186,9 @@ namespace ember::graphics {
         render_pass const *const render_pass;
         framebuffer const *const framebuffer;
         render_area const render_area;
-        containers::array<clear_value> clear_values;
+        array<clear_value> clear_values;
 
-        recorded_command(graphics::render_pass const *const render_pass, graphics::framebuffer const *const framebuffer, graphics::render_area const render_area, containers::array<clear_value> clear_values)
+        recorded_command(graphics::render_pass const *const render_pass, graphics::framebuffer const *const framebuffer, graphics::render_area const render_area, array<clear_value> clear_values)
             : render_pass{ render_pass }
             , framebuffer{ framebuffer }
             , render_area{ render_area }
@@ -199,12 +199,12 @@ namespace ember::graphics {
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::end_render_pass_command){};
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::set_viewport_command) {
-        maths::vec2i const position;
-        maths::vec2u const size;
+        vec2i const position;
+        vec2u const size;
         float const min_depth;
         float const max_depth;
 
-        recorded_command(maths::vec2i const position, maths::vec2u const size, float const min_depth, float const max_depth)
+        recorded_command(vec2i const position, vec2u const size, float const min_depth, float const max_depth)
             : position{ position }
             , size{ size }
             , min_depth{ min_depth }
@@ -212,10 +212,10 @@ namespace ember::graphics {
     };
 
     EMBER_GRAPHICS_CREATE_COMMAND(command_type::set_scissor_command) {
-        maths::vec2i const position;
-        maths::vec2u const size;
+        vec2i const position;
+        vec2u const size;
 
-        recorded_command(maths::vec2i const position, maths::vec2u const size)
+        recorded_command(vec2i const position, vec2u const size)
             : position{ position }
             , size{ size } {
         }
@@ -282,7 +282,7 @@ namespace ember::graphics {
 #undef EMBER_GRAPHICS_CREATE_COMMAND
 }
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     std::size_t get_size_of_command(command_type const type);
     void destruct_command(command_type const type, std::byte *const command_memory);
 }

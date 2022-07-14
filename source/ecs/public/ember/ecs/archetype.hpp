@@ -8,7 +8,7 @@
 #include <ember/core/export.hpp>
 #include <ember/memory/unique_ptr.hpp>
 
-namespace ember::ecs {
+namespace ember::inline ecs {
     /**
      * @brief Contains data for all entities belonging to a specific archetype.
      * @details An entity archetype is defined by it's unique combination of components.
@@ -32,23 +32,23 @@ namespace ember::ecs {
     private:
         archetype_id_t id{};
 
-        containers::map<entity, std::size_t> entity_to_index{};        /**< All entities belonging to this archetype. */
-        containers::map<std::size_t, entity> index_to_entity{}; /**< Maps an index in the arena to an entity. */
-        component_arena component_data{};                       /**< Memory pool for the archetype's components. */
+        map<entity, std::size_t> entity_to_index{}; /**< All entities belonging to this archetype. */
+        map<std::size_t, entity> index_to_entity{}; /**< Maps an index in the arena to an entity. */
+        component_arena component_data{};           /**< Memory pool for the archetype's components. */
 
-        containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map; /**< Maps a component id to it's helper type*/
-        containers::map<component_id_t, std::size_t> component_offsets{};                                       /**< Map of component offsets into the memory buffer.*/
+        map<component_id_t, unique_ptr<internal::component_helpers>> *component_helper_map; /**< Maps a component id to it's helper type*/
+        map<component_id_t, std::size_t> component_offsets{};                               /**< Map of component offsets into the memory buffer.*/
 
         //FUNCTIONS
     public:
         archetype() = delete;
-        archetype(archetype_id_t id, containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> *component_helper_map);
+        archetype(archetype_id_t id, map<component_id_t, unique_ptr<internal::component_helpers>> *component_helper_map);
 
         archetype(archetype const &other) = delete;
         archetype(archetype &&other) noexcept;
 
         archetype &operator=(archetype const &other) = delete;
-        archetype &operator                          =(archetype &&other) noexcept;
+        archetype &operator=(archetype &&other) noexcept;
 
         ~archetype();
 

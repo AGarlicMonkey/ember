@@ -1,4 +1,4 @@
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_shader_cache::vulkan_shader_cache(VkDevice device)
         : device{ device } {
     }

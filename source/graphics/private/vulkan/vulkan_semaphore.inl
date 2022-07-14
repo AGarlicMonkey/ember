@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_semaphore::vulkan_semaphore(VkDevice device, VkSemaphore handle)
         : device{ device }
         , handle{ handle } {

@@ -1,7 +1,7 @@
 #include <ember/ecs/entity_manager.hpp>
 #include <gtest/gtest.h>
 
-using namespace ember::ecs;
+using namespace ember;
 
 struct bool_component {
     bool value{ false };

@@ -8,7 +8,7 @@
 #define EMBER_MB(x) (EMBER_KB(x) * 1024u)
 #define EMBER_GB(x) (EMBER_MB(x) * 1024u)
 
-namespace ember::memory {
+namespace ember::inline memory {
     /**
      * @brief Allocates memory from the global memory pool.
      * @param bytes How many bytes to allocate.

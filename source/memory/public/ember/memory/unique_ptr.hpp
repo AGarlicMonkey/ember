@@ -3,7 +3,7 @@
 #include <concepts>
 #include <cstddef>
 
-namespace ember::memory {
+namespace ember::inline memory {
     namespace internal {
         struct default_deleter {
             template<typename type_t>
@@ -65,7 +65,7 @@ namespace ember::memory {
     };
 }
 
-namespace ember::memory {
+namespace ember::inline memory {
     /**
      * @brief Makes a unique_ptr to type_t, allocating it from the global memory pool.
      * @tparam type_t Type the unique_ptr will point to

@@ -7,7 +7,7 @@
 static std::size_t constexpr initial_buffer_size{ EMBER_KB(1) };
 static std::size_t constexpr command_alignment{ 0 };//Commands are tightly packed
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     std::pair<command_type, std::byte *> command_buffer::iterator::operator*() const {
         command_type const type{ *reinterpret_cast<command_type const *>(ptr - sizeof(command_type)) };
         return { type, ptr };

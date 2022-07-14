@@ -2,7 +2,7 @@
 #include <ember/core/log.hpp>
 #include <ember/memory/memory.hpp>
 
-namespace ember::containers {
+namespace ember::inline containers {
     namespace internal {
         template<typename array_type>
         const_array_iterator<array_type>::const_array_iterator() = default;

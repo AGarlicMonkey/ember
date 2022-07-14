@@ -6,7 +6,7 @@
 #include <cstddef>
 
 //Vector types
-namespace ember::maths {
+namespace ember::inline maths {
     template<size_t L, number T>
     struct vec;
 

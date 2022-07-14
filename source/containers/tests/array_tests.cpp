@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <vector>
 
-using namespace ember::containers;
+using namespace ember;
 
 TEST(array_tests, can_default_initialise) {
     array<std::uint32_t> arr{};

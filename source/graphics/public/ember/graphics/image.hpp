@@ -6,7 +6,7 @@
 #include <ember/core/enum.hpp>
 #include <ember/maths/vector.hpp>
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     class image {
         //TYPES
     public:
@@ -71,7 +71,7 @@ namespace ember::graphics {
         struct descriptor {
             type type{ type::_2d };
             usage_mode usage_flags;
-            maths::vec2u dimensions;
+            vec2u dimensions;
             std::uint32_t array_count{ 1u }; /**< How many elements to create for an image array. */
             format format;
             sharing_mode sharing_mode{ sharing_mode::exclusive };

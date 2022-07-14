@@ -1,6 +1,6 @@
 #include "host_memory_allocator.hpp"
 
-namespace ember::graphics {
+namespace ember::inline graphics {
     vulkan_sampler::vulkan_sampler(descriptor desc, VkDevice device, VkSampler handle)
         : desc{ desc }
         , device{ device }

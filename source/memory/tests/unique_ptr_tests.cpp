@@ -1,7 +1,7 @@
 #include <ember/memory/unique_ptr.hpp>
 #include <gtest/gtest.h>
 
-using namespace ember::memory;
+using namespace ember;
 
 TEST(unique_ptr_tests, does_not_create_nullptr) {
     unique_ptr<float> ptr{ make_unique<float>() };
@@ -119,13 +119,13 @@ TEST(unique_ptr_tests, can_use_custom_deleter) {
     bool deleter_called_a{ false };
     bool deleter_called_b{ false };
     {
-        auto ptr_a = unique_ptr<std::int32_t, std::function<void(std::int32_t *)>>(ember::memory::construct<std::int32_t>(6), [&](std::int32_t *i) {
-            ember::memory::destruct(i);
+        auto ptr_a = unique_ptr<std::int32_t, std::function<void(std::int32_t *)>>(construct<std::int32_t>(6), [&](std::int32_t *i) {
+            destruct(i);
             deleter_called_a = true;
         });
 
-        auto ptr_b{ unique_ptr<std::int32_t, std::function<void(std::int32_t *)>>(ember::memory::construct<std::int32_t>(6), [&](std::int32_t *i) {
-            ember::memory::destruct(i);
+        auto ptr_b{ unique_ptr<std::int32_t, std::function<void(std::int32_t *)>>(construct<std::int32_t>(6), [&](std::int32_t *i) {
+            destruct(i);
             deleter_called_b = true;
         })};
     }

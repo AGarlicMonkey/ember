@@ -1,6 +1,6 @@
 #include "ember/ecs/entity_manager.hpp"
 
-namespace ember::ecs {
+namespace ember::inline ecs {
     void entity_manager::destroy(entity &entity) {
         EMBER_THROW_IF_FAILED(is_valid(entity), exception{ "Cannot destroy an invalid entity." });
 

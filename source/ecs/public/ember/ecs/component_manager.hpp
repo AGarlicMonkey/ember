@@ -7,16 +7,16 @@
 #include <ember/containers/map.hpp>
 #include <ember/core/export.hpp>
 
-namespace ember::ecs {
+namespace ember::inline ecs {
     /**
      * @brief Manages components accross all currently known entity archetypes.
      */
     class EMBER_API component_manager {
         //VARIABLES
     private:
-        containers::array<archetype> archetypes{};
-        containers::map<entity, std::size_t> entity_to_archetype{};//Maps an entity to an index to the archetypes array;
-        containers::map<component_id_t, memory::unique_ptr<internal::component_helpers>> component_helper_map{};
+        array<archetype> archetypes{};
+        map<entity, std::size_t> entity_to_archetype{};//Maps an entity to an index to the archetypes array;
+        map<component_id_t, unique_ptr<internal::component_helpers>> component_helper_map{};
 
         //FUNCTIONS
     public:
@@ -50,8 +50,8 @@ namespace ember::ecs {
         void for_each(function_t function, object_t *object);
 
     private:
-        containers::array<archetype>::iterator find_archetype(archetype_id_t const &id);
-        containers::array<archetype>::iterator find_or_add_archetype(archetype_id_t const &id);
+        array<archetype>::iterator find_archetype(archetype_id_t const &id);
+        array<archetype>::iterator find_or_add_archetype(archetype_id_t const &id);
 
         template<typename function_t, std::size_t... parameter_indices_t>
         archetype_id_t generate_archetype_id_from_function(std::index_sequence<parameter_indices_t...>);

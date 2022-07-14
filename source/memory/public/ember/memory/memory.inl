@@ -1,6 +1,6 @@
 #include <new>
 
-namespace ember::memory {
+namespace ember::inline memory {
     template<typename object_t, typename... arg_t>
     object_t *construct(arg_t &&...args) {
         std::byte *const memory{ alloc(sizeof(object_t), alignof(object_t)) };
