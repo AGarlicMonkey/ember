@@ -30,8 +30,8 @@ namespace ember::inline memory {
     unique_ptr<type_t, deleter_t>::unique_ptr(unique_ptr<type_t, deleter_t> &&other) noexcept {
         reset();
 
-        ptr       = other.ptr;
-        deleter   = other.deleter;
+        ptr     = other.ptr;
+        deleter = other.deleter;
 
         other.ptr = nullptr;
     }
@@ -41,8 +41,8 @@ namespace ember::inline memory {
     unique_ptr<type_t, deleter_t>::unique_ptr(unique_ptr<other_type_t, deleter_t> &&other) requires std::is_base_of_v<type_t, other_type_t> {
         reset();
 
-        ptr       = other.ptr;
-        deleter   = other.deleter;
+        ptr     = other.ptr;
+        deleter = other.deleter;
 
         other.ptr = nullptr;
     }
@@ -51,8 +51,8 @@ namespace ember::inline memory {
     unique_ptr<type_t, deleter_t> &unique_ptr<type_t, deleter_t>::operator=(unique_ptr<type_t, deleter_t> &&other) noexcept {
         reset();
 
-        ptr       = other.ptr;
-        deleter   = other.deleter;
+        ptr     = other.ptr;
+        deleter = other.deleter;
 
         other.ptr = nullptr;
 
@@ -93,12 +93,12 @@ namespace ember::inline memory {
     }
 
     template<typename type_t, typename deleter_t>
-    type_t &unique_ptr<type_t, deleter_t>::operator*() {
+    auto &unique_ptr<type_t, deleter_t>::operator*() requires(!std::is_void_v<type_t>) {
         return *get();
     }
 
     template<typename type_t, typename deleter_t>
-    type_t const &unique_ptr<type_t, deleter_t>::operator*() const {
+    auto const &unique_ptr<type_t, deleter_t>::operator*() const requires(!std::is_void_v<type_t>) {
         return *get();
     }
 

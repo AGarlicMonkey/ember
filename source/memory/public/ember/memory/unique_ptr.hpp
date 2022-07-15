@@ -55,8 +55,8 @@ namespace ember::inline memory {
         type_t *operator->();
         type_t const *operator->() const;
 
-        type_t &operator*();
-        type_t const &operator*() const;
+        auto &operator*() requires(!std::is_void_v<type_t>);
+        auto const &operator*() const requires(!std::is_void_v<type_t>);
 
         template<typename type_t_1, typename deleter_t>
         friend bool operator==(unique_ptr<type_t_1, deleter_t> const &lhs, std::nullptr_t);
