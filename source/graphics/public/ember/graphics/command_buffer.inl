@@ -17,8 +17,8 @@ namespace ember::inline graphics {
 
     void command_buffer::reset() {
         destruct_items();
-        head          = nullptr;
-        current_arena = nullptr;
+        head = current = nullptr;
+        current_arena  = nullptr;
     }
 
     command_buffer::iterator command_buffer::begin() const {
