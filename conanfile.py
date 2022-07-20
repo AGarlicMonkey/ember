@@ -2,7 +2,7 @@ import os
 
 from conans import ConanFile
 
-class CloveConan(ConanFile):
+class EmberConan(ConanFile):
     settings = (
         "os",
         "os_build",
