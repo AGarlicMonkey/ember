@@ -323,6 +323,7 @@ namespace ember::inline graphics {
 
             VkPhysicalDeviceFeatures device_features{
                 .imageCubeArray    = VK_TRUE,
+                .multiDrawIndirect = VK_TRUE,
                 .samplerAnisotropy = VK_TRUE,
             };
 
