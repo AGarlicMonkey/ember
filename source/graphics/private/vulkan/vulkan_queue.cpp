@@ -133,9 +133,8 @@ namespace ember::inline graphics {
                     fp_vkCmdBeginDebugUtilsLabelEXT(vk_cmd_buffer, &label);
     #endif
     #if EMBER_CORE_ENABLE_PROFILING
-                    //TODO: Colour zones
                     if(!queue.source_datas.contains(command->name)) {
-                        queue.source_datas[command->name] = tracy::SourceLocationData{ command->name.c_str(), __FUNCTION__, __FILE__, (uint32_t)__LINE__, 0 };
+                        queue.source_datas[command->name] = tracy::SourceLocationData{ command->name.c_str(), __FUNCTION__, __FILE__, (uint32_t)__LINE__, core::internal::rgb_to_32(command->colour.r, command->colour.g, command->colour.b, command->colour.a) };
                     }
                     queue.scoped_events.emplace(queue.profiling_context, &queue.source_datas.at(command->name), vk_cmd_buffer, true);
     #endif

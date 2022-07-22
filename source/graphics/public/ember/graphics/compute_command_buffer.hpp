@@ -116,7 +116,7 @@ namespace ember::inline graphics::internal {
 
     #define EMBER_GRAPHICS_SCOPED_MARKER_C(command_buffer, name, r, g, b)                                                                                                                     \
         ::ember::graphics::internal::scoped_user_marker INTERNAL_EMBER_GRAPHICS_CAT(scoped_user_marker, __COUNT__, __LINE__){ command_buffer, name, ::ember::maths::vec4f{ r, g, b, 1.0f } }; \
-        EMBER_PROFILE_SCOPE(name)
+        EMBER_PROFILE_SCOPE_C(name, r, g, b)
 #else
     #define EMBER_GRAPHICS_SCOPED_MARKER(command_buffer, name)
     #define EMBER_GRAPHICS_SCOPED_MARKER_C(command_buffer, name, r, g, b)
