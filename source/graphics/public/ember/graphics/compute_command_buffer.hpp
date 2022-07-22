@@ -71,7 +71,7 @@ namespace ember::inline graphics {
 
         /**
          * @brief Dispatch an indirect compute workload.
-         * @param indirect_buffer A buffer with one or many tightly packed dispatch_indirect_info written into it.
+         * @param indirect_buffer A buffer with a dispatch_indirect_info struct written into it.
          * @param offset Offset into the indirect_buffer to start the dispatch from.
          */
         void dispatch_indirect(buffer const *const indirect_buffer, std::size_t const offset);
