@@ -133,10 +133,23 @@ namespace ember::inline graphics {
                     fp_vkCmdBeginDebugUtilsLabelEXT(vk_cmd_buffer, &label);
     #endif
     #if EMBER_CORE_ENABLE_PROFILING
+                    //TODO: Proper file / line location etc. Just using the current file at the moment which isn't useful
                     if(!queue.source_datas.contains(command->name)) {
-                        queue.source_datas[command->name] = tracy::SourceLocationData{ command->name.c_str(), __FUNCTION__, __FILE__, (uint32_t)__LINE__, core::internal::rgb_to_32(command->colour.r, command->colour.g, command->colour.b, command->colour.a) };
+                        queue.source_datas[command->name] = source_data{
+                            .name            = command->name,
+                            .source_location = tracy::SourceLocationData{
+                                .name     = "NAME NOT YET SET",
+                                .function = "",//TODO
+                                .file     = "",//TODO
+                                .line     = 0, //TODO
+                                .color    = core::internal::rgb_to_32(command->colour.r, command->colour.g, command->colour.b, command->colour.a),
+                            },
+                        };
+
+                        //Have to set the name after the fact so the pointers are correct
+                        queue.source_datas.at(command->name).source_location.name = queue.source_datas.at(command->name).name.c_str();
                     }
-                    queue.scoped_events.emplace(queue.profiling_context, &queue.source_datas.at(command->name), vk_cmd_buffer, true);
+                    queue.scoped_events.emplace(queue.profiling_context, &queue.source_datas.at(command->name).source_location, vk_cmd_buffer, true);
     #endif
                 } break;
                 case command_type::pop_user_marker_command:

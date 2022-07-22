@@ -34,9 +34,16 @@ namespace ember::inline graphics {
             VkFence fence{};
         };
 
+#if EMBER_CORE_ENABLE_PROFILING
+        struct source_data {
+            std::string name;
+            tracy::SourceLocationData source_location;
+        };
+#endif
+
         struct queue {
             VkQueue handle{ VK_NULL_HANDLE };
-            VkCommandPool command_pool{ VK_NULL_HANDLE };//TODO: It would be nice to have a pool per frame and just reset at the beginning but the current abstraction does not allow for that.
+            VkCommandPool command_pool{ VK_NULL_HANDLE };
 
             array<VkCommandBuffer> pooled_buffers{};
             array<VkFence> pooled_fences{};
@@ -45,7 +52,7 @@ namespace ember::inline graphics {
 #if EMBER_CORE_ENABLE_PROFILING
             TracyVkCtx profiling_context{ nullptr };
             stack<tracy::VkCtxScope> scoped_events{};
-            map<std::string, tracy::SourceLocationData> source_datas{};//Bit hack but because of how we do command buffers we need to make our own source locations
+            map<std::string, source_data> source_datas{};//Bit hack but because of how we do command buffers we need to make our own source locations and these need to be stored somewhere
 #endif
         };
 
@@ -68,7 +75,7 @@ namespace ember::inline graphics {
         vulkan_queue(vulkan_queue const &other)     = delete;
         vulkan_queue(vulkan_queue &&other) noexcept = delete;
 
-        vulkan_queue &operator=(vulkan_queue const &other) = delete;
+        vulkan_queue &operator=(vulkan_queue const &other)     = delete;
         vulkan_queue &operator=(vulkan_queue &&other) noexcept = delete;
 
         ~vulkan_queue();
