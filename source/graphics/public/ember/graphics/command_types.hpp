@@ -40,18 +40,18 @@ namespace ember::inline graphics {
 
     //NOTE: The size of the buffer directly matches that of the vulkan indirect dispatch command
     struct dispatch_indirect_info {
-        std::uint32_t x{};
-        std::uint32_t y{};
-        std::uint32_t z{};
+        std::uint32_t x{ 1 };
+        std::uint32_t y{ 1 };
+        std::uint32_t z{ 1 };
     };
 
     //NOTE: The size of the buffer directly matches that of the vulkan indirect draw command
     struct draw_indexed_indirect_info {
-        std::uint32_t index_count{};
-        std::uint32_t instance_count{};
-        std::uint32_t first_index{};
-        std::int32_t vertex_offset{};
-        std::uint32_t first_instance{};
+        std::uint32_t index_count{ 0 };
+        std::uint32_t instance_count{ 1 };
+        std::uint32_t first_index{ 0 };
+        std::int32_t vertex_offset{ 0 };
+        std::uint32_t first_instance{ 0 };
     };
 
     struct command {
