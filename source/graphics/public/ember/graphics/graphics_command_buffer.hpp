@@ -113,8 +113,9 @@ namespace ember::inline graphics {
          * @param indirect_buffer A buffer with one or many tightly packed draw_indexed_indirect_info written into it.
          * @param offset Offset into the buffer to look for the first draw_indexed_indirect_info.
          * @param draw_count How many draws to execute from the buffer.
+         * @param stride How many bytes to move along the buffer after each draw.
          */
-        void draw_indexed_indirect(buffer const *const indirect_buffer, std::size_t const offset, std::size_t const draw_count);
+        void draw_indexed_indirect(buffer const *const indirect_buffer, std::size_t const offset, std::size_t const draw_count, std::size_t const stride);
     };
 }
 

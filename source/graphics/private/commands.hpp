@@ -271,11 +271,13 @@ namespace ember::inline graphics {
         buffer const *const indirect_buffer;
         std::size_t const offset;
         std::size_t const draw_count;
+        std::size_t const stride;
 
-        recorded_command(buffer const *const indirect_buffer, std::size_t const offset, std::size_t const draw_count)
+        recorded_command(buffer const *const indirect_buffer, std::size_t const offset, std::size_t const draw_count, std::size_t const stride)
             : indirect_buffer{ indirect_buffer }
             , offset{ offset }
-            , draw_count{ draw_count } {
+            , draw_count{ draw_count }
+            , stride{ stride } {
         }
     };
 

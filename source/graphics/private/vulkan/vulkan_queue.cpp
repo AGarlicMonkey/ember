@@ -396,7 +396,7 @@ namespace ember::inline graphics {
 
                     VkBuffer const buffer_handle{ resource_cast<vulkan_buffer const>(command->indirect_buffer)->get_handle() };
 
-                    vkCmdDrawIndexedIndirect(vk_cmd_buffer, buffer_handle, command->offset, command->draw_count, sizeof(draw_indexed_indirect_info));
+                    vkCmdDrawIndexedIndirect(vk_cmd_buffer, buffer_handle, command->offset, command->draw_count, command->stride);
                 } break;
                 default:
                     EMBER_CHECK(false);

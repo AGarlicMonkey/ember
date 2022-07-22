@@ -35,7 +35,7 @@ namespace ember::inline graphics {
         record_command<command_type::draw_indexed_command>(index_count, instance_count, first_index, vertex_offset, first_instance);
     }
 
-    void graphics_command_buffer::draw_indexed_indirect(buffer const *const indirect_buffer, std::size_t const offset, std::size_t const draw_count) {
-        record_command<command_type::draw_indexed_indirect_command>(indirect_buffer, offset, draw_count);
+    void graphics_command_buffer::draw_indexed_indirect(buffer const *const indirect_buffer, std::size_t const offset, std::size_t const draw_count, std::size_t const stride) {
+        record_command<command_type::draw_indexed_indirect_command>(indirect_buffer, offset, draw_count, stride);
     }
 }
