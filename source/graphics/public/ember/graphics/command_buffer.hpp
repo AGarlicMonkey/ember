@@ -4,9 +4,10 @@
 
 #include <cstddef>
 #include <ember/containers/array.hpp>
+#include <ember/core/export.hpp>
 
 namespace ember::inline graphics {
-    class command_buffer {
+    class EMBER_API command_buffer {
         //TYPES
     public:
         class iterator {
