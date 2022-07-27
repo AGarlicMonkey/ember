@@ -528,7 +528,7 @@ namespace ember::inline graphics {
         VkDescriptorPoolCreateInfo const create_info{
             .sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO,
             .pNext         = nullptr,
-            .flags         = 0,
+            .flags         = vulkan_descriptor_pool::convert_flags(descriptor.flags),
             .maxSets       = descriptor.max_sets,
             .poolSizeCount = static_cast<std::uint32_t>(num_descriptor_types),
             .pPoolSizes    = pool_sizes.data(),

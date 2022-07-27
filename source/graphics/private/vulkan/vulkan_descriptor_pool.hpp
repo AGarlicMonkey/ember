@@ -34,6 +34,8 @@ namespace ember::inline graphics {
         void reset() override;
 
         inline VkDescriptorPool get_handle() const;
+
+        static VkDescriptorPoolCreateFlags convert_flags(flag const flags);
     };
 }
 

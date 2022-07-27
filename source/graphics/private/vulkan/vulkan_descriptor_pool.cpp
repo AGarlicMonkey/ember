@@ -44,4 +44,14 @@ namespace ember::inline graphics {
     void vulkan_descriptor_pool::reset() {
         vkResetDescriptorPool(device, handle, 0);
     }
+
+    VkDescriptorPoolCreateFlags vulkan_descriptor_pool::convert_flags(flag const flags) {
+        VkDescriptorPoolCreateFlags vk_flags{ 0 };
+
+        if((flags & flag::update_after_bind) != 0) {
+            vk_flags |= VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
+        }
+
+        return vk_flags;
+    }
 }
