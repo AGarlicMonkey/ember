@@ -16,6 +16,7 @@ namespace ember::inline graphics {
         descriptor_type type{};
         std::size_t array_size{ 1 }; /**< If this descriptor represents an array of objects it'll be the size of the array, else 1. */
         shader::stage stage{};
+        bool bindless{ false }; /**< If this descriptor supports bindless. Must be the last element in the layout. If set to true descriptors need to be allocated from a pool with `descriptor_pool::flag::update_after_bind` set. */
     };
 }
 

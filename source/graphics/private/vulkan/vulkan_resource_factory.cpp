@@ -486,9 +486,17 @@ namespace ember::inline graphics {
     }
 
     unique_ptr<descriptor_set_layout> vulkan_resource_factory::create_descriptor_set_layout(descriptor_set_layout::descriptor descriptor, std::string_view name) const {
-        array<VkDescriptorSetLayoutBinding> layout_bindings(descriptor.bindings.size());
+        VkDescriptorBindingFlags constexpr bindless_flags{ VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT |
+                                                           VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT };
+
+        auto const binding_count{ static_cast<std::uint32_t>(descriptor.bindings.size()) };
+
+        bool require_update_after_bind{ false };
+        array<VkDescriptorSetLayoutBinding> layout_bindings(binding_count);
+        array<VkDescriptorBindingFlags> layout_flags(binding_count);
         for(std::size_t i{ 0 }; i < layout_bindings.size(); ++i) {
             auto const &binding{ descriptor.bindings[i] };
+
             layout_bindings[i] = VkDescriptorSetLayoutBinding{
                 .binding            = binding.binding,
                 .descriptorType     = convert_descriptor_type(binding.type),
@@ -496,13 +504,22 @@ namespace ember::inline graphics {
                 .stageFlags         = vulkan_shader::convert_stage(binding.stage),
                 .pImmutableSamplers = nullptr,
             };
+            layout_flags[i]           = binding.bindless ? bindless_flags : 0;
+            require_update_after_bind = require_update_after_bind || binding.bindless;
         }
+
+        VkDescriptorSetLayoutBindingFlagsCreateInfo const binding_flags{
+            .sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO,
+            .pNext         = nullptr,
+            .bindingCount  = binding_count,
+            .pBindingFlags = layout_flags.data(),
+        };
 
         VkDescriptorSetLayoutCreateInfo const create_info{
             .sType        = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
-            .pNext        = nullptr,
-            .flags        = 0,
-            .bindingCount = static_cast<std::uint32_t>(layout_bindings.size()),
+            .pNext        = &binding_flags,
+            .flags        = require_update_after_bind ? VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT : static_cast<VkDescriptorSetLayoutCreateFlags>(0),
+            .bindingCount = binding_count,
             .pBindings    = layout_bindings.data(),
         };
 

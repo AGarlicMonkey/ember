@@ -321,20 +321,33 @@ namespace ember::inline graphics {
                 queue_create_infos.push_back(queue_create_info);
             }
 
-            VkPhysicalDeviceFeatures device_features{
-                .imageCubeArray    = VK_TRUE,
-                .multiDrawIndirect = VK_TRUE,
-                .samplerAnisotropy = VK_TRUE,
+            //These indexing features allow for bindless
+            VkPhysicalDeviceDescriptorIndexingFeatures indexing_features{
+                .sType                                        = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES,
+                .pNext                                        = nullptr,
+                .descriptorBindingSampledImageUpdateAfterBind = VK_TRUE,
+                .descriptorBindingPartiallyBound              = VK_TRUE,
+                .runtimeDescriptorArray                       = VK_TRUE,
+            };
+
+            VkPhysicalDeviceFeatures2 device_features{
+                .sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2,
+                .pNext    = &indexing_features,
+                .features = VkPhysicalDeviceFeatures{
+                    .imageCubeArray    = VK_TRUE,
+                    .multiDrawIndirect = VK_TRUE,
+                    .samplerAnisotropy = VK_TRUE,
+                },
             };
 
             VkDeviceCreateInfo create_info{
                 .sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+                .pNext                   = &device_features,//Use pNext instead of pEnabledFeatures as we're using the VkPhysicalDeviceFeatures2 struct
                 .queueCreateInfoCount    = static_cast<std::uint32_t>(queue_create_infos.size()),
                 .pQueueCreateInfos       = queue_create_infos.data(),
                 .enabledLayerCount       = 0,
                 .enabledExtensionCount   = static_cast<std::uint32_t>(required_device_extensions.size()),
                 .ppEnabledExtensionNames = required_device_extensions.data(),
-                .pEnabledFeatures        = &device_features,
             };
 
             EMBER_VULKAN_VERIFY_RESULT(vkCreateDevice(physical_device, &create_info, &global_host_allocation_callbacks, &logical_device), "Failed to create logical device for vulkan. ");

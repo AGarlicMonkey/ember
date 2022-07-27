@@ -20,9 +20,9 @@ namespace ember::inline graphics {
      * function on a command_buffer. This has to match the index of the descriptor_set_layout array
      * inside the appropriate pipeline object's descriptor. Each individual binding is written through
      * this descriptor set.
-     * To update a descriptor set after it has been used in a draw or dispatch call it needs to be allocated
-     * from a pool with the `descriptor_pool::flag::update_after_bind` flag set. Otherwise it can only be
-     * written to the before it is bound for the first time.
+     * Descriptors in a descriptor cannot be updated after being bound for the first time except when
+     * using a layout with `descriptor_set_binding_info::bindless` set to true and allocated from
+     * a pool with `descriptor_pool::flag::update_after_bind` set.
      */
     class descriptor_set {
         //FUNCTIONS

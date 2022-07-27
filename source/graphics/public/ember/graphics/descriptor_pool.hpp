@@ -27,7 +27,7 @@ namespace ember::inline graphics {
         using flag_type = std::uint8_t;
         enum class flag : flag_type {
             none              = 0 << 0,
-            update_after_bind = 1 << 0, /**< Allows a descriptor set to be written to after being used in a draw or dispatch call. */
+            update_after_bind = 1 << 0, /**< Allows this pool to allocate descriptor sets that are able to be updated after bound for the first time. See `descriptor_set_binding_info::bindless`. */
         };
 
         struct descriptor {
