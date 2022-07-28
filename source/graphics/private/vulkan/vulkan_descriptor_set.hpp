@@ -25,7 +25,7 @@ namespace ember::inline graphics {
         inline ~vulkan_descriptor_set() override;
 
         void write(buffer const &buffer, std::size_t const offset, std::size_t const bytes, descriptor_type const type, std::uint32_t const slot) override;
-        void write(image_view const &image_view, image::layout const layout, descriptor_type const type, std::uint32_t const slot) override;
+        void write(image_view const &image_view, image::layout const layout, descriptor_type const type, std::uint32_t const slot, std::uint32_t const array_element) override;
         void write(sampler const &sampler, std::uint32_t const slot) override;
 
         inline VkDescriptorSet get_handle() const;

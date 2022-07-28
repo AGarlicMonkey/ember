@@ -44,8 +44,9 @@ namespace ember::inline graphics {
          * @param layout The expected layout of the image being written.
          * @param type The type of binding this is. In this case either sampled_image or storage_image.
          * @param slot Which slot inside the set this will be written to.
+         * @param array_element Which element in the binding array to write to.
          */
-        virtual void write(image_view const &image_view, image::layout const layout, descriptor_type const type, std::uint32_t const slot) = 0;
+        virtual void write(image_view const &image_view, image::layout const layout, descriptor_type const type, std::uint32_t const slot, std::uint32_t const array_element = 0) = 0;
         /**
          * @brief Writes a sampler into a binding inside a shader.
          * @param sampler 

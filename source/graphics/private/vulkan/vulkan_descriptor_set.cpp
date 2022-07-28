@@ -33,7 +33,7 @@ namespace ember::inline graphics {
         vkUpdateDescriptorSets(device, 1, &write_info, 0, nullptr);
     }
 
-    void vulkan_descriptor_set::write(image_view const &image_view, image::layout const layout, descriptor_type const type, std::uint32_t const slot) {
+    void vulkan_descriptor_set::write(image_view const &image_view, image::layout const layout, descriptor_type const type, std::uint32_t const slot, std::uint32_t const array_element) {
         VkImageView const image_view_handle{ resource_cast<vulkan_image_view const>(&image_view)->get_handle() };
 
         VkDescriptorImageInfo const image_info{
@@ -47,7 +47,7 @@ namespace ember::inline graphics {
             .pNext            = nullptr,
             .dstSet           = handle,
             .dstBinding       = slot,
-            .dstArrayElement  = 0,
+            .dstArrayElement  = array_element,
             .descriptorCount  = 1,
             .descriptorType   = convert_descriptor_type(type),
             .pImageInfo       = &image_info,
